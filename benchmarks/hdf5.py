@@ -52,7 +52,7 @@ class DaskChunkedReduce(SingleHDF5File):
         self.da = da.from_array(self.ds, chunks=chunksize)
 
     def time_sum(self, chunksize):
-        return self.da.sum()
+        return self.da.sum().compute()
 
     def teardown(self, chunksize):
         self.f.close()
