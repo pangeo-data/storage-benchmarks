@@ -67,6 +67,7 @@
 	"h5netcdf": [""],
 	"netcdf4": [""],
 	"rasterio": [""],
+	"xarray": [""],
 	"zarr": [""],
     },
 
