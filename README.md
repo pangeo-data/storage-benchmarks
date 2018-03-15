@@ -10,3 +10,14 @@ Latest github master of asv is required
 To run the benchmarks (from repo root directory)
 
     $ asv run
+
+Then, update reports
+
+    $ asv publish
+
+Finally, you can run a local webserver to view results:
+
+    $ asv preview
+
+Browsing to http://127.0.0.1:8080 will show your reports.
+
