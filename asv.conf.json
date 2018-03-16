@@ -63,6 +63,7 @@
         "numpy": [""],
 	"dask": [""],
 	"distributed": [""],
+	"gcsfs": [""],
 	"h5py": [""],
 	"h5netcdf": [""],
 	"netcdf4": [""],

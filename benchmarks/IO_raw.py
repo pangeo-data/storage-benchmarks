@@ -1,16 +1,20 @@
 """
     Raw read/write performance of various backends and infrastructure
+    TODO: should IO_raw just be combined with IO_numpy?
 
 
 """
 
 from . import target_zarr, target_hdf5
+from subprocess import call
+
 import os
 import tempfile
 import itertools
 import shutil
 import numpy as np
 import dask.array as da
+import xarray as xr
 import h5py
 import zarr
 
@@ -28,9 +32,9 @@ class IORead_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
         return
 
 
-class IOWrite_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
+class IOWrite_zarr_POSIX_local(target_zarr.ZarrStore):
     def setup(self):
-        self.create_objects()
+        self.create_objects(backend='POSIX')
         self.nz = 1024
         self.ny = 256
         self.nx = 512
@@ -47,8 +51,24 @@ class IOWrite_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
         return
 
     def teardown_files(self):
-        self.rm_objects()
+        self.rm_objects(backend='POSIX')
 
+class IOWrite_zarr_GCS_synth(target_zarr.ZarrStore):
+    def setup(self):
+        self.nz = 3
+        self.ny = 128
+        self.nx = 128
+        self.shape = (self.nz, self.ny, self.nx)
+        self.dtype = 'f8'
+        self.da = xr.DataArray(np.random.rand(*self.shape).astype(self.dtype))
+        self.ds = xr.Dataset({'foo': self.da, 'bar': ('x', [1, 2]), 'baz': np.pi})
+        self.create_objects(backend='GCS')
+
+    def time_writetest(self):
+        self.ds.to_zarr(store=self.gcs_store)
+
+    def teardown_files(self):
+        self.rm_objects(backend='GCS')
 
 class IORead_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
     def setup(self):
