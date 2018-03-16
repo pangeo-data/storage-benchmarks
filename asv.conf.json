@@ -69,7 +69,8 @@
 	"netcdf4": [""],
 	"rasterio": [""],
 	"xarray": [""],
-	"zarr": [""],
+    "zarr": [""],
+    "pip+h5pyd": [""],
     },
 
     // Combinations of libraries/python versions can be excluded/included
