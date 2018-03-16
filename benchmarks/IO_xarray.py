@@ -17,7 +17,7 @@ class IOWriteZarrPOSIXLocal(target_zarr.ZarrStore):
     def time_SyntheticWrite(self):
         self.ds.to_zarr(self.path)
 
-    def teardown_files(self):
+    def teardown(self):
         self.rm_store(backend='POSIX')
 
 
@@ -30,7 +30,7 @@ class IOReadZarrPOSIXLocal(target_zarr.ZarrStore):
     def time_SyntheticRead(self):
         xr.open_zarr(self.path).load()
 
-    def teardown_files(self):
+    def teardown(self):
         self.rm_store(backend='POSIX')
 
 
@@ -43,7 +43,7 @@ class ComputeZarrPOSIXLocal(target_zarr.ZarrStore):
     def time_computemean(self):
         xr.open_zarr(self.path).mean
 
-    def teardown_files(self):
+    def teardown(self):
         self.rm_store(backend='POSIX')
 
 
@@ -57,7 +57,7 @@ class IOWriteZarrGCS(target_zarr.ZarrStore):
     def time_SyntheticWrite(self):
         self.ds.to_zarr(self.gcs_store)
 
-    def teardown_files(self):
+    def teardown(self):
         self.rm_store(backend='GCS')
 
 
@@ -71,7 +71,7 @@ class IOReadZarrGCS(target_zarr.ZarrStore):
     def time_SyntheticRead(self):
         xr.open_zarr(self.gcs_store).load()
 
-    def teardown_files(self):
+    def teardown(self):
         self.rm_store(backend='GCS')
 
 
@@ -85,7 +85,7 @@ class ComputeZarrGCS(target_zarr.ZarrStore):
     def time_computemean(self):
         xr.open_zarr(self.gcs_store).mean
 
-    def teardown_files(self):
+    def teardown(self):
         self.rm_store(backend='GCS')
 
 
@@ -97,8 +97,7 @@ class IOReadZarrGCS_FUSE(target_zarr.ZarrStore):
         self.ds.to_zarr(self.test_dir, 'w')
 
     def time_SyntheticRead(self):
-        # xr.open_zarr(self.test_dir).load()
-        return
+        xr.open_zarr(self.test_dir).load()
 
     def teardown(self):
         self.rm_store(backend='GCS_FUSE')

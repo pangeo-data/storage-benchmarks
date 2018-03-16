@@ -19,55 +19,6 @@ import zarr
 _counter = itertools.count()
 _DATASET_NAME = "default"
 
-class IORead_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
-    def setup(self):
-        return
-
-    def time_readtest(self):
-        return
-
-    def time_fancycalculation(self):
-        return
-
-
-class IOWrite_zarr_POSIX_local(target_zarr.ZarrStore):
-    def setup(self):
-        self.create_objects(backend='POSIX')
-        self.nz = 1024
-        self.ny = 256
-        self.nx = 512
-        self.shape = (self.nz, self.ny, self.nx)
-        self.dtype = 'f8'
-        self.data = np.random.rand(*self.shape).astype(self.dtype)
-
-    def time_writetest(self):
-        zarrfile = zarr.open_array(self.path, mode='w',
-                                   shape=(self.shape))
-        zarrfile[...] = self.data[...]
-
-    def time_fancywritecalculation(self):
-        return
-
-    def teardown_files(self):
-        self.rm_objects(backend='POSIX')
-
-class IOWrite_zarr_GCS_synth(target_zarr.ZarrStore):
-    def setup(self):
-        self.nz = 3
-        self.ny = 128
-        self.nx = 128
-        self.shape = (self.nz, self.ny, self.nx)
-        self.dtype = 'f8'
-        self.da = xr.DataArray(np.random.rand(*self.shape).astype(self.dtype))
-        self.ds = xr.Dataset({'foo': self.da, 'bar': ('x', [1, 2]), 'baz': np.pi})
-        self.create_objects(backend='GCS')
-
-    def time_writetest(self):
-        self.ds.to_zarr(store=self.gcs_store)
-
-    def teardown_files(self):
-        self.rm_objects(backend='GCS')
-
 class IORead_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
     def setup(self):
         return

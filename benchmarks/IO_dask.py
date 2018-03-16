@@ -17,64 +17,65 @@ _counter = itertools.count()
 _DATASET_NAME = "default"
 
 
-class IORead_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
-    def setup(self):
-        return
+# class IORead_zarr_POSIX_local(target_zarr.ZarrStore):
+#     def setup(self):
+#         return
 
-    def time_writetest(self):
-        return
+#     def time_writetest(self):
+#         return
 
-    def time_fancywritecalculation(self):
-        return
-
-
-class IOWrite_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
-    def setup(self):
-        return
-
-    def time_writetest(self):
-        return
-
-    def time_fancywritecalculation(self):
-        return
+#     def time_fancywritecalculation(self):
+#         return
 
 
-class ComputeSum_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
-    # chunks
-    params = [256, 64]
-    param_names = ['chunksize']
+# class IOWrite_zarr_POSIX_local(target_zarr.ZarrStore):
+#     def setup(self):
+#         return
 
-    def setup(self, chunksize):
-        self.create_objects(empty=False)
-        self.ds = zarr.open_array(self.path, mode='r')
-        self.da = da.from_array(self.ds, chunks=chunksize)
+#     def time_writetest(self):
+#         return
 
-    def time_sum(self, chunksize):
-        return self.da.sum().compute()
-
-    def teardown(self, chunksize):
-        self.rm_objects()
+#     def time_fancywritecalculation(self):
+#         return
 
 
-class IORead_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
-    def setup(self):
-        return
+# class ComputeSum_zarr_POSIX_local(target_zarr.ZarrStore):
+#     # chunks
+#     params = [256, 64]
+#     param_names = ['chunksize']
 
-    def time_readtest(self):
-        return
+#     def setup(self, chunksize):
+#         self.make_ds()
+#         self.config_store()
+#         self.ds = zarr.open_array(self.path, mode='r')
+#         self.da = da.from_array(self.ds, chunks=chunksize)
 
-    def teardown(self):
-        return
+#     def time_sum(self, chunksize):
+#         return self.da.sum().compute()
 
-class IOWrite_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
-    def setup(self):
-        return
+#     def teardown(self, chunksize):
+#         self.rm_objects()
 
-    def time_writetest(self):
-        return
 
-    def teardown(self):
-        return
+# class IORead_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
+#     def setup(self):
+#         return
+
+#     def time_readtest(self):
+#         return
+
+#     def teardown(self):
+#         return
+
+# class IOWrite_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
+#     def setup(self):
+#         return
+
+#     def time_writetest(self):
+#         return
+
+#     def teardown(self):
+#         return
 
 class ComputeSum_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
     # chunks
