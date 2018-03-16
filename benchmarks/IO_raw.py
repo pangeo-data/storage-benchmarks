@@ -1,53 +1,57 @@
 """
     Raw read/write performance of various backends and infrastructure
+    TODO: should IO_raw just be combined with IO_numpy?
 
 
 """
 
 from . import target_zarr, target_hdf5
+from subprocess import call
+
 import os
 import tempfile
 import itertools
 import shutil
 import numpy as np
 import dask.array as da
+import xarray as xr
 import h5py
 import zarr
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
 
-class IORead_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
-    def setup(self):
-        return
+# class IORead_zarr_POSIX_local(target_zarr.ZarrStore):
+#     def setup(self):
+#         return
 
-    def time_readtest(self):
-        return
+#     def time_readtest(self):
+#         return
 
-    def time_fancycalculation(self):
-        return
+#     def time_fancycalculation(self):
+#         return
 
 
-class IOWrite_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
-    def setup(self):
-        self.create_objects()
-        self.nz = 1024
-        self.ny = 256
-        self.nx = 512
-        self.shape = (self.nz, self.ny, self.nx)
-        self.dtype = 'f8'
-        self.data = np.random.rand(*self.shape).astype(self.dtype)
+# class IOWrite_zarr_POSIX_local(target_zarr.ZarrStore):
+#     def setup(self):
+#         self.create_objects(backend='POSIX')
+#         self.nz = 1024
+#         self.ny = 256
+#         self.nx = 512
+#         self.shape = (self.nz, self.ny, self.nx)
+#         self.dtype = 'f8'
+#         self.data = np.random.rand(*self.shape).astype(self.dtype)
 
-    def time_writetest(self):
-        zarrfile = zarr.open_array(self.path, mode='w',
-                                   shape=(self.shape))
-        zarrfile[...] = self.data[...]
+#     def time_writetest(self):
+#         zarrfile = zarr.open_array(self.path, mode='w',
+#                                    shape=(self.shape))
+#         zarrfile[...] = self.data[...]
 
-    def time_fancywritecalculation(self):
-        return
+#     def time_fancywritecalculation(self):
+#         return
 
-    def teardown_files(self):
-        self.rm_objects()
+#     def teardown_files(self):
+#         self.rm_objects(backend='POSIX')
 
 
 class IORead_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):

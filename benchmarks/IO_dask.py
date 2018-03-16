@@ -17,7 +17,7 @@ _counter = itertools.count()
 _DATASET_NAME = "default"
 
 
-class IORead_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
+class IORead_zarr_POSIX_local(target_zarr.ZarrStore):
     def setup(self):
         return
 
@@ -28,7 +28,7 @@ class IORead_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
         return
 
 
-class IOWrite_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
+class IOWrite_zarr_POSIX_local(target_zarr.ZarrStore):
     def setup(self):
         return
 
@@ -39,21 +39,22 @@ class IOWrite_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
         return
 
 
-class ComputeSum_zarr_POSIX_local(target_zarr.SingleZarrPOSIXFile):
-    # chunks
-    params = [256, 64]
-    param_names = ['chunksize']
+# class ComputeSum_zarr_POSIX_local(target_zarr.ZarrStore):
+#     # chunks
+#     params = [256, 64]
+#     param_names = ['chunksize']
 
-    def setup(self, chunksize):
-        self.create_objects(empty=False)
-        self.ds = zarr.open_array(self.path, mode='r')
-        self.da = da.from_array(self.ds, chunks=chunksize)
+#     def setup(self, chunksize):
+#         self.config_store(empty=False, backend='POSIX')
+#         self.make_ds()
+#         self.ds = zarr.open_array(self.path, mode='r')
+#         self.da = da.from_array(self.ds, chunks=chunksize)
 
-    def time_sum(self, chunksize):
-        return self.da.sum().compute()
+#     def time_sum(self, chunksize):
+#         return self.da.sum().compute()
 
-    def teardown(self, chunksize):
-        self.rm_objects()
+#     def teardown(self, chunksize):
+#         self.rm_objects()
 
 
 class IORead_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
