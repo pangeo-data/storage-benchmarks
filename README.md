@@ -31,10 +31,10 @@ For all use cases, the following perfomance tests are conducted:
 	* Delete file
 * Get time series at a single point
 * Aggregations
-	*global mean / variance of SST as a function of time
+	* global mean / variance of SST as a function of time
  	* mean / variance over longitude and time (i.e. zonal mean)
-	*monthly climatology
-	*convolution (smoothing) over spatial dimensions
+	* monthly climatology
+	* convolution (smoothing) over spatial dimensions
 	* multidimensional Fourier transforms
 
 ## Storage/Backend/API Combinations
