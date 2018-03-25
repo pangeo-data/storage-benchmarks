@@ -1,0 +1,4 @@
+hs_username: null  # HSDS Username account
+hs_password: null  # HSDS Password
+hs_endpoint: http://52.4.181.237:5101  # HSDS endpoint
+num_slices: 100  # number of "Z" slices for dataset creation
