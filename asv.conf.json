@@ -67,6 +67,7 @@
 	"h5py": [""],
 	"h5netcdf": [""],
 	"netcdf4": [""],
+    "pyyaml": [""],
 	"rasterio": [""],
 	"xarray": [""],
     "zarr": [""],
