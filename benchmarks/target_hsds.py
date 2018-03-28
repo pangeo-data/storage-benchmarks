@@ -7,7 +7,7 @@ import itertools
 import numpy as np
 import h5pyd
 import time
-from . import getTestConfigValue
+from . import getTestConfigValue, create_numpy_random
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
@@ -40,14 +40,7 @@ class SingleHDF5HSDSFile(object):
 
     def create_objects(self, empty=True):   
         self.h5file = h5pyd.File(self.path, 'w', endpoint=self.endpoint, username=self.username, password=self.password)
-             
-        self.nz = getTestConfigValue("num_slices")
-        self.ny = 256
-        self.nx = 512
-        self.shape = (self.nz, self.ny, self.nx)
-        self.dtype = 'f8'
-        # Create a 1GB dataset
-        data = np.random.rand(*self.shape).astype(self.dtype)
+        data = create_numpy_random(self.nz)
         dset = self.h5file.create_dataset(_DATASET_NAME, (self.nz,self.ny,self.nx), dtype = self.dtype)
         self.dset_name = _DATASET_NAME
         # Writing the entire dataset in one h5pyd call is not yet supported for large datasets, so write in slices

@@ -1,10 +1,13 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
 import itertools
 import yaml
 import os
 import numpy as np
+import pandas as pd
+import xarray as xr
 
 _counter = itertools.count()
 
@@ -62,4 +65,78 @@ def getTestConfigValue(k):
         if k in cfg:
             val = cfg[k]
     return val
+
+def create_numpy_random(num_slices=None):
+    """
+    Generate random Numpy array
+
+    """
+
+    if num_slices == None:
+        num_slices = getTestConfigValue("num_slices")
+    nz = getTestConfigValue("num_slices")
+    ny = 256
+    nx = 512
+    shape = (nz, ny, nx)
+    dtype = 'f8'
+    data = np.random.rand(*shape).astype(dtype)
+
+    return data
+
+def create_xarray_random(num_time_slices=None):
+    """
+    Generate synthetic geoscience-like Xarray dataset filled with random 
+    data.
+
+    """
+
+    if num_time_slices == None:
+        num_time_slices = getTestConfigValue("num_time_slices")
+    ds = xr.Dataset()
+    nt = int(num_time_slices)
+    nx = 90
+    ny = 45
+    block_chunks = {'time': nt / 4,
+                             'lon': nx / 3,
+                             'lat': ny / 3}
+
+    time_chunks = {'time': int(nt / 36)}
+
+    times = pd.date_range('1970-01-01', periods=nt, freq='D')
+    lons = xr.DataArray(np.linspace(0, 360, nx), dims=('lon', ),
+                        attrs={'units': 'degrees east',
+                               'long_name': 'longitude'})
+    lats = xr.DataArray(np.linspace(-90, 90, ny), dims=('lat', ),
+                        attrs={'units': 'degrees north',
+                               'long_name': 'latitude'})
+    ds['foo'] = xr.DataArray(randn((nt, nx, ny), frac_nan=0.2),
+                             coords={'lon': lons, 'lat': lats,'time': times},
+                             dims=('time', 'lon', 'lat'),
+                             name='foo', encoding=None,
+                             attrs={'units': 'foo units',
+                                    'description': 'a description'})
+    ds['bar'] = xr.DataArray(randn((nt, nx, ny), frac_nan=0.2),
+                             coords={'lon': lons, 'lat': lats, 'time': times},
+                             dims=('time', 'lon', 'lat'),
+                             name='bar', encoding=None,
+                             attrs={'units': 'bar units',
+                                    'description': 'a description'})
+    ds['baz'] = xr.DataArray(randn((nx, ny), frac_nan=0.2).astype(np.float32),
+                             coords={'lon': lons, 'lat': lats},
+                             dims=('lon', 'lat'),
+                             name='baz', encoding=None,
+                             attrs={'units': 'baz units',
+                                    'description': 'a description'})
+
+    ds.attrs = {'history': 'created for xarray benchmarking'}
+
+    oinds = {'time': randint(0, nt, 120),
+             'lon': randint(0, nx, 20),
+             'lat': randint(0, ny, 10)}
+    vinds = {'time': xr.DataArray(randint(0, nt, 120), dims='x'),
+             'lon': xr.DataArray(randint(0, nx, 120), dims='x'),
+             'lat': slice(3, 20)}
+    return ds
+
+
      
