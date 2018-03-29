@@ -4,101 +4,150 @@
 
 
 """
-from . import target_zarr, target_hdf5, target_hsds, getTestConfigValue
-from subprocess import call
-import os
-import tempfile
+from . import target_hdf5, target_hsds, getTestConfigValue
+import random
 import itertools
-import shutil
 import numpy as np
-import dask.array as da
-import xarray as xr
-import h5py
-import h5pyd
-import zarr
 
 _counter = itertools.count()
 
-class IORead_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
+_DATASET_NAME = "default"
+
+# Use given handle to create a dataset
+def create_objects(f, empty=True):
+    nz = getTestConfigValue("num_slices")
+    if not nz or nz <= 0: 
+        raise NotImplementedError("num_slices invalid")
+    ny = 256
+    nx = 512
+    dtype = 'f8'
+    # Create a dataset
+    dset = f.create_dataset(_DATASET_NAME, (nz,ny,nx), dtype=dtype)
+
+    if not empty:
+        # fill in some random data
+        data = np.random.rand(*dset.shape).astype(dset.dtype)
+        for i in range(nz):
+            dset[i, :, :] = data[i, :, :]
+
+
+# Read all values of dataset and confirm they are in the expected range
+def readtest(f):
+    dset = f[_DATASET_NAME]
+    nz = dset.shape[0]
+    for i in range(nz):
+        arr = dset[i,:,:]
+        mean = arr.mean()
+        if mean < 0.4 or mean > 0.6:
+            msg = "mean of {} for slice: {} is unexpected".format(mean, i)
+            raise ValueError(msg)
+
+# Update all values of the dataset
+def writetest(f, data):
+    dset = f[_DATASET_NAME]
+    nz = dset.shape[0]
+    for i in range(nz):
+        dset[i,:,:] = data[i,:,:]
+
+# Check random slice of tasmax dataset
+def tasmax_slicetest(f):
+    dset = f['tasmax']
+    day = random.randrange(dset.shape[0])  # choose random day in year
+    data = dset[day,:,:]  # get numpy array for given day
+    vals = data[np.where(data<400.0)]  # cull fill values
+    min = vals.min()
+    if min < 100.0:
+        msg = "day: {} was unusually cold! (for degrees kelvin)".format(day)
+        raise ValueError(msg)
+    max = vals.max()
+    if max > 350.0:
+        msg = "day: {} was unusually hot! (for degrees kelvin)".format(day)
+        raise ValueError(msg)
+    if max - min < 20.0:
+        msg = "day: {} expected more variation".format(day)
+        raise ValueError(msg)
+
+class IORead_Random_POSIX(target_hdf5.SingleHDF5POSIXFile):
     def setup(self):
-        self.nz = getTestConfigValue("num_slices")
-        if not self.nz or self.nz <= 0: 
-            raise NotImplementedError("num_slices invalid")
-        self.create_objects(empty=False)
+        self.path = self.get_temp_filepath()
+        f = self.open(self.path, 'w')
+        create_objects(f, empty=False)
+        f.close()
 
     def time_readtest(self):
-        with h5py.File(self.path, 'r') as f:
-            dset = f[self.dset_name]
-            for i in range(self.nz):
-                arr = dset[i,:,:]
-                mean = arr.mean()
-                if mean < 0.4 or mean > 0.6:
-                    msg = "mean of {} for slice: {} is unexpected".format(mean, i)
-                    raise ValueError(msg)
+        f = self.open(self.path, 'r')
+        readtest(f)
+        f.close()
+     
+    def teardown(self):
+        self.rm_objects()
 
-    def time_fancycalculation(self):
-        return
+class IORead_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
+    def setup(self):
+        self.path = self.get_temp_filepath()
+        f = self.open(self.path, 'w')
+        create_objects(f, empty=False)
+        f.close()
+
+    def time_readtest(self):
+        f = self.open(self.path, 'r')
+        readtest(f)
+        f.close()
 
     def teardown(self):
         self.rm_objects()
 
-
-class IOWrite_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
+class IOWrite_Random_POSIX(target_hdf5.SingleHDF5POSIXFile):
     def setup(self):
-        self.create_objects()
-        self.nz = getTestConfigValue("num_slices")
+        self.path = self.get_temp_filepath()
+        
+        f = self.open(self.path, 'w')
+        create_objects(f, empty=True)
+        dset = f[_DATASET_NAME]
+        self.dtype = dset.dtype
+        self.shape = dset.shape
+        f.close()
         self.data = np.random.rand(*self.shape).astype(self.dtype)
 
     def time_writetest(self):
-        with h5py.File(self.path, 'a') as f:
-            dset = f[self.dset_name]
-            for i in range(self.nz):
-                dset[i,:,:] = self.data[i,:,:]
+        f = self.open(self.path, 'a')
+        writetest(f, self.data)
+        f.close()
 
     def teardown_files(self):
         self.rm_objects()
 
-class IORead_h5netcdf_HSDS(target_hsds.SingleHDF5HSDSFile):
+
+class IOWrite_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
     def setup(self):
-        if not self.username or not self.password or not self.endpoint:
-            raise NotImplementedError("Missing config for HSDS tests")
-        self.nz = getTestConfigValue("num_slices")
-        self.create_objects(empty=False)
-
-    def time_readtest(self):
-        with h5pyd.File(self.path, 'r') as f:
-            dset = f[self.dset_name]
-            for i in range(self.nz):
-                arr = dset[i,:,:]
-                mean = arr.mean()
-                if mean < 0.4 or mean > 0.6:
-                    msg = "mean of {} for slice: {} is unexpected".format(mean, i)
-                    raise ValueError(msg)
-
-    def time_fancycalculation(self):
-        return
-
-    def teardown(self):
-        self.rm_objects()
-
-class IOWrite_h5netcdf_HSDS(target_hsds.SingleHDF5HSDSFile):
-    def setup(self):
-        if not self.username or not self.password or not self.endpoint:
-            raise NotImplementedError("Missing config for HSDS tests")
-        self.nz = getTestConfigValue("num_slices")
-        self.ny = 256
-        self.nx = 512
-        self.shape = (self.nz, self.ny, self.nx)
-        self.dtype = 'f8'
-        self.create_objects()
+        self.path = self.get_temp_filepath()
+        f = self.open(self.path, 'w')
+        create_objects(f, empty=True)
+        dset = f[_DATASET_NAME]
+        self.dtype = dset.dtype
+        self.shape = dset.shape
+        f.close()
         self.data = np.random.rand(*self.shape).astype(self.dtype)
 
     def time_writetest(self):
-        # Writing the entire 1GB in one h5pyd call is not yet supported, so write in slices
-        with h5pyd.File(self.path, 'a') as f:
-            dset = f[self.dset_name]
-            for i in range(self.nz):
-                dset[i, :, :] = self.data[i, :, :]
+        f = self.open(self.path, 'a')
+        writetest(f, self.data)
+        f.close()
          
     def teardown_files(self):
         self.rm_objects()
+
+class IOSelect_LOCA_HSDS(target_hsds.SingleHDF5HSDSFile):
+    def setup(self):
+        self.year = getTestConfigValue("loca_year_start")
+        self.filepath = self.get_tasmax_filepath(year=self.year)
+        
+    def time_readslice(self):
+        f = self.open(self.filepath, 'r')
+        tasmax_slicetest(f)
+        f.close()
+
+    def teardown(self):
+        pass
+
+
