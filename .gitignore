@@ -102,3 +102,6 @@ ENV/
 
 # asv
 .asv/
+
+# kai
+test-kai.conf.yaml

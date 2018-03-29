@@ -7,38 +7,45 @@
 """
 
 from subprocess import call
-from . import randn, randint, requires_dask, create_xarray_random
-
+from . import getTestConfigValue
+from . import benchmark_tools as bmt
 import gcsfs
 import os
 import tempfile
 import itertools
 import shutil
-import numpy as np
-import pandas as pd
-import xarray as xr
-import zarr
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
-_GCS_bucket   = "storage-benchmarks"
-_GCS_proj     = "pangeo-181919"
-_GCS_zarr     = "%s/test_zarr/" % _GCS_bucket
-_GCS_zarr_arg = "gs://%s" % _GCS_zarr
-_GCS_zarrfuse = "%s/test_zarr_fuse/" % _GCS_bucket
 
 class ZarrStore(object):
     """
-    Set up a Zarr backend.
-    TODO: Better docs
+    Set up necessary variables and bits to run data operations on a Zarr
+    backend. For local filesystems, generally consists of configuring temp
+    directories to save datasets while in cloud environments, this will 
+    mean connecting and authenticating to resources using native tools.
+
+    Being consistent with rm_objects method is important here as it will 
+    prevent clutter of potentially large unwanted datasets persisting in
+    random locations following completion of tests.
+
+     Note: Test expects that the following config settings are defined:
+    * gcp_ and gcs_ - These tests should NOT run if these variables are
+                      not set up correctly.
 
 
     """
+
+    def __init__(self):
+        self.gcp_project_name   = getTestConfigValue("gcp_project")
+        self.gcs_zarr           = getTestConfigValue("gcs_zarr")
+        self.gcs_zarrfuse       = getTestConfigValue("gcs_zarrfuse")
+        self.gcs_benchmark_root = getTestConfigValue("gcs_benchmark_root")
 
     def create_objects(self, dset=None):
         # single Dataset
         if dset == 'xarray':
-            self.ds = create_xarray_random()
+            self.ds = bmt.rand_xarray()
 
     def config_store(self, empty=True, backend='POSIX'):
         """
@@ -59,15 +66,23 @@ class ZarrStore(object):
 
         elif backend == 'GCS':
             # todo: check for path on this!
-            call(["gsutil", "-q", "-m", "rm","-r", _GCS_zarr_arg])
-            self.gcs_proj  = gcsfs.GCSFileSystem(project=_GCS_proj, token=None)
-            self.gcs_store = gcsfs.mapping.GCSMap(_GCS_zarr, gcs=self.gcs_proj,
-                                                  check=True, create=True)
+            if not self.gcs_zarr:
+                raise NotImplementedError("Missing config for GCP test")
+
+            gsutil_arg = "gs://%s" % self.gcs_zarr
+            call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
+            self.gcp_project = gcsfs.GCSFileSystem(project=self.gcp_project_name, 
+                                                      token=None)
+            self.gcszarr_bucket = gcsfs.mapping.GCSMap('storage-benchmarks/test_zarr/', 
+                                                       gcs=self.gcp_project,
+                                                       check=True, create=False)
 
         elif backend =='GCS_FUSE':
+            if not self.gcs_zarrfuse:
+                raise NotImplementedError("Missing config for GCP test")
             self.temp_dir = tempfile.mkdtemp()
             self.test_dir = self.temp_dir + "/Zarr_FUSE_test"
-            call(["gcsfuse", _GCS_bucket, self.temp_dir])
+            call(["gcsfuse", self.gcs_benchmark_root, self.temp_dir])
             if not os.path.exists(self.test_dir):
                 os.makedirs(self.test_dir)
 
@@ -77,31 +92,17 @@ class ZarrStore(object):
             shutil.rmtree(self.temp_dir)
 
         elif backend == 'GCS':
-            gcs_zarr_arg = "gs://%s" % _GCS_zarr
-            call(["gsutil", "-q", "-m", "rm", "-r", _GCS_zarr_arg])
+            if not self.gcs_zarr or not self.gcp_project:
+                return
+            gsutil_arg = "gs://%s" % self.gcs_zarr
+            call(["gsutil", "-q", "-m", "rm", "-r", gsutil_arg])
 
         elif backend == 'GCS_FUSE':
+            if not self.gcs_zarrfuse or not self.gcp_project:
+                return
             shutil.rmtree(self.test_dir)
             call(["umount", self.temp_dir])
             shutil.rmtree(self.temp_dir)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

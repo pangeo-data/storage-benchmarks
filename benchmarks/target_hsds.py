@@ -6,7 +6,7 @@ import os
 import itertools
 import h5pyd
 import time
-from . import getTestConfigValue, create_numpy_random
+from . import getTestConfigValue
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
@@ -46,17 +46,6 @@ class SingleHDF5HSDSFile(object):
     def open(self, path, mode):
         return h5pyd.File(path, mode, endpoint=self.endpoint, username=self.username, password=self.password)
 
-<<<<<<< HEAD
-    def create_objects(self, empty=True):   
-        self.h5file = h5pyd.File(self.path, 'w', endpoint=self.endpoint, username=self.username, password=self.password)
-        data = create_numpy_random(self.nz)
-        dset = self.h5file.create_dataset(_DATASET_NAME, (self.nz,self.ny,self.nx), dtype = self.dtype)
-        self.dset_name = _DATASET_NAME
-        # Writing the entire dataset in one h5pyd call is not yet supported for large datasets, so write in slices
-        if not empty:
-            for i in range(self.nz):
-                dset[i, :, :] = data[i, :, :]
-=======
     def get_tasmax_filepath(self, year=1950):
         if not self.username or not self.password or not self.endpoint:
             raise NotImplementedError("Missing config for HSDS tests")
@@ -65,7 +54,6 @@ class SingleHDF5HSDSFile(object):
             self.open(filepath, 'r')
         except IOError:
             raise NotImplementedError("Domain: {} not found".format(filepath))
->>>>>>> a5e63b24390f34f6b5f84f084e93102143eb79be
 
         return filepath
 
@@ -76,9 +64,6 @@ class SingleHDF5HSDSFile(object):
             return
         folder = h5pyd.Folder(self.temp_dir, mode='a', endpoint=self.endpoint, username=self.username, password=self.password)
         if len(folder) == 0:
-            time.sleep(10)  # allow time for HSDS to sync to S3
+            time.sleep(10)  # allow time for HSDS to sync to 
         for name in folder:
             del folder[name]
-
- 
-
