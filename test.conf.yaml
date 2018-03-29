@@ -3,3 +3,4 @@ hs_password: null  # HSDS Password
 hs_endpoint: http://35.166.11.248:5101 # HSDS endpoint
 num_slices: 5  # number of "Z" slices for dataset creation
 loca_year_start: 1950
+loca_posix_dir:  null # set to location of LOCA files

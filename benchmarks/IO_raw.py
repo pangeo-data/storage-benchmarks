@@ -137,6 +137,19 @@ class IOWrite_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
     def teardown_files(self):
         self.rm_objects()
 
+class IOSelect_LOCA_POSIX(target_hdf5.SingleHDF5POSIXFile):
+    def setup(self):
+        self.year = getTestConfigValue("loca_year_start")
+        self.filepath = self.get_tasmax_filepath(year=self.year)
+        
+    def time_readslice(self):
+        f = self.open(self.filepath, 'r')
+        tasmax_slicetest(f)
+        f.close()
+
+    def teardown(self):
+        pass
+
 class IOSelect_LOCA_HSDS(target_hsds.SingleHDF5HSDSFile):
     def setup(self):
         self.year = getTestConfigValue("loca_year_start")
