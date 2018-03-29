@@ -12,7 +12,7 @@ from . import getTestConfigValue
 _counter = itertools.count()
 _DATASET_NAME = "default"
       
-
+_LOCA_PATH = "hdf5://nex/loca/ACCESS1-0/16th/historical/r1i1p1/tasmax/tasmax_day_ACCESS1-0_historical_r1i1p1_19500101-19501231.LOCA_2016-04-02.16th.nc"
 class SingleHDF5HSDSFile(object):
     """
     Single HSDS File (domain)  
@@ -38,8 +38,12 @@ class SingleHDF5HSDSFile(object):
             self.path = os.path.join(self.temp_dir,
                                  'temp-%s%s' % (next(_counter), suffix))
 
+    def open(self, path, mode):
+        return h5pyd.File(path, mode, endpoint=self.endpoint, username=self.username, password=self.password)
+
     def create_objects(self, empty=True):   
-        self.h5file = h5pyd.File(self.path, 'w', endpoint=self.endpoint, username=self.username, password=self.password)
+        print("create object:", self.path)
+        h5file = self.open(self.path, 'w')
              
         self.nz = getTestConfigValue("num_slices")
         self.ny = 256
@@ -48,14 +52,18 @@ class SingleHDF5HSDSFile(object):
         self.dtype = 'f8'
         # Create a 1GB dataset
         data = np.random.rand(*self.shape).astype(self.dtype)
-        dset = self.h5file.create_dataset(_DATASET_NAME, (self.nz,self.ny,self.nx), dtype = self.dtype)
+        dset = h5file.create_dataset(_DATASET_NAME, self.shape, dtype = self.dtype)
         self.dset_name = _DATASET_NAME
         # Writing the entire dataset in one h5pyd call is not yet supported for large datasets, so write in slices
         if not empty:
             for i in range(self.nz):
                 dset[i, :, :] = data[i, :, :]
 
-        self.h5file.close()
+        h5file.close()
+
+    def get_tasmax_file(self, year=1950):
+        f = self.open(_LOCA_PATH, 'r')
+        return f
 
     def rm_objects(self):
         if not self.username or not self.password or not self.endpoint:
