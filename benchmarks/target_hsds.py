@@ -64,9 +64,6 @@ class SingleHDF5HSDSFile(object):
             return
         folder = h5pyd.Folder(self.temp_dir, mode='a', endpoint=self.endpoint, username=self.username, password=self.password)
         if len(folder) == 0:
-            time.sleep(10)  # allow time for HSDS to sync to S3
+            time.sleep(10)  # allow time for HSDS to sync to 
         for name in folder:
             del folder[name]
-
- 
-

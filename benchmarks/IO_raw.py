@@ -5,6 +5,7 @@
 
 """
 from . import target_hdf5, target_hsds, getTestConfigValue
+from . import benchmark_tools as bmt
 import random
 import itertools
 import numpy as np
@@ -12,24 +13,6 @@ import numpy as np
 _counter = itertools.count()
 
 _DATASET_NAME = "default"
-
-# Use given handle to create a dataset
-def create_objects(f, empty=True):
-    nz = getTestConfigValue("num_slices")
-    if not nz or nz <= 0: 
-        raise NotImplementedError("num_slices invalid")
-    ny = 256
-    nx = 512
-    dtype = 'f8'
-    # Create a dataset
-    dset = f.create_dataset(_DATASET_NAME, (nz,ny,nx), dtype=dtype)
-
-    if not empty:
-        # fill in some random data
-        data = np.random.rand(*dset.shape).astype(dset.dtype)
-        for i in range(nz):
-            dset[i, :, :] = data[i, :, :]
-
 
 # Read all values of dataset and confirm they are in the expected range
 def readtest(f):
@@ -71,7 +54,7 @@ class IORead_Random_POSIX(target_hdf5.SingleHDF5POSIXFile):
     def setup(self):
         self.path = self.get_temp_filepath()
         f = self.open(self.path, 'w')
-        create_objects(f, empty=False)
+        bmt.rand_numpy(f, empty=False)
         f.close()
 
     def time_readtest(self):
@@ -86,7 +69,7 @@ class IORead_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
     def setup(self):
         self.path = self.get_temp_filepath()
         f = self.open(self.path, 'w')
-        create_objects(f, empty=False)
+        bmt.rand_numpy(f, empty=False)
         f.close()
 
     def time_readtest(self):
@@ -97,12 +80,13 @@ class IORead_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
     def teardown(self):
         self.rm_objects()
 
+
 class IOWrite_Random_POSIX(target_hdf5.SingleHDF5POSIXFile):
     def setup(self):
         self.path = self.get_temp_filepath()
         
         f = self.open(self.path, 'w')
-        create_objects(f, empty=True)
+        bmt.rand_numpy(f, empty=True)
         dset = f[_DATASET_NAME]
         self.dtype = dset.dtype
         self.shape = dset.shape
@@ -117,12 +101,11 @@ class IOWrite_Random_POSIX(target_hdf5.SingleHDF5POSIXFile):
     def teardown_files(self):
         self.rm_objects()
 
-
 class IOWrite_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
     def setup(self):
         self.path = self.get_temp_filepath()
         f = self.open(self.path, 'w')
-        create_objects(f, empty=True)
+        bmt.rand_numpy(f, empty=True)
         dset = f[_DATASET_NAME]
         self.dtype = dset.dtype
         self.shape = dset.shape
@@ -149,5 +132,3 @@ class IOSelect_LOCA_HSDS(target_hsds.SingleHDF5HSDSFile):
 
     def teardown(self):
         pass
-
-

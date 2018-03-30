@@ -77,20 +77,20 @@ _DATASET_NAME = "default"
 #     def teardown(self):
 #         return
 
-class ComputeSum_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
-    # chunks
-    params = [256, 64]
-    param_names = ['chunksize']
+# class ComputeSum_h5netcdf_POSIX_local(target_hdf5.SingleHDF5POSIXFile):
+#     # chunks
+#     params = [256, 64]
+#     param_names = ['chunksize']
 
-    def setup(self, chunksize):
-        self.create_objects(empty=False)
-        self.f = h5py.File(self.path)
-        self.ds = self.f[_DATASET_NAME]
-        self.da = da.from_array(self.ds, chunks=chunksize)
+#     def setup(self, chunksize):
+#         self.create_objects(empty=False)
+#         self.f = h5py.File(self.path)
+#         self.ds = self.f[_DATASET_NAME]
+#         self.da = da.from_array(self.ds, chunks=chunksize)
 
-    def time_sum(self, chunksize):
-        return self.da.sum().compute()
+#     def time_sum(self, chunksize):
+#         return self.da.sum().compute()
 
-    def teardown(self, chunksize):
-        self.f.close()
-        self.rm_objects()
+#     def teardown(self, chunksize):
+#         self.f.close()
+#         self.rm_objects()

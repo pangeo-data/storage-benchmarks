@@ -7,87 +7,45 @@
 """
 
 from subprocess import call
-from . import randn, randint, requires_dask
-
+from . import getTestConfigValue
+from . import benchmark_tools as bmt
 import gcsfs
 import os
 import tempfile
 import itertools
 import shutil
-import numpy as np
-import pandas as pd
-import xarray as xr
-import zarr
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
-_GCS_bucket   = "storage-benchmarks"
-_GCS_proj     = "pangeo-181919"
-_GCS_zarr     = "%s/test_zarr/" % _GCS_bucket
-_GCS_zarr_arg = "gs://%s" % _GCS_zarr
-_GCS_zarrfuse = "%s/test_zarr_fuse/" % _GCS_bucket
 
 class ZarrStore(object):
     """
-    Set up a Zarr backend.
-    TODO: Better docs
+    Set up necessary variables and bits to run data operations on a Zarr
+    backend. For local filesystems, generally consists of configuring temp
+    directories to save datasets while in cloud environments, this will 
+    mean connecting and authenticating to resources using native tools.
+
+    Being consistent with rm_objects method is important here as it will 
+    prevent clutter of potentially large unwanted datasets persisting in
+    random locations following completion of tests.
+
+     Note: Test expects that the following config settings are defined:
+    * gcp_ and gcs_ - These tests should NOT run if these variables are
+                      not set up correctly.
 
 
     """
 
-    def make_ds(self):
+    def __init__(self):
+        self.gcp_project_name   = getTestConfigValue("gcp_project")
+        self.gcs_zarr           = getTestConfigValue("gcs_zarr")
+        self.gcs_zarrfuse       = getTestConfigValue("gcs_zarrfuse")
+        self.gcs_benchmark_root = getTestConfigValue("gcs_benchmark_root")
+
+    def create_objects(self, dset=None):
         # single Dataset
-        self.ds = xr.Dataset()
-        self.nt = 1000
-        self.nx = 90
-        self.ny = 45
-
-        self.block_chunks = {'time': self.nt / 4,
-                             'lon': self.nx / 3,
-                             'lat': self.ny / 3}
-
-        self.time_chunks = {'time': int(self.nt / 36)}
-
-        times = pd.date_range('1970-01-01', periods=self.nt, freq='D')
-        lons = xr.DataArray(np.linspace(0, 360, self.nx), dims=('lon', ),
-                            attrs={'units': 'degrees east',
-                                   'long_name': 'longitude'})
-        lats = xr.DataArray(np.linspace(-90, 90, self.ny), dims=('lat', ),
-                            attrs={'units': 'degrees north',
-                                   'long_name': 'latitude'})
-        self.ds['foo'] = xr.DataArray(randn((self.nt, self.nx, self.ny),
-                                            frac_nan=0.2),
-                                      coords={'lon': lons, 'lat': lats,
-                                              'time': times},
-                                      dims=('time', 'lon', 'lat'),
-                                      name='foo', encoding=None,
-                                      attrs={'units': 'foo units',
-                                             'description': 'a description'})
-        self.ds['bar'] = xr.DataArray(randn((self.nt, self.nx, self.ny),
-                                            frac_nan=0.2),
-                                      coords={'lon': lons, 'lat': lats,
-                                              'time': times},
-                                      dims=('time', 'lon', 'lat'),
-                                      name='bar', encoding=None,
-                                      attrs={'units': 'bar units',
-                                             'description': 'a description'})
-        self.ds['baz'] = xr.DataArray(randn((self.nx, self.ny),
-                                            frac_nan=0.2).astype(np.float32),
-                                      coords={'lon': lons, 'lat': lats},
-                                      dims=('lon', 'lat'),
-                                      name='baz', encoding=None,
-                                      attrs={'units': 'baz units',
-                                             'description': 'a description'})
-
-        self.ds.attrs = {'history': 'created for xarray benchmarking'}
-
-        self.oinds = {'time': randint(0, self.nt, 120),
-                      'lon': randint(0, self.nx, 20),
-                      'lat': randint(0, self.ny, 10)}
-        self.vinds = {'time': xr.DataArray(randint(0, self.nt, 120),
-                                           dims='x'),
-                      'lon': xr.DataArray(randint(0, self.nx, 120),
-                                          dims='x'),'lat': slice(3, 20)}
+        if dset == 'xarray':
+            self.ds = bmt.rand_xarray()
 
     def config_store(self, empty=True, backend='POSIX'):
         """
@@ -108,49 +66,43 @@ class ZarrStore(object):
 
         elif backend == 'GCS':
             # todo: check for path on this!
-            call(["gsutil", "-q", "-m", "rm","-r", _GCS_zarr_arg])
-            self.gcs_proj  = gcsfs.GCSFileSystem(project=_GCS_proj, token=None)
-            self.gcs_store = gcsfs.mapping.GCSMap(_GCS_zarr, gcs=self.gcs_proj,
-                                                  check=True, create=True)
+            if not self.gcs_zarr:
+                raise NotImplementedError("Missing config for GCP test")
+
+            gsutil_arg = "gs://%s" % self.gcs_zarr
+            call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
+            self.gcp_project = gcsfs.GCSFileSystem(project=self.gcp_project_name, 
+                                                      token=None)
+            self.gcszarr_bucket = gcsfs.mapping.GCSMap('storage-benchmarks/test_zarr/', 
+                                                       gcs=self.gcp_project,
+                                                       check=True, create=False)
 
         elif backend =='GCS_FUSE':
+            if not self.gcs_zarrfuse:
+                raise NotImplementedError("Missing config for GCP test")
             self.temp_dir = tempfile.mkdtemp()
             self.test_dir = self.temp_dir + "/Zarr_FUSE_test"
-            call(["gcsfuse", _GCS_bucket, self.temp_dir])
+            call(["gcsfuse", self.gcs_benchmark_root, self.temp_dir])
             if not os.path.exists(self.test_dir):
                 os.makedirs(self.test_dir)
 
 
-    def rm_store(self, backend='POSIX'):
+    def rm_objects(self, backend='POSIX'):
         if backend == 'POSIX':
             shutil.rmtree(self.temp_dir)
 
         elif backend == 'GCS':
-            gcs_zarr_arg = "gs://%s" % _GCS_zarr
-            call(["gsutil", "-q", "-m", "rm", "-r", _GCS_zarr_arg])
+            if not self.gcs_zarr or not self.gcp_project:
+                return
+            gsutil_arg = "gs://%s" % self.gcs_zarr
+            call(["gsutil", "-q", "-m", "rm", "-r", gsutil_arg])
 
         elif backend == 'GCS_FUSE':
+            if not self.gcs_zarrfuse or not self.gcp_project:
+                return
             shutil.rmtree(self.test_dir)
             call(["umount", self.temp_dir])
             shutil.rmtree(self.temp_dir)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
