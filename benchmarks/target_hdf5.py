@@ -54,7 +54,6 @@ class SingleHDF5POSIXFile(object):
         return filepath
 
     def rm_objects(self):
-        return
         if self.temp_dir:
             shutil.rmtree(self.temp_dir)
             self.temp_dir = None
