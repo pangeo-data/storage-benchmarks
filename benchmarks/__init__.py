@@ -1,13 +1,13 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
 import itertools
 import yaml
 import os
-import numpy as np
 
-_counter = itertools.count()
-
+_counter      = itertools.count()
+_CONFIG_FILE  = "test.conf.yaml"
 
 def parameterized(names, params):
     def decorator(func):
@@ -16,38 +16,11 @@ def parameterized(names, params):
         return func
     return decorator
 
-
 def requires_dask():
     try:
         import dask  # noqa
     except ImportError:
         raise NotImplementedError
-
-
-def randn(shape, frac_nan=None, chunks=None, seed=0):
-    rng = np.random.RandomState(seed)
-    if chunks is None:
-        x = rng.standard_normal(shape)
-    else:
-        import dask.array as da
-        rng = da.random.RandomState(seed)
-        x = rng.standard_normal(shape, chunks=chunks)
-
-    if frac_nan is not None:
-        inds = rng.choice(range(x.size), int(x.size * frac_nan))
-        x.flat[inds] = np.nan
-
-    return x
-
-
-def randint(low, high=None, size=None, frac_minus=None, seed=0):
-    rng = np.random.RandomState(seed)
-    x = rng.randint(low, high, size)
-    if frac_minus is not None:
-        inds = rng.choice(range(x.size), int(x.size * frac_minus))
-        x.flat[inds] = -1
-
-    return x
 
 def getTestConfigValue(k):
     val = None
@@ -56,10 +29,11 @@ def getTestConfigValue(k):
         val = os.environ[k.upper()]
     else:
         cwd = os.getenv("PWD")  # not the same as os.getcwd()
-        config_file_path = os.path.join(cwd, "test.conf.yaml")
+        config_file_path = os.path.join(cwd, _CONFIG_FILE)
         with open(config_file_path, "r") as f:
             cfg = yaml.load(f)
         if k in cfg:
             val = cfg[k]
     return val
+
      

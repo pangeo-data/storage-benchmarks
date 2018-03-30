@@ -1,5 +1,5 @@
 '''
-    IO Tests on Xarray performance
+    Tests using Xarray datasets. 
 
 '''
 
@@ -9,21 +9,11 @@ import os
 import numpy as np
 import xarray as xr
 
-class IOWriteZarrPOSIXLocal(target_zarr.ZarrStore):
+
+class IORead_Random_Zarr_POSIXLocal(target_zarr.ZarrStore):
+    
     def setup(self):
-        self.make_ds()
-        self.config_store(backend='POSIX')
-
-    def time_SyntheticWrite(self):
-        self.ds.to_zarr(self.path)
-
-    def teardown(self):
-        self.rm_store(backend='POSIX')
-
-
-class IOReadZarrPOSIXLocal(target_zarr.ZarrStore):
-    def setup(self):
-        self.make_ds()
+        self.create_objects(dset='xarray')
         self.config_store(backend='POSIX')
         self.ds.to_zarr(self.path)
 
@@ -31,12 +21,29 @@ class IOReadZarrPOSIXLocal(target_zarr.ZarrStore):
         xr.open_zarr(self.path).load()
 
     def teardown(self):
-        self.rm_store(backend='POSIX')
+        self.rm_objects(backend='POSIX')
 
+class IOWrite_Random_Zarr_POSIXLocal(target_zarr.ZarrStore):
+    # Not specifying below will result in failure as ASV will repeatedly
+    # try to overwrite existing store causing Zarr to complain.
+    number = 1
+    warmup_time = 0.0
 
-class ComputeZarrPOSIXLocal(target_zarr.ZarrStore):
     def setup(self):
-        self.make_ds()
+        self.create_objects(dset='xarray')
+        self.config_store(backend='POSIX')
+
+    def time_SyntheticWrite(self):
+        self.ds.to_zarr(self.path)
+
+    def teardown(self):
+        self.rm_objects(backend='POSIX')
+
+
+class Compute_Zarr_POSIXLocal(target_zarr.ZarrStore):
+
+    def setup(self):
+        self.create_objects(dset='xarray')
         self.config_store(backend='POSIX')
         self.ds.to_zarr(self.path)
 
@@ -44,60 +51,71 @@ class ComputeZarrPOSIXLocal(target_zarr.ZarrStore):
         xr.open_zarr(self.path).mean
 
     def teardown(self):
-        self.rm_store(backend='POSIX')
+        self.rm_objects(backend='POSIX')
 
 
-class IOWriteZarrGCS(target_zarr.ZarrStore):
+class IORead_Random_ZarrGCS(target_zarr.ZarrStore):
+    number      = 1
+    warmup_time = 0.0
     timeout = 300.0
 
     def setup(self):
-        self.make_ds()
+        self.create_objects(dset='xarray')
         self.config_store(backend='GCS')
-
-    def time_SyntheticWrite(self):
-        self.ds.to_zarr(self.gcs_store)
-
-    def teardown(self):
-        self.rm_store(backend='GCS')
-
-
-class IOReadZarrGCS(target_zarr.ZarrStore):
-    timeout = 300.0
-    def setup(self):
-        self.make_ds()
-        self.config_store(backend='GCS')
-        self.ds.to_zarr(self.gcs_store)
+        self.ds.to_zarr(self.gcszarr_bucket)
 
     def time_SyntheticRead(self):
-        xr.open_zarr(self.gcs_store).load()
+        xr.open_zarr(self.gcszarr_bucket).load()
 
     def teardown(self):
-        self.rm_store(backend='GCS')
+        self.rm_objects(backend='GCS')
 
 
-class ComputeZarrGCS(target_zarr.ZarrStore):
-    timeout = 300.0
-    def setup(self):
-        self.make_ds()
-        self.config_store(backend='GCS')
-        self.ds.to_zarr(self.gcs_store)
+# class IOWrite_Random_ZarrGCS(target_zarr.ZarrStore):
+#     number      = 1
+#     warmup_time = 0.0
+#     timeout     = 300.0
 
-    def time_computemean(self):
-        xr.open_zarr(self.gcs_store).mean
+#     def setup(self):
+#         self.create_objects()
+#         self.config_store(backend='GCS')
 
-    def teardown(self):
-        self.rm_store(backend='GCS')
+#     def time_SyntheticWrite(self):
+#         self.ds.to_zarr(self.gcszarr_bucket)
+
+#     def teardown(self):
+#         self.rm_objects(backend='GCS')
 
 
-class IOReadZarrGCS_FUSE(target_zarr.ZarrStore):
-    timeout = 300.0
-    def setup(self):
-        self.make_ds()
-        self.config_store(backend='GCS_FUSE')
-        self.ds.to_zarr(self.test_dir, 'w')
+# class Compute_Random_ZarrGCS(target_zarr.ZarrStore):
+#     number      = 1
+#     warmup_time = 0.0
+#     timeout = 300.0
 
-    def time_SyntheticRead(self):
-        xr.open_zarr(self.test_dir).load()
+#     def setup(self):
+#         self.create_objects()
+#         self.config_store(backend='GCS')
+#         self.ds.to_zarr(self.gcszarr_bucket)
 
-    def teardown(self):
-        self.rm_store(backend='GCS_FUSE')
+#     def time_computemean(self):
+#         xr.open_zarr(self.gcszarr_bucket).mean
+
+#     def teardown(self):
+#         self.rm_objects(backend='GCS')
+
+
+# class IORead_Random_Zarr_GCSFUSE(target_zarr.ZarrStore):
+#     number      = 1
+#     warmup_time = 0.0
+#     timeout = 300.0
+
+#     def setup(self):
+#         self.create_objects()
+#         self.config_store(backend='GCS_FUSE')
+#         self.ds.to_zarr(self.test_dir, 'w')
+
+#     def time_SyntheticRead(self):
+#         xr.open_zarr(self.test_dir).load()
+
+#     def teardown(self):
+#         self.rm_objects(backend='GCS_FUSE')
