@@ -6,7 +6,8 @@
 
 """
 
-from subprocess import call
+from subprocess import call, Popen
+from sys import platform
 from . import getTestConfigValue
 from . import benchmark_tools as bmt
 import gcsfs
@@ -14,9 +15,11 @@ import os
 import tempfile
 import itertools
 import shutil
+import zarr
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
+_PLATFORM = platform
 
 class ZarrStore(object):
     """
@@ -33,85 +36,82 @@ class ZarrStore(object):
     * gcp_ and gcs_ - These tests should NOT run if these variables are
                       not set up correctly.
 
+    - parmams
+
+    storage_obj: Reference object that we read/write data to/from. 
+                 For POSIX, this is a directory, and for cloud storage
+                 it's the object store.
+
 
     """
 
-    def __init__(self):
+    def __init__(self, backend='POSIX'):
+        # Initialize all values
+        self.backend            = backend
         self.gcp_project_name   = getTestConfigValue("gcp_project")
         self.gcs_zarr           = getTestConfigValue("gcs_zarr")
-        self.gcs_zarrfuse       = getTestConfigValue("gcs_zarrfuse")
+        self.gcs_zarr_FUSE      = getTestConfigValue("gcs_zarr_FUSE")
         self.gcs_benchmark_root = getTestConfigValue("gcs_benchmark_root")
+        self.suffix             = ".zarr" 
+
+    def get_temp_filepath(self):
+        if self.backend == 'POSIX':
+            self.temp_dir    = tempfile.mkdtemp()
+            self.storage_obj = os.path.join(self.temp_dir,
+                                           'temp-%s%s' % (next(_counter),
+                                            self.suffix))
+        elif self.backend == 'GCS':
+            if not self.gcs_zarr:
+                    raise NotImplementedError("Missing config for GCP test")
+            self.gcp_project = gcsfs.GCSFileSystem(project=self.gcp_project_name, 
+                                                   token=None)
+            self.storage_obj = gcsfs.mapping.GCSMap(self.gcs_zarr, 
+                                                    gcs=self.gcp_project,
+                                                    check=True, create=False)
+        # GCS FUSE
+        elif self.backend == 'FUSE':
+            if not self.gcs_zarr_FUSE:
+                raise NotImplementedError("Missing config for GCP test")
+            self.temp_dir    = tempfile.mkdtemp()
+            self.storage_obj = self.temp_dir + "/zarr_FUSE"
+
+            if platform == 'darwin':
+                call(["gcsfuse", self.gcs_benchmark_root, self.temp_dir])
+            elif platform == 'linux':
+                call(["gcsfuse", self.gcs_benchmark_root, self.temp_dir, "--background"])
+            if not os.path.exists(self.storage_obj):
+                os.makedirs(self.storage_obj)
+
+        else:
+            raise NotImplementedError("Storage backend not implemented.")
 
     def create_objects(self, dset=None):
         # single Dataset
         if dset == 'xarray':
             self.ds = bmt.rand_xarray()
 
-    def config_store(self, empty=True, backend='POSIX'):
-        """
-        Set up the environment for the Zarr store depending on parameters
+    def open(self, path, mode):
+        return zarr.open(self.storage_obj, mode=mode)
 
-        backend: [ 'POSIX', 'GGS', 'S3' ]
-        empty: whether to populate datastore with synthetic data
-
-        TODO: Checks for proper cloud environmental variables and binaries to 
-              be able to actually connect to stuff
-        """
-
-        if backend == 'POSIX':
-            suffix = '.zarr'
-            self.temp_dir = tempfile.mkdtemp()
-            self.path = os.path.join(self.temp_dir,
-                                     'temp-%s%s' % (next(_counter), suffix))
-
-        elif backend == 'GCS':
-            # todo: check for path on this!
-            if not self.gcs_zarr:
-                raise NotImplementedError("Missing config for GCP test")
-
-            gsutil_arg = "gs://%s" % self.gcs_zarr
-            call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
-            self.gcp_project = gcsfs.GCSFileSystem(project=self.gcp_project_name, 
-                                                      token=None)
-            self.gcszarr_bucket = gcsfs.mapping.GCSMap('storage-benchmarks/test_zarr/', 
-                                                       gcs=self.gcp_project,
-                                                       check=True, create=False)
-
-        elif backend =='GCS_FUSE':
-            if not self.gcs_zarrfuse:
-                raise NotImplementedError("Missing config for GCP test")
-            self.temp_dir = tempfile.mkdtemp()
-            self.test_dir = self.temp_dir + "/Zarr_FUSE_test"
-            call(["gcsfuse", self.gcs_benchmark_root, self.temp_dir])
-            if not os.path.exists(self.test_dir):
-                os.makedirs(self.test_dir)
+    def save(self, path, data):
+        return zarr.save(path, data)
 
 
-    def rm_objects(self, backend='POSIX'):
-        if backend == 'POSIX':
-            shutil.rmtree(self.temp_dir)
+    def rm_objects(self):
+        if self.backend == 'POSIX':
+            shutil.rmtree(self.storage_obj)
 
-        elif backend == 'GCS':
-            if not self.gcs_zarr or not self.gcp_project:
+        elif self.backend == 'GCS':
+            if not self.gcs_zarr or not self.gcp_project_name:
                 return
             gsutil_arg = "gs://%s" % self.gcs_zarr
-            call(["gsutil", "-q", "-m", "rm", "-r", gsutil_arg])
+            Popen(["gsutil", "-q", "-m", "rm", "-r", gsutil_arg])
 
-        elif backend == 'GCS_FUSE':
-            if not self.gcs_zarrfuse or not self.gcp_project:
+        elif self.backend == 'FUSE':
+            if not self.gcs_zarr_FUSE or not self.gcp_project_name:
                 return
-            shutil.rmtree(self.test_dir)
-            call(["umount", self.temp_dir])
-            shutil.rmtree(self.temp_dir)
-
-
-
-
-
-
-
-
-
-
-
-
+            shutil.rmtree(self.storage_obj)
+            if platform == 'darwin':
+                call(["umount", self.temp_dir])
+            elif platform == 'linux':
+                call(["fusermount",  "-u", self.temp_dir])

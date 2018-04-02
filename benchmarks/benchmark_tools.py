@@ -37,19 +37,20 @@ def randint(low, high=None, size=None, frac_minus=None, seed=0):
 
     return x
 
-def rand_numpy(f, empty=True):
+def rand_numpy(f, nz=None, empty=True):
     """
     Generate random 3D Numpy dataset. 
 
     """
-    nz = getTestConfigValue("num_slices")
+    if nz == None:
+        nz = getTestConfigValue("num_slices")
     if not nz or nz <= 0: 
         raise NotImplementedError("num_slices invalid")
     ny = 256
     nx = 512
     dtype = 'f8'
     # Create a dataset
-    dset = f.create_dataset(_DATASET_NAME, (nz,ny,nx), dtype=dtype)
+    dset = f.create_dataset(_DATASET_NAME, shape=(nz,ny,nx), dtype=dtype)
 
     if not empty:
         # fill in some random data
