@@ -4,6 +4,7 @@
 
 
 """
+
 from . import target_hdf5, target_hsds, target_zarr, getTestConfigValue
 from . import benchmark_tools as bmt
 from subprocess import call
@@ -14,7 +15,6 @@ import numpy as np
 import os
 
 _counter = itertools.count()
-
 _DATASET_NAME = "default"
 
 # Read all values of dataset and confirm they are in the expected range
@@ -110,7 +110,7 @@ class IOWrite_Random_Zarr():
         self.target.rm_objects()
 
 
-class IORead_Random_POSIX(target_hdf5.SingleHDF5POSIXFile):
+class IORead_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
     def setup(self):
         self.path = self.get_temp_filepath()
         f = self.open(self.path, 'w')
@@ -142,10 +142,9 @@ class IORead_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
         self.rm_objects()
 
 
-class IOWrite_Random_POSIX(target_hdf5.SingleHDF5POSIXFile):
+class IOWrite_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
     def setup(self):
-        self.path = self.get_temp_filepath()
-        
+        self.path = self.get_temp_filepath()    
         f = self.open(self.path, 'w')
         bmt.rand_numpy(f, empty=True)
         dset = f[_DATASET_NAME]
@@ -178,7 +177,7 @@ class IOWrite_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
         f = self.open(self.path, 'a')
         writetest(f, self.data)
         f.close()
-        
+
     def teardown_files(self):
         self.rm_objects()
 

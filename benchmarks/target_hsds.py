@@ -49,6 +49,7 @@ class SingleHDF5HSDSFile(object):
     def get_tasmax_filepath(self, year=1950):
         if not self.username or not self.password or not self.endpoint:
             raise NotImplementedError("Missing config for HSDS tests")
+        # TBD: Get different files for different years
         filepath = _LOCA_PATH
         try:
             self.open(filepath, 'r')

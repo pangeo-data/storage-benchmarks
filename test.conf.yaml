@@ -7,4 +7,4 @@ gcs_zarr: null # Google Cloud Storage container holding Zarr datasets
 gcs_zarr_FUSE: null # Google Cloud Storage FUSE mount for Zarr datasets
 num_slices: 5  # number of "Z" slices for dataset creation
 num_time_slices: 100 # number of time slices for Xarray dataset creation
-loca_year_start: 1950
+loca_year_start: 1950 
