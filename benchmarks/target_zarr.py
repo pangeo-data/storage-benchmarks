@@ -21,6 +21,11 @@ _counter = itertools.count()
 _DATASET_NAME = "default"
 _PLATFORM = platform
 
+if _PLATFORM == 'darwin':
+    GCSFUSE = '/usr/local/bin/gcsfuse'
+else:
+    GCSFUSE = '/usr/bin/gcsfuse'
+
 class ZarrStore(object):
     """
     Set up necessary variables and bits to run data operations on a Zarr
@@ -63,6 +68,7 @@ class ZarrStore(object):
         elif self.backend == 'GCS':
             if not self.gcs_zarr:
                     raise NotImplementedError("Missing config for GCP test")
+            
             self.gcp_project = gcsfs.GCSFileSystem(project=self.gcp_project_name, 
                                                    token=None)
             self.storage_obj = gcsfs.mapping.GCSMap(self.gcs_zarr, 
@@ -72,13 +78,11 @@ class ZarrStore(object):
         elif self.backend == 'FUSE':
             if not self.gcs_zarr_FUSE:
                 raise NotImplementedError("Missing config for GCP test")
+
             self.temp_dir    = tempfile.mkdtemp()
             self.storage_obj = self.temp_dir + "/zarr_FUSE"
+            call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
 
-            if platform == 'darwin':
-                call(["gcsfuse", self.gcs_benchmark_root, self.temp_dir])
-            elif platform == 'linux':
-                call(["gcsfuse", self.gcs_benchmark_root, self.temp_dir, "--background"])
             if not os.path.exists(self.storage_obj):
                 os.makedirs(self.storage_obj)
 
