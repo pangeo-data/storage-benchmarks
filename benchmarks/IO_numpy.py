@@ -58,7 +58,7 @@ class IORead_Random_Zarr():
     timeout = 300
     #number = 1
     warmup_time = 0.0
-    params = (['POSIX', 'GCS', 'FUSE'], [1, 2, 5])
+    params = (['POSIX', 'GCS', 'FUSE'], [1, 5])
     param_names = ['backend', 'nz']
 
     def setup(self, backend, nz):
@@ -84,7 +84,7 @@ class IOWrite_Random_Zarr():
     timeout = 300
     #number = 1
     warmup_time = 0.0
-    params = (['POSIX', 'GCS', 'FUSE'], [1, 2, 5])
+    params = (['POSIX', 'GCS', 'FUSE'], [1, 5])
     param_names = ['backend', 'nz']
 
     def setup(self, backend, nz):
