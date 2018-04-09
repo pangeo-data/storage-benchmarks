@@ -1,0 +1,155 @@
+{
+    "commit_hash": "e63597f48a439e72a5a93c4b086180a84405b111",
+    "date": 1523226200000,
+    "ended_at": {
+        "IO_numpy.IORead_Random_HDF5_POSIX.time_readtest": 1523291020000,
+        "IO_numpy.IORead_Random_HSDS.time_readtest": 1523291080000,
+        "IO_numpy.IORead_Random_Zarr.time_readtest": 1523291239000,
+        "IO_numpy.IOSelect_LOCA_HSDS.time_readslice": 1523291281000,
+        "IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest": 1523291283000,
+        "IO_numpy.IOWrite_Random_HSDS.time_writetest": 1523291322000,
+        "IO_numpy.IOWrite_Random_Zarr.time_writetest": 1523292171000,
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523292417000,
+        "IO_xarray.IOWrite_Zarr.time_synthetic_write": 1523292632000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-netcdf4-numpy-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Xeon(R) CPU @ 2.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "machine": "jupyter-kaipak",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Linux 4.4.111+",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "15405960",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "IO_numpy.IORead_Random_HDF5_POSIX.time_readtest": 0.0022153786700000013,
+        "IO_numpy.IORead_Random_HSDS.time_readtest": null,
+        "IO_numpy.IORead_Random_Zarr.time_readtest": {
+            "params": [
+                [
+                    "'POSIX'",
+                    "'GCS'",
+                    "'FUSE'"
+                ],
+                [
+                    "1",
+                    "5"
+                ]
+            ],
+            "result": [
+                0.0019606073780000003,
+                0.0072020331799999985,
+                0.04724922769999999,
+                0.17938576700000008,
+                0.0028083476200000002,
+                0.011741777
+            ]
+        },
+        "IO_numpy.IOSelect_LOCA_HSDS.time_readslice": 0.03787156989999998,
+        "IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest": 0.002795979770000001,
+        "IO_numpy.IOWrite_Random_HSDS.time_writetest": 0.036323859499999986,
+        "IO_numpy.IOWrite_Random_Zarr.time_writetest": {
+            "params": [
+                [
+                    "'POSIX'",
+                    "'GCS'",
+                    "'FUSE'"
+                ],
+                [
+                    "1",
+                    "5"
+                ]
+            ],
+            "result": [
+                0.0030023788099999994,
+                0.02282082190000001,
+                0.0685811524,
+                0.32563067700000015,
+                null,
+                0.07211742319999996
+            ]
+        },
+        "IO_xarray.IORead_Zarr.time_synthetic_read": {
+            "params": [
+                [
+                    "'POSIX'",
+                    "'GCS'",
+                    "'FUSE'"
+                ],
+                [
+                    "1",
+                    "5"
+                ]
+            ],
+            "result": [
+                0.023496037999999775,
+                0.05533765099999988,
+                0.03435087300000017,
+                0.04001242099999969,
+                0.035597346000000085,
+                0.1079053200000002
+            ]
+        },
+        "IO_xarray.IOWrite_Zarr.time_synthetic_write": {
+            "params": [
+                [
+                    "'POSIX'",
+                    "'GCS'",
+                    "'FUSE'"
+                ],
+                [
+                    "1",
+                    "5"
+                ]
+            ],
+            "result": [
+                0.12199715500000008,
+                0.4389452490000001,
+                0.362845305,
+                0.8221471599999999,
+                0.1658139310000002,
+                0.5218101440000003
+            ]
+        }
+    },
+    "started_at": {
+        "IO_numpy.IORead_Random_HDF5_POSIX.time_readtest": 1523291018000,
+        "IO_numpy.IORead_Random_HSDS.time_readtest": 1523291020000,
+        "IO_numpy.IORead_Random_Zarr.time_readtest": 1523291080000,
+        "IO_numpy.IOSelect_LOCA_HSDS.time_readslice": 1523291239000,
+        "IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest": 1523291281000,
+        "IO_numpy.IOWrite_Random_HSDS.time_writetest": 1523291283000,
+        "IO_numpy.IOWrite_Random_Zarr.time_writetest": 1523291322000,
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523292171000,
+        "IO_xarray.IOWrite_Zarr.time_synthetic_write": 1523292417000
+    },
+    "version": 1
+}
