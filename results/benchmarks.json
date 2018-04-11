@@ -1,0 +1,24 @@
+{
+    "IO_dask.IOWrite_Zarr.time_synthetic_write": {
+        "code": "def time_synthetic_write(self, backend):\n    with dask.set_options(get=dask.threaded.get):\n        self.da.store(self.target.storage_obj, lock=False)\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.IOWrite_Zarr.time_synthetic_write",
+        "number": 1,
+        "param_names": [
+            "backend"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'GCS'",
+                "'FUSE'"
+            ]
+        ],
+        "pretty_name": "IO_dask.IOWrite_Zarr.time_synthetic_write",
+        "repeat": 1,
+        "timeout": 60,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "version": 1
+}
