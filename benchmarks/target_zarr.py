@@ -53,6 +53,7 @@ class ZarrStore(object):
     """
 
     def __init__(self, backend='POSIX', dask=False, chunksize=None, shape=None, dtype=None):
+
         # Initialize all values
         self.backend            = backend
         self.gcp_project_name   = getTestConfigValue("gcp_project")

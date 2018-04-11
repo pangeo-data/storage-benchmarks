@@ -11,6 +11,8 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+from pathlib import Path
+
 _DATASET_NAME = "default"
 
 def randn(shape, frac_nan=None, chunks=None, seed=0):
