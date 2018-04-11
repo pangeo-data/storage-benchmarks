@@ -35,5 +35,3 @@ def getTestConfigValue(k):
         if k in cfg:
             val = cfg[k]
     return val
-
-     

@@ -37,19 +37,22 @@ def randint(low, high=None, size=None, frac_minus=None, seed=0):
 
     return x
 
-def rand_numpy(f, empty=True):
+def rand_numpy(f, nz=None, empty=True):
     """
-    Generate random 3D Numpy dataset. 
+    Generate random 3D Numpy dataset.
+
+    :params;
 
     """
-    nz = getTestConfigValue("num_slices")
+    if nz == None:
+        nz = getTestConfigValue("num_slices")
     if not nz or nz <= 0: 
         raise NotImplementedError("num_slices invalid")
     ny = 256
     nx = 512
     dtype = 'f8'
     # Create a dataset
-    dset = f.create_dataset(_DATASET_NAME, (nz,ny,nx), dtype=dtype)
+    dset = f.create_dataset(_DATASET_NAME, shape=(nz,ny,nx), dtype=dtype)
 
     if not empty:
         # fill in some random data
@@ -57,21 +60,23 @@ def rand_numpy(f, empty=True):
         for i in range(nz):
             dset[i, :, :] = data[i, :, :]
 
-def rand_xarray(num_time_slices=None):
+def rand_xarray(nt=None):
     """
     Generate synthetic geoscience-like Xarray dataset filled with random 
     data.
 
-    TODO: make interface more consistent with rand_numpy function
+    :param ds: dataset that gets generated.
+    :param nt: number of timesteps for data. Primary control over how large
+               the dataset is.
+    :returns: A synthetic xarray dataset that mimics geodata.
 
     """
 
-    if num_time_slices == None:
-        num_time_slices = getTestConfigValue("num_time_slices")
     ds = xr.Dataset()
-    nt = int(num_time_slices)
-    nx = 90
-    ny = 45
+    if nt == None:
+        nt = getTestConfigValue("ntime_slices")
+    ny = 256
+    nx = 512
     block_chunks = {'time': nt / 4,
                              'lon': nx / 3,
                              'lat': ny / 3}
@@ -112,4 +117,5 @@ def rand_xarray(num_time_slices=None):
     vinds = {'time': xr.DataArray(randint(0, nt, 120), dims='x'),
              'lon': xr.DataArray(randint(0, nx, 120), dims='x'),
              'lat': slice(3, 20)}
+
     return ds

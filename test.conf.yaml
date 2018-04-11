@@ -4,7 +4,7 @@ hs_endpoint: http://35.166.11.248:5101 # HSDS endpoint
 gcp_project: pangeo-181919 # Google Cloud Platform project ID
 gcs_benchmark_root: null # Google Cloud Platform root bucket holding datasets for benchmarks
 gcs_zarr: null # Google Cloud Storage container holding Zarr datasets
-gcs_zarrfuse: null # Google Cloud Storage FUSE mount for Zarr datasets
+gcs_zarr_FUSE: null # Google Cloud Storage FUSE mount for Zarr datasets
 num_slices: 5  # number of "Z" slices for dataset creation
-num_time_slices: 100 # number of time slices for Xarray dataset creation
+ntime_slices: 5 # number of time slices for Xarray dataset creation
 loca_year_start: 1950 
