@@ -43,6 +43,8 @@ class ZarrStore(object):
 
     - parmams
 
+    - dask - Saving dask chunks requires additional set up. 
+
     storage_obj: Reference object that we read/write data to/from. 
                  For POSIX, this is a directory, and for cloud storage
                  it's the object store.
@@ -50,7 +52,7 @@ class ZarrStore(object):
 
     """
 
-    def __init__(self, backend='POSIX'):
+    def __init__(self, backend='POSIX', dask=False, chunksize=None, shape=None, dtype=None):
         # Initialize all values
         self.backend            = backend
         self.gcp_project_name   = getTestConfigValue("gcp_project")
@@ -58,41 +60,63 @@ class ZarrStore(object):
         self.gcs_zarr_FUSE      = getTestConfigValue("gcs_zarr_FUSE")
         self.gcs_benchmark_root = getTestConfigValue("gcs_benchmark_root")
         self.suffix             = ".zarr" 
+        self.dask               = dask
+        self.shape              = shape
+        self.chunksize          = chunksize
+        self.dtype              = dtype
 
     def get_temp_filepath(self):
         if self.backend == 'POSIX':
             self.temp_dir    = tempfile.mkdtemp()
-            self.storage_obj = os.path.join(self.temp_dir,
-                                           'temp-%s%s' % (next(_counter),
+            self.dir_store   = os.path.join(self.temp_dir,
+                                            'temp-%s%s' % (next(_counter),
                                             self.suffix))
+            # Saving dask objects as Zarr requires more than just a filehandle
+            if not self.dask:
+                self.storage_obj = self.dir_store
+            else:
+                self.storage_obj = zarr.create(shape=self.shape, chunks=self.chunksize,
+                                               store=self.dir_store, dtype=self.dtype, 
+                                               overwrite=True)
         elif self.backend == 'GCS':
             if not self.gcs_zarr:
                     raise NotImplementedError("Missing config for GCP test")
             
             self.gcp_project = gcsfs.GCSFileSystem(project=self.gcp_project_name, 
                                                    token=None)
-            self.storage_obj = gcsfs.mapping.GCSMap(self.gcs_zarr, 
+            self.gcsfsmap    = gcsfs.mapping.GCSMap(self.gcs_zarr, 
                                                     gcs=self.gcp_project,
                                                     check=True, create=False)
+            if not self.dask:
+                self.storage_obj = self.gcsfsmap
+            else: 
+                self.storage_obj = zarr.create(shape=self.shape, chunks=self.chunksize,
+                                               store=self.gcsfsmap, dtype=self.dtype, 
+                                               overwrite=True)
+            
         # GCS FUSE
         elif self.backend == 'FUSE':
             if not self.gcs_zarr_FUSE:
-                raise NotImplementedError("Missing config for GCP test")
+                raise NotImplementedError("Missing config for FUSE test")
 
             self.temp_dir    = tempfile.mkdtemp()
-            self.storage_obj = self.temp_dir + "/zarr_FUSE"
+            self.dir_store = self.temp_dir + "/zarr_FUSE"
             call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
 
-            if not os.path.exists(self.storage_obj):
-                os.makedirs(self.storage_obj)
+            if not os.path.exists(self.dir_store):
+                os.makedirs(self.dir_store)
+
+            # Return the path if this isn't Dask
+            # TODO: This should be a function
+            if not self.dask:
+                self.storage_obj = self.dir_store
+            else:
+                self.storage_obj = zarr.create(shape=self.shape, chunks=self.chunksize,
+                                               store=self.dir_store, dtype=self.dtype, 
+                                               overwrite=True)
 
         else:
             raise NotImplementedError("Storage backend not implemented.")
-
-    def create_objects(self, dset=None):
-        # single Dataset
-        if dset == 'xarray':
-            self.ds = bmt.rand_xarray()
 
     def open(self, path, mode):
         return zarr.open(self.storage_obj, mode=mode)
@@ -103,7 +127,7 @@ class ZarrStore(object):
 
     def rm_objects(self):
         if self.backend == 'POSIX':
-            shutil.rmtree(self.storage_obj)
+            shutil.rmtree(self.dir_store)
 
         elif self.backend == 'GCS':
             if not self.gcs_zarr or not self.gcp_project_name:
@@ -114,7 +138,7 @@ class ZarrStore(object):
         elif self.backend == 'FUSE':
             if not self.gcs_zarr_FUSE or not self.gcp_project_name:
                 return
-            shutil.rmtree(self.storage_obj)
+            shutil.rmtree(self.dir_store)
             if platform == 'darwin':
                 call(["umount", self.temp_dir])
             elif platform == 'linux':

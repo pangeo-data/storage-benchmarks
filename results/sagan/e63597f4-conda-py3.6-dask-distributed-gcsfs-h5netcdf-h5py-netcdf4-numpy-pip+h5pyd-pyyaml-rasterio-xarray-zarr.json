@@ -1,0 +1,100 @@
+{
+    "benchmark_version": {
+        "IO_dask.IOWrite_Zarr.time_synthetic_write": "a3d208662a396c8e3580115863431d17578d84e804008e2e2b1f2a45c43792a8",
+        "IO_dask.IOWrite_Zarr.track_ds_size": "dd811ece2e017f986f08b511ae02b307d197f7a94b163462a42710348c6e664c",
+        "IO_xarray.IORead_Zarr.time_synthetic_read": "ec37ed5eb710ce22fc38a9385a860a361532c61ca1eabf4c9f84d612dc3bf422"
+    },
+    "commit_hash": "e63597f48a439e72a5a93c4b086180a84405b111",
+    "date": 1523226200000,
+    "ended_at": {
+        "IO_dask.IOWrite_Zarr.time_synthetic_write": 1523406513000,
+        "IO_dask.IOWrite_Zarr.track_ds_size": 1523406535000,
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523405103000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-netcdf4-numpy-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Core(TM) i7-6567U CPU @ 3.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "machine": "sagan",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Darwin 17.4.0",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "17179869184",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "IO_dask.IOWrite_Zarr.time_synthetic_write": {
+            "params": [
+                [
+                    "'POSIX'",
+                    "'GCS'",
+                    "'FUSE'"
+                ]
+            ],
+            "result": [
+                0.06340699999999999,
+                0.1831630000000002,
+                0.14718500000000012
+            ]
+        },
+        "IO_dask.IOWrite_Zarr.track_ds_size": {
+            "params": [
+                [
+                    "'POSIX'",
+                    "'GCS'",
+                    "'FUSE'"
+                ]
+            ],
+            "result": [
+                7.63,
+                7.63,
+                7.63
+            ]
+        },
+        "IO_xarray.IORead_Zarr.time_synthetic_read": {
+            "params": [
+                [
+                    "'POSIX'"
+                ],
+                [
+                    "5"
+                ]
+            ],
+            "result": [
+                0.07487899999999992
+            ]
+        }
+    },
+    "started_at": {
+        "IO_dask.IOWrite_Zarr.time_synthetic_write": 1523406445000,
+        "IO_dask.IOWrite_Zarr.track_ds_size": 1523406513000,
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523405101000
+    },
+    "version": 1
+}

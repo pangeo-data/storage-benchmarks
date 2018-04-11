@@ -1,0 +1,95 @@
+{
+    "benchmark_version": {
+        "IO_dask.IOWrite_Zarr.time_synthetic_write": "016e82dfe90c09a5e598270d1bf6bc9eac8714ea999d1c0bacf5faa0825156c9",
+        "IO_xarray.IORead_Zarr.time_synthetic_read": "ec37ed5eb710ce22fc38a9385a860a361532c61ca1eabf4c9f84d612dc3bf422"
+    },
+    "commit_hash": "e63597f48a439e72a5a93c4b086180a84405b111",
+    "date": 1523226200000,
+    "ended_at": {
+        "IO_dask.IOWrite_Zarr.time_synthetic_write": 1523394806000,
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523394812000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-netcdf4-numpy-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Core(TM) i7-6567U CPU @ 3.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "machine": "dyn-129-236-228-58.dyn.columbia.edu",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Darwin 17.5.0",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "17179869184",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "IO_dask.IOWrite_Zarr.time_synthetic_write": {
+            "params": [
+                [
+                    "'GCS'"
+                ]
+            ],
+            "result": [
+                0.19623299999999988
+            ]
+        },
+        "IO_xarray.IORead_Zarr.time_synthetic_read": {
+            "params": [
+                [
+                    "'POSIX'"
+                ],
+                [
+                    "5"
+                ]
+            ],
+            "result": [
+                0.117699
+            ],
+            "stats": [
+                {
+                    "ci_99": [
+                        0.11722799999999989,
+                        0.11889400000000006
+                    ],
+                    "max": 0.11889400000000006,
+                    "mean": 0.11794033333333331,
+                    "min": 0.11722799999999989,
+                    "n": 3,
+                    "q_25": 0.11746349999999994,
+                    "q_75": 0.11829650000000003,
+                    "std": 0.0007012229000507928,
+                    "systematic": 0.0
+                }
+            ]
+        }
+    },
+    "started_at": {
+        "IO_dask.IOWrite_Zarr.time_synthetic_write": 1523394789000,
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523394806000
+    },
+    "version": 1
+}
