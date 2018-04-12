@@ -1,7 +1,6 @@
 {
     "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write": {
-        "code": "def time_synthetic_write(self, backend, dask_get_opt, chunk_size, n_workers):\n    benchmark_name = \"Random Dask write of %s\" % self.da_size\n    with dask.set_options(get=dask.get):\n        self.da.store(self.target.storage_obj, lock=False)\n",
-        "goal_time": 2.0,
+        "code": "class IOWrite_Zarr_GCP:\n    def time_synthetic_write(self, backend, dask_get_opt, chunk_size, n_workers):\n        benchmark_name = \"Random Dask write of %s\" % self.da_size\n        with dask.set_options(get=dask_get_opt):\n            self.da.store(self.target.storage_obj, lock=False)\n\n    def setup(self, backend, dask_get_opt, chunk_size, n_workers):\n        test_gcp()\n    \n        cluster = KubeCluster(n_workers=n_workers)\n        client = Client(cluster)\n    \n        chunksize=(chunk_size, 1000, 1000)\n        self.da = da.random.normal(10, 0.1, size=(1100, 1100, 1100),\n                                   chunks=chunksize)\n    \n        self.da_size = np.round(self.da.nbytes / 1024**2, 2)\n        self.target = target_zarr.ZarrStore(backend=backend, dask=True,\n                                            chunksize=chunksize, shape=self.da.shape,\n                                            dtype=self.da.dtype)\n        self.target.get_temp_filepath()\n        if backend == 'GCS':\n            gsutil_arg = \"gs://%s\" % self.target.gcs_zarr\n            call([\"gsutil\", \"-q\", \"-m\", \"rm\",\"-r\", gsutil_arg])",
         "name": "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write",
         "number": 1,
         "param_names": [
@@ -16,28 +15,145 @@
                 "'FUSE'"
             ],
             [
-                "<function get at 0x7f96f237f950>",
-                "<function get at 0x7f96e9586510>"
+                "<function get_sync at 0x1143a08c8>",
+                "<function get at 0x11460a2f0>",
+                "<function get at 0x11799e378>"
+            ],
+            [
+                "1",
+                "10",
+                "100"
             ],
             [
                 "10",
-                "50"
-            ],
-            [
-                "10",
-                "20",
-                "30"
+                "50",
+                "100"
             ]
         ],
-        "pretty_name": "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write",
         "repeat": 1,
+        "sample_time": 0.1,
         "timeout": 600,
         "type": "time",
-        "unit": "seconds"
+        "unit": "seconds",
+        "version": "443998fedffd795281f15c8c9fb7c74ccffdfbe8b77f9c1d2da2c2ca4d2f679a",
+        "warmup_time": 0.0
+    },
+    "IO_numpy.IORead_Random_HDF5_POSIX.time_readtest": {
+        "code": "class IORead_Random_HDF5_POSIX:\n    def time_readtest(self):\n        f = self.open(self.path, 'r')\n        readtest(f)\n        f.close()\n\n    def setup(self):\n        self.path = self.get_temp_filepath()\n        f = self.open(self.path, 'w')\n        bmt.rand_numpy(f, empty=False)\n        f.close()",
+        "name": "IO_numpy.IORead_Random_HDF5_POSIX.time_readtest",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "repeat": 0,
+        "sample_time": 0.1,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "1a6d3aea91a69a705243d391ac71ca4a174cba3453c0c3c84367897e1fc94497",
+        "warmup_time": -1
+    },
+    "IO_numpy.IORead_Random_HSDS.time_readtest": {
+        "code": "class IORead_Random_HSDS:\n    def time_readtest(self):\n        f = self.open(self.path, 'r')\n        readtest(f)\n        f.close()\n\n    def setup(self):\n        self.path = self.get_temp_filepath()\n        f = self.open(self.path, 'w')\n        bmt.rand_numpy(f, empty=False)\n        f.close()",
+        "name": "IO_numpy.IORead_Random_HSDS.time_readtest",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "repeat": 0,
+        "sample_time": 0.1,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "63074da2a9f20512c80db37342c3dcce7eaeef7329edf5afc2d7ebf047bd7208",
+        "warmup_time": -1
+    },
+    "IO_numpy.IORead_Random_Zarr.time_readtest": {
+        "code": "class IORead_Random_Zarr:\n    def time_readtest(self, backend):\n        f = self.target.open(self.target.storage_obj, 'r')\n        readtest(f)\n\n    def setup(self, backend):\n        self.target = target_zarr.ZarrStore(backend=backend)\n        self.target.get_temp_filepath()\n    \n        if backend == 'GCS':\n            gsutil_arg = \"gs://%s\" % self.target.gcs_zarr\n            call([\"gsutil\", \"-q\", \"-m\", \"rm\",\"-r\", gsutil_arg])\n    \n        f = self.target.open(self.target.storage_obj, 'w')\n        bmt.rand_numpy(f, empty=False)",
+        "name": "IO_numpy.IORead_Random_Zarr.time_readtest",
+        "number": 0,
+        "param_names": [
+            "backend"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'GCS'",
+                "'FUSE'"
+            ]
+        ],
+        "repeat": 0,
+        "sample_time": 0.1,
+        "timeout": 300,
+        "type": "time",
+        "unit": "seconds",
+        "version": "8e39fa18add68c6ea43417da9ce2bb1b33eb3cc62fd66b6cc3b316fa4f167dac",
+        "warmup_time": 0.0
+    },
+    "IO_numpy.IOSelect_LOCA_HSDS.time_readslice": {
+        "code": "class IOSelect_LOCA_HSDS:\n    def time_readslice(self):\n        f = self.open(self.filepath, 'r')\n        tasmax_slicetest(f)\n        f.close()\n\n    def setup(self):\n        self.year = getTestConfigValue(\"loca_year_start\")\n        self.filepath = self.get_tasmax_filepath(year=self.year)",
+        "name": "IO_numpy.IOSelect_LOCA_HSDS.time_readslice",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "repeat": 0,
+        "sample_time": 0.1,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "f3970dbb66763a2588a852ebcef3e53d1aecab3f20e8e6539c295dce6c93139b",
+        "warmup_time": -1
+    },
+    "IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest": {
+        "code": "class IOWrite_Random_HDF5_POSIX:\n    def time_writetest(self):\n        f = self.open(self.path, 'a')\n        writetest(f, self.data)\n        f.close()\n\n    def setup(self):\n        self.path = self.get_temp_filepath()\n        f = self.open(self.path, 'w')\n        bmt.rand_numpy(f, empty=True)\n        dset = f[_DATASET_NAME]\n        self.dtype = dset.dtype\n        self.shape = dset.shape\n        f.close()\n        self.data = np.random.rand(*self.shape).astype(self.dtype)",
+        "name": "IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "repeat": 0,
+        "sample_time": 0.1,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "476fbfa6d335e130596ead87c477cc956ef5f375a01f0da80a48cbfb3faca239",
+        "warmup_time": -1
+    },
+    "IO_numpy.IOWrite_Random_HSDS.time_writetest": {
+        "code": "class IOWrite_Random_HSDS:\n    def time_writetest(self):\n        f = self.open(self.path, 'a')\n        writetest(f, self.data)\n        f.close()\n\n    def setup(self):\n        self.path = self.get_temp_filepath()\n        f = self.open(self.path, 'w')\n        bmt.rand_numpy(f, empty=True)\n        dset = f[_DATASET_NAME]\n        self.dtype = dset.dtype\n        self.shape = dset.shape\n        f.close()\n        self.data = np.random.rand(*self.shape).astype(self.dtype)",
+        "name": "IO_numpy.IOWrite_Random_HSDS.time_writetest",
+        "number": 0,
+        "param_names": [],
+        "params": [],
+        "repeat": 0,
+        "sample_time": 0.1,
+        "timeout": 60.0,
+        "type": "time",
+        "unit": "seconds",
+        "version": "cd219031d49f8fac1d2204c11c983bd12995bb62510aa21cde95c5663fdf2643",
+        "warmup_time": -1
+    },
+    "IO_numpy.IOWrite_Random_Zarr.time_writetest": {
+        "code": "class IOWrite_Random_Zarr:\n    def time_writetest(self, backend):\n        f = self.target.open(self.target.storage_obj, 'a')\n        writetest(f, self.data)\n\n    def setup(self, backend):\n        self.target = target_zarr.ZarrStore(backend=backend)\n        self.target.get_temp_filepath()\n    \n        if backend == 'GCS':\n             gsutil_arg = \"gs://%s\" % self.target.gcs_zarr\n             call([\"gsutil\", \"-q\", \"-m\", \"rm\",\"-r\", gsutil_arg])\n    \n        f = self.target.open(self.target.storage_obj, 'w')\n        bmt.rand_numpy(f, empty=True)\n        dset = f[_DATASET_NAME]\n        self.dtype = dset.dtype\n        self.shape = dset.shape\n        self.data = np.random.rand(*self.shape).astype(self.dtype)",
+        "name": "IO_numpy.IOWrite_Random_Zarr.time_writetest",
+        "number": 0,
+        "param_names": [
+            "backend"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'GCS'",
+                "'FUSE'"
+            ]
+        ],
+        "repeat": 0,
+        "sample_time": 0.1,
+        "timeout": 300,
+        "type": "time",
+        "unit": "seconds",
+        "version": "541ceaa318f955f35b6d7af5d3bc8526a697dfcba0627ece37b144679f2bb972",
+        "warmup_time": 0.0
     },
     "IO_xarray.IORead_Zarr.time_synthetic_read": {
-        "code": "def time_synthetic_read(self, backend, nt):\n    ds = xr.open_zarr(self.target.storage_obj).load()\n",
-        "goal_time": 2.0,
+        "code": "class IORead_Zarr:\n    def time_synthetic_read(self, backend, nt):\n        ds = xr.open_zarr(self.target.storage_obj).load()\n\n    def setup(self, backend, nt):\n        self.target = target_zarr.ZarrStore(backend=backend)\n        self.target.get_temp_filepath()\n    \n        if backend == 'GCS':\n            gsutil_arg = \"gs://%s\" % self.target.gcs_zarr\n            call([\"gsutil\", \"-q\", \"-m\", \"rm\",\"-r\", gsutil_arg])\n    \n        bmt.rand_xarray(nt=nt).to_zarr(self.target.storage_obj)",
         "name": "IO_xarray.IORead_Zarr.time_synthetic_read",
         "number": 1,
         "param_names": [
@@ -52,11 +168,13 @@
                 "5"
             ]
         ],
-        "pretty_name": "IO_xarray.IORead_Zarr.time_synthetic_read",
         "repeat": 0,
+        "sample_time": 0.1,
         "timeout": 300,
         "type": "time",
-        "unit": "seconds"
+        "unit": "seconds",
+        "version": "ec37ed5eb710ce22fc38a9385a860a361532c61ca1eabf4c9f84d612dc3bf422",
+        "warmup_time": 0.0
     },
     "version": 1
 }

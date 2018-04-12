@@ -1,7 +1,8 @@
-"""Set of Dask based benchmarks
+"""Dask IO performance.
 
-These ASV classes are meant to test the IO performance of various Dask/Xarray based 
-calculations and operations against a variety of storage backends and architectures.
+These ASV classes are meant to test the IO performance of various Dask/Xarray
+based calculations and operations against a variety of storage backends and
+architectures.
 
 
 """
@@ -28,30 +29,38 @@ import tempfile
 _counter = itertools.count()
 _DATASET_NAME = "default"
 
+
 def test_gcp():
     """A very simple test to see if we're on Pangeo GCP environment
     Todo:
         Make this more robust
 
     Raises:
-        NotImplementedError: Causes ASV to skip this test with assumption we're 
+        NotImplementedError: Causes ASV to skip this test with assumption we're
         not on Pangeo GCP environment
 
     """
-   pod_conf = Path('/home/jovyan/worker-template.yaml')
-   if not pod_conf.is_file():
-   	raise NotImplementedError("Not on GCP Pangeo environment... skipping") 
+    pod_conf = Path('/home/jovyan/worker-template.yaml')
+    if not pod_conf.is_file():
+        raise NotImplementedError("Not on GCP Pangeo environment... skipping")
+
 
 class IOWrite_Zarr_GCP():
     """Synthetic random Dask data write test
 
-    Generates a 10 GB dataset to benchmark write operations in a Dask/Kubernetes 
-    Pangeo environment
+    Generates a 10 GB dataset to benchmark write operations in a
+    Dask/Kubernetes Pangeo environment
 
     ASV Parameters:
-        backend (str): Storage backend that will be used. e.g. POSIX fs, FUSE, etc.
-        dask_get_opt (obj): Dask processing option. See Dask docs on set_options
-        chunk_size (int): Dask chunk size across 'x' axis of dataset.
+        backend (str): Storage backend that will be used. e.g. POSIX fs, FUSE,
+            etc.
+
+        dask_get_opt (obj): Dask processing option. See Dask docs on
+            set_options.
+
+        chunk_size (int): Dask chunk size across 'x' axis of
+            dataset.
+
         n_workers (int): Number of Kubernetes Dask workers to spawn
 
     """
@@ -67,15 +76,14 @@ class IOWrite_Zarr_GCP():
         test_gcp()
 
         cluster = KubeCluster(n_workers=n_workers)
-        cluster.adapt()    # or create and destroy workers dynamically based on workload
         client = Client(cluster)
 
         chunksize=(chunk_size, 1000, 1000)
-        self.da = da.random.normal(10, 0.1, size=(1100, 1100, 1100), 
+        self.da = da.random.normal(10, 0.1, size=(1100, 1100, 1100),
                                    chunks=chunksize)
 
         self.da_size = np.round(self.da.nbytes / 1024**2, 2)
-        self.target = target_zarr.ZarrStore(backend=backend, dask=True, 
+        self.target = target_zarr.ZarrStore(backend=backend, dask=True,
                                             chunksize=chunksize, shape=self.da.shape,
                                             dtype=self.da.dtype)
         self.target.get_temp_filepath()
@@ -89,6 +97,7 @@ class IOWrite_Zarr_GCP():
             self.da.store(self.target.storage_obj, lock=False)
 
     def teardown(self, backend, dask_get_opt, chunk_size, n_workers):
+        return
         self.target.rm_objects()
 
 
