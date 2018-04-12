@@ -1,23 +1,26 @@
-'''
-    IO Tests on Dask performance
+"""Set of Dask based benchmarks
 
-'''
-from subprocess import call
+These ASV classes are meant to test the IO performance of various Dask/Xarray based 
+calculations and operations against a variety of storage backends and architectures.
+
+
+"""
 from . import target_zarr, target_hdf5
 from . import benchmark_tools as bmt
-from dask_kubernetes import KubeCluster
-from dask.distributed import Client
-from pathlib import Path
 
-import dask_kubernetes
-import os
+from dask.distributed import Client
+from dask_kubernetes import KubeCluster
 import dask
+import dask.array as da
+import dask.multiprocessing
+import numpy as np
+
+from subprocess import call
+from pathlib import Path
+import os
 import tempfile
 import itertools
 import shutil
-import numpy as np
-import dask.array as da
-import h5py
 import zarr
 import tempfile
 
@@ -26,27 +29,49 @@ _counter = itertools.count()
 _DATASET_NAME = "default"
 
 def test_gcp():
+    """A very simple test to see if we're on Pangeo GCP environment
+    Todo:
+        Make this more robust
+
+    Raises:
+        NotImplementedError: Causes ASV to skip this test with assumption we're 
+        not on Pangeo GCP environment
+
+    """
    pod_conf = Path('/home/jovyan/worker-template.yaml')
    if not pod_conf.is_file():
-   	raise NotImplementedError("Apparently not on GCP Pangeo environment... skipping") 
+   	raise NotImplementedError("Not on GCP Pangeo environment... skipping") 
 
-class IOWrite_Zarr():
-    timeout = 60
+class IOWrite_Zarr_GCP():
+    """Synthetic random Dask data write test
+
+    Generates a 10 GB dataset to benchmark write operations in a Dask/Kubernetes 
+    Pangeo environment
+
+    ASV Parameters:
+        backend (str): Storage backend that will be used. e.g. POSIX fs, FUSE, etc.
+        dask_get_opt (obj): Dask processing option. See Dask docs on set_options
+        chunk_size (int): Dask chunk size across 'x' axis of dataset.
+        n_workers (int): Number of Kubernetes Dask workers to spawn
+
+    """
+    timeout = 600
     repeat = 1
     number = 1
     warmup_time = 0.0
-    params = (['POSIX', 'GCS', 'FUSE'])
-    param_names = ['backend']
+    params = (['GCS', 'FUSE'], [dask.get, dask.threaded.get, dask.multiprocessing.get],
+              [1, 10, 100], [10, 50, 100])
+    param_names = ['backend', 'dask_get_opt', 'chunk_size', 'n_workers']
 
-    def setup(self, backend):
+    def setup(self, backend, dask_get_opt, chunk_size, n_workers):
         test_gcp()
 
-        cluster = KubeCluster(n_workers=10)
+        cluster = KubeCluster(n_workers=n_workers)
         cluster.adapt()    # or create and destroy workers dynamically based on workload
         client = Client(cluster)
 
-        chunksize=(10, 1000, 1000)
-        self.da = da.random.normal(10, 0.1, size=(100, 1000, 1000), 
+        chunksize=(chunk_size, 1000, 1000)
+        self.da = da.random.normal(10, 0.1, size=(1100, 1100, 1100), 
                                    chunks=chunksize)
 
         self.da_size = np.round(self.da.nbytes / 1024**2, 2)
@@ -58,13 +83,14 @@ class IOWrite_Zarr():
             gsutil_arg = "gs://%s" % self.target.gcs_zarr
             call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
 
-    def time_synthetic_write(self, backend):
-        with dask.set_options(get=dask.threaded.get):
+    def time_synthetic_write(self, backend, dask_get_opt, chunk_size, n_workers):
+        benchmark_name = "Random Dask write of %s" % self.da_size
+        with dask.set_options(get=dask_get_opt):
             self.da.store(self.target.storage_obj, lock=False)
 
-    def teardown(self, backend):
+    def teardown(self, backend, dask_get_opt, chunk_size, n_workers):
         self.target.rm_objects()
-        return
+
 
 
 # class IORead_zarr_POSIX_local(target_zarr.ZarrStore):

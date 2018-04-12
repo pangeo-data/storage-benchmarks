@@ -12,28 +12,28 @@ import numpy as np
 import xarray as xr
 
 
-# class IORead_Zarr():
-#     timeout = 300
-#     number = 1
-#     warmup_time = 0.0
-#     params = (['POSIX'], [5])
-#     param_names = ['backend', 'nt']
+class IORead_Zarr():
+     timeout = 300
+     number = 1
+     warmup_time = 0.0
+     params = (['POSIX'], [5])
+     param_names = ['backend', 'nt']
 
-#     def setup(self, backend, nt):
-#         self.target = target_zarr.ZarrStore(backend=backend)
-#         self.target.get_temp_filepath()
+     def setup(self, backend, nt):
+         self.target = target_zarr.ZarrStore(backend=backend)
+         self.target.get_temp_filepath()
 
-#         if backend == 'GCS':
-#             gsutil_arg = "gs://%s" % self.target.gcs_zarr
-#             call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
+         if backend == 'GCS':
+             gsutil_arg = "gs://%s" % self.target.gcs_zarr
+             call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
 
-#         bmt.rand_xarray(nt=nt).to_zarr(self.target.storage_obj)
+         bmt.rand_xarray(nt=nt).to_zarr(self.target.storage_obj)
 
-#     def time_synthetic_read(self, backend, nt):
-#         ds = xr.open_zarr(self.target.storage_obj).load()
+     def time_synthetic_read(self, backend, nt):
+         ds = xr.open_zarr(self.target.storage_obj).load()
 
-#     def teardown(self, backend, nt):
-#         self.target.rm_objects()
+     def teardown(self, backend, nt):
+         self.target.rm_objects()
 
 # class IOWrite_Zarr():
 #     timeout = 300

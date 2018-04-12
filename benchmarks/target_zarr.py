@@ -1,21 +1,19 @@
-""""
-   Set up Zarr Datasets on various backends
-   TODO: These target libraries could be just single library with a single
-   class with options 
+""""Configure Zarr datasets on various backends
 
 
 """
 
-from subprocess import call, Popen
-from sys import platform
 from . import getTestConfigValue
 from . import benchmark_tools as bmt
 import gcsfs
+import zarr
+
+from subprocess import call, Popen
+from sys import platform
 import os
 import tempfile
 import itertools
 import shutil
-import zarr
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
@@ -27,34 +25,20 @@ else:
     GCSFUSE = '/usr/bin/gcsfuse'
 
 class ZarrStore(object):
-    """
-    Set up necessary variables and bits to run data operations on a Zarr
-    backend. For local filesystems, generally consists of configuring temp
-    directories to save datasets while in cloud environments, this will 
-    mean connecting and authenticating to resources using native tools.
+    """Set up necessary variables and bits to run operations Zarr dataset.
 
     Being consistent with rm_objects method is important here as it will 
     prevent clutter of potentially large unwanted datasets persisting in
     random locations following completion of tests.
 
-     Note: Test expects that the following config settings are defined:
-    * gcp_ and gcs_ - These tests should NOT run if these variables are
-                      not set up correctly.
+    Note: Undefined expected values skips ASV tests by design.
 
-    - parmams
-
-    - dask - Saving dask chunks requires additional set up. 
-
-    storage_obj: Reference object that we read/write data to/from. 
-                 For POSIX, this is a directory, and for cloud storage
-                 it's the object store.
-
-
+    Returns:
+        storage_obj: Reference object that will run IO operations against.
+            For POSIX, this is a directory, and for cloud storage it's an 
+            object store.
     """
-
     def __init__(self, backend='POSIX', dask=False, chunksize=None, shape=None, dtype=None):
-
-        # Initialize all values
         self.backend            = backend
         self.gcp_project_name   = getTestConfigValue("gcp_project")
         self.gcs_zarr           = getTestConfigValue("gcs_zarr")
@@ -95,7 +79,6 @@ class ZarrStore(object):
                                                store=self.gcsfsmap, dtype=self.dtype, 
                                                overwrite=True)
             
-        # GCS FUSE
         elif self.backend == 'FUSE':
             if not self.gcs_zarr_FUSE:
                 raise NotImplementedError("Missing config for FUSE test")
@@ -115,7 +98,6 @@ class ZarrStore(object):
                 self.storage_obj = zarr.create(shape=self.shape, chunks=self.chunksize,
                                                store=self.dir_store, dtype=self.dtype, 
                                                overwrite=True)
-
         else:
             raise NotImplementedError("Storage backend not implemented.")
 

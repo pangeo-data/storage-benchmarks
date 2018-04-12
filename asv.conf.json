@@ -67,11 +67,12 @@
 	"h5py": [""],
 	"h5netcdf": [""],
 	"netcdf4": [""],
-    "pyyaml": [""],
+        "pyyaml": [""],
 	"rasterio": [""],
 	"xarray": [""],
-    "zarr": [""],
-    "pip+h5pyd": [""],
+        "zarr": [""],
+        "pip+h5pyd": [""],
+	"pip+dask_kubernetes": [""],
     },
 
     // Combinations of libraries/python versions can be excluded/included

@@ -1,22 +1,60 @@
 {
-    "IO_dask.IOWrite_Zarr.time_synthetic_write": {
-        "code": "def time_synthetic_write(self, backend):\n    with dask.set_options(get=dask.threaded.get):\n        self.da.store(self.target.storage_obj, lock=False)\n",
+    "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write": {
+        "code": "def time_synthetic_write(self, backend, dask_get_opt, chunk_size, n_workers):\n    benchmark_name = \"Random Dask write of %s\" % self.da_size\n    with dask.set_options(get=dask.get):\n        self.da.store(self.target.storage_obj, lock=False)\n",
         "goal_time": 2.0,
-        "name": "IO_dask.IOWrite_Zarr.time_synthetic_write",
+        "name": "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write",
         "number": 1,
         "param_names": [
-            "backend"
+            "backend",
+            "dask_get_opt",
+            "chunk_size",
+            "n_workers"
         ],
         "params": [
             [
-                "'POSIX'",
                 "'GCS'",
                 "'FUSE'"
+            ],
+            [
+                "<function get at 0x7f96f237f950>",
+                "<function get at 0x7f96e9586510>"
+            ],
+            [
+                "10",
+                "50"
+            ],
+            [
+                "10",
+                "20",
+                "30"
             ]
         ],
-        "pretty_name": "IO_dask.IOWrite_Zarr.time_synthetic_write",
+        "pretty_name": "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write",
         "repeat": 1,
-        "timeout": 60,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_xarray.IORead_Zarr.time_synthetic_read": {
+        "code": "def time_synthetic_read(self, backend, nt):\n    ds = xr.open_zarr(self.target.storage_obj).load()\n",
+        "goal_time": 2.0,
+        "name": "IO_xarray.IORead_Zarr.time_synthetic_read",
+        "number": 1,
+        "param_names": [
+            "backend",
+            "nt"
+        ],
+        "params": [
+            [
+                "'POSIX'"
+            ],
+            [
+                "5"
+            ]
+        ],
+        "pretty_name": "IO_xarray.IORead_Zarr.time_synthetic_read",
+        "repeat": 0,
+        "timeout": 300,
         "type": "time",
         "unit": "seconds"
     },
