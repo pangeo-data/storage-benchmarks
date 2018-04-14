@@ -1,35 +1,61 @@
 {
-    "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write": {
-        "code": "def time_synthetic_write(self, backend, dask_get_opt, chunk_size, n_workers):\n    benchmark_name = \"Random Dask write of %s\" % self.da_size\n    with dask.set_options(get=dask.get):\n        self.da.store(self.target.storage_obj, lock=False)\n",
+    "IO_dask.Zarr_GCP.time_1synthetic_write": {
+        "code": "def time_1synthetic_write(self, backend, n_chunks, n_workers):\n    pretty_name = \"Synthetic write Dask/Zarr/GCS %s gb.\" % self.da_size\n    self.da.store(self.target.storage_obj, lock=False)\n",
         "goal_time": 2.0,
-        "name": "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write",
-        "number": 1,
+        "name": "IO_dask.Zarr_GCP.time_1synthetic_write",
+        "number": 3,
         "param_names": [
             "backend",
-            "dask_get_opt",
-            "chunk_size",
+            "n_chunks",
             "n_workers"
         ],
         "params": [
             [
-                "'GCS'",
-                "'FUSE'"
+                "'GCS'"
             ],
             [
-                "<function get at 0x7f96f237f950>",
-                "<function get at 0x7f96e9586510>"
-            ],
-            [
-                "10",
-                "50"
+                "5",
+                "10"
             ],
             [
                 "10",
                 "20",
-                "30"
+                "40",
+                "80"
             ]
         ],
-        "pretty_name": "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write",
+        "pretty_name": "IO_dask.Zarr_GCP.time_1synthetic_write",
+        "repeat": 1,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_dask.Zarr_GCP.time_2synthetic_mean": {
+        "code": "def time_2synthetic_mean(self, backend, n_chunks, n_workers):\n    pretty_name = \"Synthetic mean Dask/Zarr/GCS %s gb.\" % self.da_size\n    test_da = da.from_array(self.target.storage_obj, chunks=self.chunks)\n    test_da.mean().compute()\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.Zarr_GCP.time_2synthetic_mean",
+        "number": 3,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'GCS'"
+            ],
+            [
+                "5",
+                "10"
+            ],
+            [
+                "10",
+                "20",
+                "40",
+                "80"
+            ]
+        ],
+        "pretty_name": "IO_dask.Zarr_GCP.time_2synthetic_mean",
         "repeat": 1,
         "timeout": 600,
         "type": "time",

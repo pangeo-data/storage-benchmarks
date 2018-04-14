@@ -1,0 +1,83 @@
+{
+    "commit_hash": "e60de08822d48cfeaeb63f4167513e88f56b984c",
+    "date": 1523497577000,
+    "ended_at": {
+        "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write": 1523578373000,
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523578376000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Xeon(R) CPU @ 2.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "machine": "jupyter-kaipak",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Linux 4.4.111+",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "15405960",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write": {
+            "params": [
+                [
+                    "'GCS'"
+                ],
+                [
+                    "5"
+                ],
+                [
+                    "20"
+                ]
+            ],
+            "result": [
+                null
+            ]
+        },
+        "IO_xarray.IORead_Zarr.time_synthetic_read": {
+            "params": [
+                [
+                    "'POSIX'"
+                ],
+                [
+                    "5"
+                ]
+            ],
+            "result": [
+                0.06566249400000013
+            ]
+        }
+    },
+    "started_at": {
+        "IO_dask.IOWrite_Zarr_GCP.time_synthetic_write": 1523578349000,
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523578373000
+    },
+    "version": 1
+}

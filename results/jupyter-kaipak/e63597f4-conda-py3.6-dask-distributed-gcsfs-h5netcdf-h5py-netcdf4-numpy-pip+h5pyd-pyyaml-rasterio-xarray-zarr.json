@@ -1,0 +1,63 @@
+{
+    "commit_hash": "e63597f48a439e72a5a93c4b086180a84405b111",
+    "date": 1523226200000,
+    "ended_at": {
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523467821000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-netcdf4-numpy-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Xeon(R) CPU @ 2.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "machine": "jupyter-kaipak",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Linux 4.4.111+",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "15405960",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "IO_xarray.IORead_Zarr.time_synthetic_read": {
+            "params": [
+                [
+                    "'POSIX'"
+                ],
+                [
+                    "5"
+                ]
+            ],
+            "result": [
+                0.05052264000000051
+            ]
+        }
+    },
+    "started_at": {
+        "IO_xarray.IORead_Zarr.time_synthetic_read": 1523467818000
+    },
+    "version": 1
+}

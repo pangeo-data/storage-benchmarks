@@ -5,7 +5,7 @@ calculations and operations against a variety of storage backends and architectu
 
 
 """
-from . import target_zarr, target_hdf5
+from . import target_zarr, target_hdf5, getTestConfigValue
 from . import benchmark_tools as bmt
 
 from dask.distributed import Client
@@ -38,11 +38,11 @@ def test_gcp():
         not on Pangeo GCP environment
 
     """
-   pod_conf = Path('/home/jovyan/worker-template.yaml')
-   if not pod_conf.is_file():
-   	raise NotImplementedError("Not on GCP Pangeo environment... skipping") 
+    pod_conf = Path('/home/jovyan/worker-template.yaml')
+    if not pod_conf.is_file():
+        raise NotImplementedError("Not on GCP Pangeo environment... skipping") 
 
-class IOWrite_Zarr_GCP():
+class Zarr_GCP():
     """Synthetic random Dask data write test
 
     Generates a 10 GB dataset to benchmark write operations in a Dask/Kubernetes 
@@ -57,41 +57,45 @@ class IOWrite_Zarr_GCP():
     """
     timeout = 600
     repeat = 1
-    number = 1
+    number = 3
     warmup_time = 0.0
-    params = (['GCS', 'FUSE'], [dask.get, dask.threaded.get, dask.multiprocessing.get],
-              [1, 10, 100], [10, 50, 100])
-    param_names = ['backend', 'dask_get_opt', 'chunk_size', 'n_workers']
+    params = (['GCS'], [5, 10], [10, 20, 40, 80])
+    param_names = ['backend', 'n_chunks', 'n_workers']
 
-    def setup(self, backend, dask_get_opt, chunk_size, n_workers):
+    def setup(self, backend, n_chunks, n_workers):
         test_gcp()
 
-        cluster = KubeCluster(n_workers=n_workers)
-        cluster.adapt()    # or create and destroy workers dynamically based on workload
-        client = Client(cluster)
+        self.cluster = KubeCluster(n_workers=n_workers)
+        self.client = Client(self.cluster)
 
-        chunksize=(chunk_size, 1000, 1000)
-        self.da = da.random.normal(10, 0.1, size=(1100, 1100, 1100), 
-                                   chunks=chunksize)
-
-        self.da_size = np.round(self.da.nbytes / 1024**2, 2)
-        self.target = target_zarr.ZarrStore(backend=backend, dask=True, 
-                                            chunksize=chunksize, shape=self.da.shape,
-                                            dtype=self.da.dtype)
-        self.target.get_temp_filepath()
+        # Clean house before we begin
         if backend == 'GCS':
-            gsutil_arg = "gs://%s" % self.target.gcs_zarr
+            gsutil_arg = "gs://%s" % getTestConfigValue("gcs_zarr")
             call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
 
-    def time_synthetic_write(self, backend, dask_get_opt, chunk_size, n_workers):
-        benchmark_name = "Random Dask write of %s" % self.da_size
-        with dask.set_options(get=dask_get_opt):
-            self.da.store(self.target.storage_obj, lock=False)
+        self.chunks=(n_chunks, 1000, 1000)
+        self.da = da.random.normal(10, 0.1, size=(1000, 1000, 2000), 
+                                   chunks=self.chunks)
+        self.da_size = np.round(self.da.nbytes / 1024**3, 2) # in gigabytes
+        self.target = target_zarr.ZarrStore(backend=backend, dask=True, 
+                                            chunksize=self.chunks, shape=self.da.shape,
+                                            dtype=self.da.dtype)
+        # Maybe combine above and below methods so init does all this?
+        # seems a little superfluous?
+        self.target.get_temp_filepath()
 
-    def teardown(self, backend, dask_get_opt, chunk_size, n_workers):
+    def time_1synthetic_write(self, backend, n_chunks, n_workers):
+        pretty_name = "Synthetic write Dask/Zarr/GCS %s gb." % self.da_size
+        self.da.store(self.target.storage_obj, lock=False)
+
+    def time_2synthetic_mean(self, backend, n_chunks, n_workers):
+        pretty_name = "Synthetic mean Dask/Zarr/GCS %s gb." % self.da_size
+        test_da = da.from_array(self.target.storage_obj, chunks=self.chunks)
+        test_da.mean().compute()
+
+    def teardown(self, backend, n_chunks, n_workers):
+        self.cluster.close()
         self.target.rm_objects()
-
-
 
 # class IORead_zarr_POSIX_local(target_zarr.ZarrStore):
 #     def setup(self):

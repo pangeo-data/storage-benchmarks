@@ -67,8 +67,11 @@ class ZarrStore(object):
             if not self.gcs_zarr:
                     raise NotImplementedError("Missing config for GCP test")
             
+            # HACK in order to give worker pods read/write to storage
+            fs = gcsfs.GCSFileSystem(project=self.gcp_project_name, token='cache')
+            token = fs.session.credentials
             self.gcp_project = gcsfs.GCSFileSystem(project=self.gcp_project_name, 
-                                                   token=None)
+                                                   token=token)
             self.gcsfsmap    = gcsfs.mapping.GCSMap(self.gcs_zarr, 
                                                     gcs=self.gcp_project,
                                                     check=True, create=False)
@@ -115,6 +118,7 @@ class ZarrStore(object):
         elif self.backend == 'GCS':
             if not self.gcs_zarr or not self.gcp_project_name:
                 return
+
             gsutil_arg = "gs://%s" % self.gcs_zarr
             Popen(["gsutil", "-q", "-m", "rm", "-r", gsutil_arg])
 
