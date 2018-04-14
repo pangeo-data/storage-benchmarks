@@ -1,7 +1,8 @@
-"""Set of Dask based benchmarks
+"""Dask IO performance.
 
-These ASV classes are meant to test the IO performance of various Dask/Xarray based 
-calculations and operations against a variety of storage backends and architectures.
+These ASV classes are meant to test the IO performance of various Dask/Xarray
+based calculations and operations against a variety of storage backends and
+architectures.
 
 
 """
@@ -28,30 +29,38 @@ import tempfile
 _counter = itertools.count()
 _DATASET_NAME = "default"
 
+
 def test_gcp():
     """A very simple test to see if we're on Pangeo GCP environment
     Todo:
         Make this more robust
 
     Raises:
-        NotImplementedError: Causes ASV to skip this test with assumption we're 
+        NotImplementedError: Causes ASV to skip this test with assumption we're
         not on Pangeo GCP environment
 
     """
     pod_conf = Path('/home/jovyan/worker-template.yaml')
     if not pod_conf.is_file():
         raise NotImplementedError("Not on GCP Pangeo environment... skipping") 
+        raise NotImplementedError("Not on GCP Pangeo environment... skipping")
 
 class Zarr_GCP():
     """Synthetic random Dask data write test
 
-    Generates a 10 GB dataset to benchmark write operations in a Dask/Kubernetes 
-    Pangeo environment
+    Generates a 10 GB dataset to benchmark write operations in a
+    Dask/Kubernetes Pangeo environment
 
     ASV Parameters:
-        backend (str): Storage backend that will be used. e.g. POSIX fs, FUSE, etc.
-        dask_get_opt (obj): Dask processing option. See Dask docs on set_options
-        chunk_size (int): Dask chunk size across 'x' axis of dataset.
+        backend (str): Storage backend that will be used. e.g. POSIX fs, FUSE,
+            etc.
+
+        dask_get_opt (obj): Dask processing option. See Dask docs on
+            set_options.
+
+        chunk_size (int): Dask chunk size across 'x' axis of
+            dataset.
+
         n_workers (int): Number of Kubernetes Dask workers to spawn
 
     """
@@ -59,7 +68,7 @@ class Zarr_GCP():
     repeat = 1
     number = 3
     warmup_time = 0.0
-    params = (['GCS'], [5, 10], [10, 20, 40, 80])
+    params = (['GCS'], [1, 5, 10], [10, 20, 40, 80])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
     def setup(self, backend, n_chunks, n_workers):
