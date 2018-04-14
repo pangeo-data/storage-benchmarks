@@ -1,7 +1,7 @@
 hs_username: null  # HSDS Username account
 hs_password: null  # HSDS Password
 hs_endpoint: http://35.166.11.248:5101 # HSDS endpoint
-gcp_project: pangeo-181919 # Google Cloud Platform project ID
+gcp_project: null # Google Cloud Platform project ID
 gcs_benchmark_root: null # Google Cloud Platform root bucket holding datasets for benchmarks
 gcs_zarr: null # Google Cloud Storage container holding Zarr datasets
 gcs_zarr_FUSE: null # Google Cloud Storage FUSE mount for Zarr datasets

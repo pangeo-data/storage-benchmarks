@@ -6,8 +6,9 @@ import itertools
 import yaml
 import os
 
-_counter      = itertools.count()
-_CONFIG_FILE  = "test.conf.yaml"
+_counter = itertools.count()
+_CONFIG_FILE = "test.conf.yaml"
+
 
 def parameterized(names, params):
     def decorator(func):
@@ -16,11 +17,13 @@ def parameterized(names, params):
         return func
     return decorator
 
+
 def requires_dask():
     try:
         import dask  # noqa
     except ImportError:
         raise NotImplementedError
+
 
 def getTestConfigValue(k):
     val = None

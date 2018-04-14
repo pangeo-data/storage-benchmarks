@@ -1,21 +1,19 @@
-""""
-   Set up Zarr Datasets on various backends
-   TODO: These target libraries could be just single library with a single
-   class with options 
+""""Configure Zarr datasets on various backends
 
 
 """
 
-from subprocess import call, Popen
-from sys import platform
 from . import getTestConfigValue
 from . import benchmark_tools as bmt
 import gcsfs
+import zarr
+
+from subprocess import call, Popen
+from sys import platform
 import os
 import tempfile
 import itertools
 import shutil
-import zarr
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
@@ -27,72 +25,81 @@ else:
     GCSFUSE = '/usr/bin/gcsfuse'
 
 class ZarrStore(object):
-    """
-    Set up necessary variables and bits to run data operations on a Zarr
-    backend. For local filesystems, generally consists of configuring temp
-    directories to save datasets while in cloud environments, this will 
-    mean connecting and authenticating to resources using native tools.
+    """Set up necessary variables and bits to run operations Zarr dataset.
 
     Being consistent with rm_objects method is important here as it will 
     prevent clutter of potentially large unwanted datasets persisting in
     random locations following completion of tests.
 
-     Note: Test expects that the following config settings are defined:
-    * gcp_ and gcs_ - These tests should NOT run if these variables are
-                      not set up correctly.
+    Note: Undefined expected values skips ASV tests by design.
 
-    - parmams
-
-    storage_obj: Reference object that we read/write data to/from. 
-                 For POSIX, this is a directory, and for cloud storage
-                 it's the object store.
-
-
+    Returns:
+        storage_obj: Reference object that will run IO operations against.
+            For POSIX, this is a directory, and for cloud storage it's an 
+            object store.
     """
-
-    def __init__(self, backend='POSIX'):
-        # Initialize all values
+    def __init__(self, backend='POSIX', dask=False, chunksize=None, shape=None, dtype=None):
         self.backend            = backend
         self.gcp_project_name   = getTestConfigValue("gcp_project")
         self.gcs_zarr           = getTestConfigValue("gcs_zarr")
         self.gcs_zarr_FUSE      = getTestConfigValue("gcs_zarr_FUSE")
         self.gcs_benchmark_root = getTestConfigValue("gcs_benchmark_root")
         self.suffix             = ".zarr" 
+        self.dask               = dask
+        self.shape              = shape
+        self.chunksize          = chunksize
+        self.dtype              = dtype
 
     def get_temp_filepath(self):
         if self.backend == 'POSIX':
             self.temp_dir    = tempfile.mkdtemp()
-            self.storage_obj = os.path.join(self.temp_dir,
-                                           'temp-%s%s' % (next(_counter),
+            self.dir_store   = os.path.join(self.temp_dir,
+                                            'temp-%s%s' % (next(_counter),
                                             self.suffix))
+            # Saving dask objects as Zarr requires more than just a filehandle
+            if not self.dask:
+                self.storage_obj = self.dir_store
+            else:
+                self.storage_obj = zarr.create(shape=self.shape, chunks=self.chunksize,
+                                               store=self.dir_store, dtype=self.dtype, 
+                                               overwrite=True)
         elif self.backend == 'GCS':
             if not self.gcs_zarr:
                     raise NotImplementedError("Missing config for GCP test")
             
             self.gcp_project = gcsfs.GCSFileSystem(project=self.gcp_project_name, 
                                                    token=None)
-            self.storage_obj = gcsfs.mapping.GCSMap(self.gcs_zarr, 
+            self.gcsfsmap    = gcsfs.mapping.GCSMap(self.gcs_zarr, 
                                                     gcs=self.gcp_project,
                                                     check=True, create=False)
-        # GCS FUSE
+            if not self.dask:
+                self.storage_obj = self.gcsfsmap
+            else: 
+                self.storage_obj = zarr.create(shape=self.shape, chunks=self.chunksize,
+                                               store=self.gcsfsmap, dtype=self.dtype, 
+                                               overwrite=True)
+            
         elif self.backend == 'FUSE':
             if not self.gcs_zarr_FUSE:
-                raise NotImplementedError("Missing config for GCP test")
+                raise NotImplementedError("Missing config for FUSE test")
 
             self.temp_dir    = tempfile.mkdtemp()
-            self.storage_obj = self.temp_dir + "/zarr_FUSE"
+            self.dir_store = self.temp_dir + "/zarr_FUSE"
             call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
 
-            if not os.path.exists(self.storage_obj):
-                os.makedirs(self.storage_obj)
+            if not os.path.exists(self.dir_store):
+                os.makedirs(self.dir_store)
 
+            # Return the path if this isn't Dask
+            # TODO: This should be a function
+            if not self.dask:
+                self.storage_obj = self.dir_store
+            else:
+                self.storage_obj = zarr.create(shape=self.shape, chunks=self.chunksize,
+                                               store=self.dir_store, dtype=self.dtype, 
+                                               overwrite=True)
         else:
             raise NotImplementedError("Storage backend not implemented.")
-
-    def create_objects(self, dset=None):
-        # single Dataset
-        if dset == 'xarray':
-            self.ds = bmt.rand_xarray()
 
     def open(self, path, mode):
         return zarr.open(self.storage_obj, mode=mode)
@@ -103,7 +110,7 @@ class ZarrStore(object):
 
     def rm_objects(self):
         if self.backend == 'POSIX':
-            shutil.rmtree(self.storage_obj)
+            shutil.rmtree(self.dir_store)
 
         elif self.backend == 'GCS':
             if not self.gcs_zarr or not self.gcp_project_name:
@@ -114,7 +121,7 @@ class ZarrStore(object):
         elif self.backend == 'FUSE':
             if not self.gcs_zarr_FUSE or not self.gcp_project_name:
                 return
-            shutil.rmtree(self.storage_obj)
+            shutil.rmtree(self.dir_store)
             if platform == 'darwin':
                 call(["umount", self.temp_dir])
             elif platform == 'linux':

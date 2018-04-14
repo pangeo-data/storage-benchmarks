@@ -1,14 +1,12 @@
-"""
-    Raw read/write performance of various backends and infrastructure
-    TODO: should IO_raw just be combined with IO_numpy?
+"""Numpy IO performance
 
 
 """
 
 from . import target_hdf5, target_hsds, target_zarr, getTestConfigValue
 from . import benchmark_tools as bmt
-from subprocess import call
 
+from subprocess import call
 import random
 import itertools
 import numpy as np
@@ -17,8 +15,11 @@ import os
 _counter = itertools.count()
 _DATASET_NAME = "default"
 
-# Read all values of dataset and confirm they are in the expected range
+
 def readtest(f):
+    """Read all values of dataset and confirm they are in the expected range
+
+    """
     dset = f[_DATASET_NAME]
     nz = dset.shape[0]
     for i in range(nz):
@@ -28,15 +29,20 @@ def readtest(f):
             msg = "mean of {} for slice: {} is unexpected".format(mean, i)
             raise ValueError(msg)
 
-# Update all values of the dataset
+
 def writetest(f, data):
+    """Update all values of the dataset
+
+    """
     dset = f[_DATASET_NAME]
     nz = dset.shape[0]
     for i in range(nz):
         dset[i,:,:] = data[i,:,:]
 
-# Check random slice of tasmax dataset
 def tasmax_slicetest(f):
+    """ Check random slice of tasmax dataset
+    
+    """
     dset = f['tasmax']
     day = random.randrange(dset.shape[0])  # choose random day in year
     data = dset[day,:,:]  # get numpy array for given day
@@ -58,10 +64,10 @@ class IORead_Random_Zarr():
     timeout = 300
     #number = 1
     warmup_time = 0.0
-    params = (['POSIX', 'GCS', 'FUSE'], [1, 5])
-    param_names = ['backend', 'nz']
+    params = (['POSIX', 'GCS', 'FUSE'])
+    param_names = ['backend']
 
-    def setup(self, backend, nz):
+    def setup(self, backend):
         self.target = target_zarr.ZarrStore(backend=backend)
         self.target.get_temp_filepath()
 
@@ -70,13 +76,13 @@ class IORead_Random_Zarr():
             call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
 
         f = self.target.open(self.target.storage_obj, 'w')
-        bmt.rand_numpy(f, nz=nz, empty=False)
+        bmt.rand_numpy(f, empty=False)
 
-    def time_readtest(self, backend, nz):
+    def time_readtest(self, backend):
         f = self.target.open(self.target.storage_obj, 'r')
         readtest(f)
 
-    def teardown(self, backend, nz):
+    def teardown(self, backend):
         self.target.rm_objects()
 
 
@@ -84,10 +90,10 @@ class IOWrite_Random_Zarr():
     timeout = 300
     #number = 1
     warmup_time = 0.0
-    params = (['POSIX', 'GCS', 'FUSE'], [1, 5])
-    param_names = ['backend', 'nz']
+    params = (['POSIX', 'GCS', 'FUSE'])
+    param_names = ['backend']
 
-    def setup(self, backend, nz):
+    def setup(self, backend):
         self.target = target_zarr.ZarrStore(backend=backend)
         self.target.get_temp_filepath()
 
@@ -96,17 +102,17 @@ class IOWrite_Random_Zarr():
              call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
 
         f = self.target.open(self.target.storage_obj, 'w')
-        bmt.rand_numpy(f, nz=nz, empty=True)
+        bmt.rand_numpy(f, empty=True)
         dset = f[_DATASET_NAME]
         self.dtype = dset.dtype
         self.shape = dset.shape
         self.data = np.random.rand(*self.shape).astype(self.dtype)
 
-    def time_writetest(self, backend, nz):
+    def time_writetest(self, backend):
         f = self.target.open(self.target.storage_obj, 'a')
         writetest(f, self.data)
 
-    def teardown(self, backend, nz):
+    def teardown(self, backend):
         self.target.rm_objects()
 
 
