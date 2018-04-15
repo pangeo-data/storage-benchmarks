@@ -14,13 +14,14 @@ import xarray as xr
 
 
 class IORead_Zarr():
-     timeout = 300
-     number = 1
+     timeout = 120
+     number = 5
+     repeat = 5
      warmup_time = 0.0
-     params = (['POSIX'], [5])
-     param_names = ['backend', 'nt']
+     params = (['POSIX', 'GCS', 'FUSE'])
+     param_names = ['backend']
 
-     def setup(self, backend, nt):
+     def setup(self, backend):
          self.target = target_zarr.ZarrStore(backend=backend)
          self.target.get_temp_filepath()
 
@@ -28,12 +29,16 @@ class IORead_Zarr():
              gsutil_arg = "gs://%s" % self.target.gcs_zarr
              call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
 
-         bmt.rand_xarray(nt=nt).to_zarr(self.target.storage_obj)
+         bmt.rand_xarray().to_zarr(self.target.storage_obj)
 
-     def time_synthetic_read(self, backend, nt):
+     def time_synthetic_read(self, backend):
          ds = xr.open_zarr(self.target.storage_obj).load()
 
-     def teardown(self, backend, nt):
+     def time_synthetic_mean(self, backend):
+         ds = xr.open_zarr(self.target.storage_obj).load()
+         ds.mean()
+
+     def teardown(self, backend):
          self.target.rm_objects()
 
 # class IOWrite_Zarr():

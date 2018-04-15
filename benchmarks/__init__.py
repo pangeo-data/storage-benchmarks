@@ -7,7 +7,7 @@ import yaml
 import os
 
 _counter = itertools.count()
-_CONFIG_FILE = "test.conf.yaml"
+_CONFIG_FILE = "test-kai.conf.yaml"
 
 
 def parameterized(names, params):

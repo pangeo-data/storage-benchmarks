@@ -66,7 +66,7 @@ class ZarrStore(object):
         elif self.backend == 'GCS':
             if not self.gcs_zarr:
                     raise NotImplementedError("Missing config for GCP test")
-            
+
             # HACK in order to give worker pods read/write to storage
             fs = gcsfs.GCSFileSystem(project=self.gcp_project_name, token='cache')
             token = fs.session.credentials
@@ -89,9 +89,12 @@ class ZarrStore(object):
             self.temp_dir    = tempfile.mkdtemp()
             self.dir_store = self.temp_dir + "/zarr_FUSE"
             call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
+            
+            # Clean up in case past test exists
+            if os.path.exists(self.dir_store):
+                shutil.rmtree(self.dir_store)
 
-            if not os.path.exists(self.dir_store):
-                os.makedirs(self.dir_store)
+            os.makedirs(self.dir_store)
 
             # Return the path if this isn't Dask
             # TODO: This should be a function
