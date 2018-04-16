@@ -34,7 +34,6 @@ import os
 import tempfile
 import itertools
 import shutil
-import timeit
 import zarr
 import tempfile
 
@@ -62,6 +61,8 @@ def test_gcp():
 def cluster_wait(client, n_workers):
     """Delay process until Kubernetes cluster has provisioned worker pods"""
     while len(client.cluster.scheduler.workers) < n_workers:
+        print("Provisioning worker pods. %s/%s " %
+              (len(client.cluster.scheduler.workers), n_workers))
         sleep(2)
 
 
@@ -75,7 +76,7 @@ class Zarr_GCP_write_10GB():
     number = 5
     warmup_time = 0.0
     params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
-    #params = (['GCS'], [1], [40])
+    #params = (['GCS'], [5], [5])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
     def setup(self, backend, n_chunks, n_workers):
