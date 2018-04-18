@@ -34,7 +34,6 @@ import os
 import tempfile
 import itertools
 import shutil
-import timeit
 import zarr
 import tempfile
 
