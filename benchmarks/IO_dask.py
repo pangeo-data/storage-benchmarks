@@ -26,8 +26,6 @@ import dask
 import dask.array as da
 import dask.multiprocessing
 import numpy as np
-import timeit
-
 
 from subprocess import call
 from time import sleep
@@ -59,6 +57,15 @@ def test_gcp():
     else:
         return True
 
+
+def cluster_wait(client, n_workers):
+    """Delay process until Kubernetes cluster has provisioned worker pods"""
+    while len(client.cluster.scheduler.workers) < n_workers:
+        print("Provisioning worker pods. %s/%s " %
+              (len(client.cluster.scheduler.workers), n_workers))
+        sleep(2)
+
+
 class Zarr_GCP_write_10GB():
     """Synthetic random Dask data write test
 
@@ -68,7 +75,7 @@ class Zarr_GCP_write_10GB():
     repeat = 5
     number = 5
     warmup_time = 0.0
-    params = (['GCS'], [5, 10, 50], [5, 10, 20, 40, 80])
+    params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
     #params = (['GCS'], [5], [5])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
@@ -78,7 +85,8 @@ class Zarr_GCP_write_10GB():
         if self.is_gcp:
             self.cluster = KubeCluster(n_workers=n_workers)
             self.client = Client(self.cluster)
-            sleep(5) # Give cluster a few moments to scale up
+            cluster_wait(self.client, n_workers)
+
             self.chunks=(n_chunks, 1000, 1000)
             self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000), 
                                        chunks=self.chunks)
@@ -113,7 +121,7 @@ class Zarr_GCP_Dask_compute_10GB():
     repeat = 5
     number = 5
     warmup_time = 0.0
-    params = (['GCS'], [5, 10, 50], [5, 10, 20, 40, 80])
+    params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
     #params = (['GCS'], [5], [5])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
@@ -123,7 +131,8 @@ class Zarr_GCP_Dask_compute_10GB():
         if self.is_gcp:
             self.cluster = KubeCluster(n_workers=n_workers)
             self.client = Client(self.cluster)
-            sleep(5)
+            cluster_wait(self.client, n_workers)
+
             self.chunks=(n_chunks, 1000, 1000)
             self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000),
                                        chunks=self.chunks)
