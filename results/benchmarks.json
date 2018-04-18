@@ -1,37 +1,4 @@
 {
-    "IO_dask.Zarr_GCP_Dask_compute_10GB.time_mean": {
-        "code": "def time_mean(self, backend, n_chunks, n_workers):\n    if self.is_gcp:\n        pretty_name = \"10 GB - compute mean\"\n        test_da = da.from_array(self.target.storage_obj, chunks=self.chunks)\n        test_da.mean().compute()\n",
-        "goal_time": 2.0,
-        "name": "IO_dask.Zarr_GCP_Dask_compute_10GB.time_mean",
-        "number": 5,
-        "param_names": [
-            "backend",
-            "n_chunks",
-            "n_workers"
-        ],
-        "params": [
-            [
-                "'GCS'"
-            ],
-            [
-                "1",
-                "5",
-                "10"
-            ],
-            [
-                "5",
-                "10",
-                "20",
-                "40",
-                "80"
-            ]
-        ],
-        "pretty_name": "IO_dask.Zarr_GCP_Dask_compute_10GB.time_mean",
-        "repeat": 5,
-        "timeout": 600,
-        "type": "time",
-        "unit": "seconds"
-    },
     "IO_dask.Zarr_GCP_write_10GB.time_synthetic_write": {
         "code": "def time_synthetic_write(self, backend, n_chunks, n_workers):\n    if self.is_gcp:\n        self.da.store(self.target.storage_obj, lock=False)\n",
         "goal_time": 2.0,
@@ -47,16 +14,10 @@
                 "'GCS'"
             ],
             [
-                "1",
-                "5",
-                "10"
+                "1"
             ],
             [
-                "5",
-                "10",
-                "20",
-                "40",
-                "80"
+                "40"
             ]
         ],
         "pretty_name": "IO_dask.Zarr_GCP_write_10GB.time_synthetic_write",
