@@ -66,6 +66,7 @@
 	"gcsfs": [""],
 	"h5py": [""],
 	"h5netcdf": [""],
+	"lz4": [""],
 	"netcdf4": [""],
         "pyyaml": [""],
 	"rasterio": [""],
