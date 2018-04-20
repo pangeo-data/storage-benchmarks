@@ -42,7 +42,7 @@ _counter = itertools.count()
 _DATASET_NAME = "default"
 
 
-def test_gcp():
+def test_gcp(func):
     """A very simple test to see if we're on Pangeo GCP environment
     Todo:
         Make this more robust
@@ -53,11 +53,16 @@ def test_gcp():
 
     """
     pod_conf = Path('/home/jovyan/worker-template.yaml')
-    if not pod_conf.is_file():
-        return False
-    else:
-        return True
 
+    def func_wrapper(*args, **kwargs):
+        if not pod_conf.is_file():
+            if func.__name__ == 'setup':
+                raise NotImplementedError("Not on GCP Pangeo environment... skipping")
+            else:
+                return
+        else:
+            func(*args, **kwargs)
+    return func_wrapper
 
 def cluster_wait(client, n_workers):
     """Delay process until Kubernetes cluster has provisioned worker pods"""
@@ -70,45 +75,39 @@ class Zarr_GCP_write_10GB():
 
     """
     timer = timeit.default_timer
-    timeout = 600
-    repeat = 5
+    timeout = 1200
+    repeat = 1
     number = 5
     warmup_time = 0.0
-    params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
-    #params = (['GCS'], [1], [40])
+    # params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
+    params = (['GCS'], [1], [40])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
+    @test_gcp
     def setup(self, backend, n_chunks, n_workers):
-        self.is_gcp = test_gcp()
-        # Otherwise, ASV will still try to configure variables
-        if self.is_gcp:
-            self.cluster = KubeCluster(n_workers=n_workers)
-            self.client = Client(self.cluster)
-            cluster_wait(self.client, n_workers)
 
-            self.chunks=(n_chunks, 1000, 1000)
-            self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000), 
+        self.cluster = KubeCluster(n_workers=n_workers)
+        self.client = Client(self.cluster)
+        cluster_wait(self.client, n_workers)
+
+        self.chunks=(n_chunks, 1000, 1000)
+        self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000), 
                                        chunks=self.chunks)
-            self.da_size = np.round(self.da.nbytes / 1024**3, 2) # in gigabytes
-            self.target = target_zarr.ZarrStore(backend=backend, dask=True,
+        self.da_size = np.round(self.da.nbytes / 1024**3, 2) # in gigabytes
+        self.target = target_zarr.ZarrStore(backend=backend, dask=True,
                                             chunksize=self.chunks,
                                             shape=self.da.shape,
                                             dtype=self.da.dtype)
-            # Maybe combine above and below methods
-            # so init does all this?
-            # seems a little superfluous?
-            self.target.get_temp_filepath()
-        else:
-            raise NotImplementedError("Not on GCP Pangeo environment... skipping")
+        self.target.get_temp_filepath()
 
+    @test_gcp
     def time_synthetic_write(self, backend, n_chunks, n_workers):
-        if self.is_gcp:
-            self.da.store(self.target.storage_obj, lock=False)
-        
+        self.da.store(self.target.storage_obj, lock=False)
+    
+    @test_gcp
     def teardown(self, backend, n_chunks, n_workers):
-        if self.is_gcp:
-            self.cluster.close()
-            self.target.rm_objects()
+        self.cluster.close()
+        self.target.rm_objects()
 
 
 class Zarr_GCP_Dask_compute_10GB():
@@ -116,48 +115,41 @@ class Zarr_GCP_Dask_compute_10GB():
 
     """
     timer = timeit.default_timer
-    timeout = 600
-    repeat = 5
+    timeout = 1200
+    repeat = 1
     number = 5
     warmup_time = 0.0
-    params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
-    #params = (['GCS'], [5], [5])
+    # params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
+    params = (['GCS'], [1], [40])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
+    @test_gcp
     def setup(self, backend, n_chunks, n_workers):
-        self.is_gcp = test_gcp()
-        # Otherwise, ASV will still try to configure variables
-        if self.is_gcp:
-            self.cluster = KubeCluster(n_workers=n_workers)
-            self.client = Client(self.cluster)
-            cluster_wait(self.client, n_workers)
+        self.cluster = KubeCluster(n_workers=n_workers)
+        self.client = Client(self.cluster)
+        cluster_wait(self.client, n_workers)
 
-            self.chunks=(n_chunks, 1000, 1000)
-            self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000),
-                                       chunks=self.chunks)
-            self.da_size = np.round(self.da.nbytes / 1024**3, 2) # in gigabytes
-            self.target = target_zarr.ZarrStore(backend=backend, dask=True,
-                                                chunksize=self.chunks,
-                                                shape=self.da.shape,
-                                                dtype=self.da.dtype)
-            # Maybe combine above and below methods so init does all this?
-            # seems a little superfluous?
-            self.target.get_temp_filepath()
-            self.da.store(self.target.storage_obj, lock=False)
-        else:
-            raise NotImplementedError("Not on GCP Pangeo environment...\
-                                      skipping")
-
+        self.chunks=(n_chunks, 1000, 1000)
+        self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000),
+                                   chunks=self.chunks)
+        self.da_size = np.round(self.da.nbytes / 1024**3, 2)
+        self.target = target_zarr.ZarrStore(backend=backend, dask=True,
+                                            chunksize=self.chunks,
+                                            shape=self.da.shape,
+                                            dtype=self.da.dtype)
+        self.target.get_temp_filepath()
+        self.da.store(self.target.storage_obj, lock=False)
+     
+    @test_gcp
     def time_mean(self, backend, n_chunks, n_workers):
-        if self.is_gcp:
-            pretty_name = "10 GB - compute mean"
-            test_da = da.from_array(self.target.storage_obj, chunks=self.chunks)
-            test_da.mean().compute()
+        pretty_name = "10 GB - compute mean"
+        test_da = da.from_array(self.target.storage_obj, chunks=self.chunks)
+        test_da.mean().compute()
 
+    @test_gcp
     def teardown(self, backend, n_chunks, n_workers):
-        if self.is_gcp:
-            self.cluster.close()
-            self.target.rm_objects()
+        self.cluster.close()
+        self.target.rm_objects()
 
 # class IOWrite_zarr_POSIX_local(target_zarr.ZarrStore):
 #     def setup(self):

@@ -1,6 +1,33 @@
 {
+    "IO_dask.Zarr_GCP_Dask_compute_10GB.time_mean": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.Zarr_GCP_Dask_compute_10GB.time_mean",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'GCS'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "40"
+            ]
+        ],
+        "pretty_name": "IO_dask.Zarr_GCP_Dask_compute_10GB.time_mean",
+        "repeat": 1,
+        "timeout": 1200,
+        "type": "time",
+        "unit": "seconds"
+    },
     "IO_dask.Zarr_GCP_write_10GB.time_synthetic_write": {
-        "code": "def time_synthetic_write(self, backend, n_chunks, n_workers):\n    if self.is_gcp:\n        self.da.store(self.target.storage_obj, lock=False)\n",
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
         "goal_time": 2.0,
         "name": "IO_dask.Zarr_GCP_write_10GB.time_synthetic_write",
         "number": 5,
@@ -21,8 +48,8 @@
             ]
         ],
         "pretty_name": "IO_dask.Zarr_GCP_write_10GB.time_synthetic_write",
-        "repeat": 5,
-        "timeout": 600,
+        "repeat": 1,
+        "timeout": 1200,
         "type": "time",
         "unit": "seconds"
     },
