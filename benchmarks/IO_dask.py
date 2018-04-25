@@ -4,9 +4,20 @@ These ASV classes are meant to test the IO performance of various Dask/Xarray
 based calculations and operations against a variety of storage backends and
 architectures.
 
+ASV Parameters:
+    backend (str): Storage backend that will be used. e.g. POSIX fs, FUSE,
+        etc.
+
+    dask_get_opt (obj): Dask processing option. See Dask docs on
+        set_options.
+
+    chunk_size (int): Dask chunk size across 'x' axis of
+        dataset.
+
+    n_workers (int): Number of Kubernetes Dask workers to spawn
 
 """
-from . import target_zarr, target_hdf5
+from . import target_zarr, target_hdf5, getTestConfigValue
 from . import benchmark_tools as bmt
 
 from dask.distributed import Client
@@ -17,20 +28,21 @@ import dask.multiprocessing
 import numpy as np
 
 from subprocess import call
+from time import sleep
 from pathlib import Path
 import os
 import tempfile
 import itertools
 import shutil
+import timeit
 import zarr
 import tempfile
-
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
 
 
-def test_gcp():
+def test_gcp(func):
     """A very simple test to see if we're on Pangeo GCP environment
     Todo:
         Make this more robust
@@ -41,77 +53,103 @@ def test_gcp():
 
     """
     pod_conf = Path('/home/jovyan/worker-template.yaml')
-    if not pod_conf.is_file():
-        raise NotImplementedError("Not on GCP Pangeo environment... skipping")
+
+    def func_wrapper(*args, **kwargs):
+        if not pod_conf.is_file():
+            if func.__name__ == 'setup':
+                raise NotImplementedError("Not on GCP Pangeo environment... skipping")
+            else:
+                return
+        else:
+            func(*args, **kwargs)
+    return func_wrapper
+
+def cluster_wait(client, n_workers):
+    """Delay process until Kubernetes cluster has provisioned worker pods"""
+    while len(client.cluster.scheduler.workers) < n_workers:
+        sleep(2)
 
 
-class IOWrite_Zarr_GCP():
+class Zarr_GCP_write_10GB():
     """Synthetic random Dask data write test
 
-    Generates a 10 GB dataset to benchmark write operations in a
-    Dask/Kubernetes Pangeo environment
-
-    ASV Parameters:
-        backend (str): Storage backend that will be used. e.g. POSIX fs, FUSE,
-            etc.
-
-        dask_get_opt (obj): Dask processing option. See Dask docs on
-            set_options.
-
-        chunk_size (int): Dask chunk size across 'x' axis of
-            dataset.
-
-        n_workers (int): Number of Kubernetes Dask workers to spawn
-
     """
-    timeout = 600
+    timer = timeit.default_timer
+    timeout = 1200
     repeat = 1
-    number = 1
+    number = 5
     warmup_time = 0.0
-    params = (['GCS', 'FUSE'], [dask.get, dask.threaded.get, dask.multiprocessing.get],
-              [1, 10, 100], [10, 50, 100])
-    param_names = ['backend', 'dask_get_opt', 'chunk_size', 'n_workers']
+    # params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
+    params = (['GCS'], [1], [40])
+    param_names = ['backend', 'n_chunks', 'n_workers']
 
-    def setup(self, backend, dask_get_opt, chunk_size, n_workers):
-        test_gcp()
+    @test_gcp
+    def setup(self, backend, n_chunks, n_workers):
 
-        cluster = KubeCluster(n_workers=n_workers)
-        client = Client(cluster)
+        self.cluster = KubeCluster(n_workers=n_workers)
+        self.client = Client(self.cluster)
+        cluster_wait(self.client, n_workers)
 
-        chunksize=(chunk_size, 1000, 1000)
-        self.da = da.random.normal(10, 0.1, size=(1100, 1100, 1100),
-                                   chunks=chunksize)
-
-        self.da_size = np.round(self.da.nbytes / 1024**2, 2)
+        self.chunks=(n_chunks, 1000, 1000)
+        self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000), 
+                                       chunks=self.chunks)
+        self.da_size = np.round(self.da.nbytes / 1024**3, 2) # in gigabytes
         self.target = target_zarr.ZarrStore(backend=backend, dask=True,
-                                            chunksize=chunksize, shape=self.da.shape,
+                                            chunksize=self.chunks,
+                                            shape=self.da.shape,
                                             dtype=self.da.dtype)
         self.target.get_temp_filepath()
-        if backend == 'GCS':
-            gsutil_arg = "gs://%s" % self.target.gcs_zarr
-            call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
 
-    def time_synthetic_write(self, backend, dask_get_opt, chunk_size, n_workers):
-        benchmark_name = "Random Dask write of %s" % self.da_size
-        with dask.set_options(get=dask_get_opt):
-            self.da.store(self.target.storage_obj, lock=False)
-
-    def teardown(self, backend, dask_get_opt, chunk_size, n_workers):
-        return
+    @test_gcp
+    def time_synthetic_write(self, backend, n_chunks, n_workers):
+        self.da.store(self.target.storage_obj, lock=False)
+    
+    @test_gcp
+    def teardown(self, backend, n_chunks, n_workers):
+        self.cluster.close()
         self.target.rm_objects()
 
 
+class Zarr_GCP_Dask_compute_10GB():
+    """Synthetic random Dask data read and computation test
 
-# class IORead_zarr_POSIX_local(target_zarr.ZarrStore):
-#     def setup(self):
-#         return
+    """
+    timer = timeit.default_timer
+    timeout = 1200
+    repeat = 1
+    number = 5
+    warmup_time = 0.0
+    # params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
+    params = (['GCS'], [1], [40])
+    param_names = ['backend', 'n_chunks', 'n_workers']
 
-#     def time_writetest(self):
-#         return
+    @test_gcp
+    def setup(self, backend, n_chunks, n_workers):
+        self.cluster = KubeCluster(n_workers=n_workers)
+        self.client = Client(self.cluster)
+        cluster_wait(self.client, n_workers)
 
-#     def time_fancywritecalculation(self):
-#         return
+        self.chunks=(n_chunks, 1000, 1000)
+        self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000),
+                                   chunks=self.chunks)
+        self.da_size = np.round(self.da.nbytes / 1024**3, 2)
+        self.target = target_zarr.ZarrStore(backend=backend, dask=True,
+                                            chunksize=self.chunks,
+                                            shape=self.da.shape,
+                                            dtype=self.da.dtype)
+        self.target.get_temp_filepath()
+        self.da.store(self.target.storage_obj, lock=False)
+     
+    @test_gcp
+    def time_mean(self, backend, n_chunks, n_workers):
+        pretty_name = "10 GB - compute mean"
+        test_da = da.from_array(self.target.storage_obj, chunks=self.chunks)
+        test_da.mean().compute()
 
+    @test_gcp
+    def teardown(self, backend, n_chunks, n_workers):
+        self.cluster.close()
+        self.target.rm_objects()
 
 # class IOWrite_zarr_POSIX_local(target_zarr.ZarrStore):
 #     def setup(self):

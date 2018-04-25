@@ -10,51 +10,49 @@ import os
 
 import numpy as np
 import xarray as xr
+import gcsfs
 
 
 class IORead_Zarr():
-     timeout = 300
-     number = 1
-     warmup_time = 0.0
-     params = (['POSIX'], [5])
-     param_names = ['backend', 'nt']
+    timeout = 300
+    number = 5
+    repeat = 5
+    warmup_time = 0.0
+    params = (['POSIX', 'GCS', 'FUSE'])
+    param_names = ['backend']
 
-     def setup(self, backend, nt):
-         self.target = target_zarr.ZarrStore(backend=backend)
-         self.target.get_temp_filepath()
+    def setup(self, backend):
+        self.target = target_zarr.ZarrStore(backend=backend)
+        self.target.get_temp_filepath()
+        bmt.rand_xarray().to_zarr(self.target.storage_obj)
 
-         if backend == 'GCS':
-             gsutil_arg = "gs://%s" % self.target.gcs_zarr
-             call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
+    def time_synthetic_read(self, backend):
+        ds = xr.open_zarr(self.target.storage_obj).load()
 
-         bmt.rand_xarray(nt=nt).to_zarr(self.target.storage_obj)
+    def time_synthetic_mean(self, backend):
+        ds = xr.open_zarr(self.target.storage_obj).load()
+        ds.mean()
 
-     def time_synthetic_read(self, backend, nt):
-         ds = xr.open_zarr(self.target.storage_obj).load()
+    def teardown(self, backend):
+        self.target.rm_objects()
 
-     def teardown(self, backend, nt):
-         self.target.rm_objects()
 
-# class IOWrite_Zarr():
-#     timeout = 300
-#     number = 1
-#     warmup_time = 0.0
-#     params = (['POSIX', 'GCS', 'FUSE'], [1, 5])
-#     param_names = ['backend', 'nt']
+class IOWrite_Zarr():
+    timeout = 300
+    number = 1
+    warmup_time = 0.0
+    params = (['POSIX', 'GCS', 'FUSE'])
+    param_names = ['backend']
 
-#     def setup(self, backend, nt):
-#         self.target = target_zarr.ZarrStore(backend=backend)
-#         self.target.get_temp_filepath()
+    def setup(self, backend):
+        self.target = target_zarr.ZarrStore(backend=backend)
+        self.target.get_temp_filepath()
 
-#         if backend == 'GCS':
-#             gsutil_arg = "gs://%s" % self.target.gcs_zarr
-#             call(["gsutil", "-q", "-m", "rm","-r", gsutil_arg])
+    def time_synthetic_write(self, backend):
+        bmt.rand_xarray().to_zarr(self.target.storage_obj)
 
-#     def time_synthetic_write(self, backend, nt):
-#         bmt.rand_xarray(nt=nt).to_zarr(self.target.storage_obj)
-
-#     def teardown(self, backend, nt):
-#         self.target.rm_objects()
+    def teardown(self, backend):
+        self.target.rm_objects()
 
 
 # class Compute_Zarr_POSIXLocal(target_zarr.ZarrStore):
