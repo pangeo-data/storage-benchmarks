@@ -54,15 +54,22 @@
         "unit": "seconds"
     },
     "IO_numpy.IORead_Random_HDF5_POSIX.time_readtest": {
-        "code": "def time_readtest(self):\n    f = self.open(self.path, 'r')\n    readtest(f)\n    f.close()\n",
+        "code": "def time_readtest(self, backend):\n    f = self.open(self.path, 'r')\n    readtest(f)\n    f.close()\n",
         "goal_time": 2.0,
         "name": "IO_numpy.IORead_Random_HDF5_POSIX.time_readtest",
         "number": 0,
-        "param_names": [],
-        "params": [],
+        "param_names": [
+            "backend"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'FUSE'"
+            ]
+        ],
         "pretty_name": "IO_numpy.IORead_Random_HDF5_POSIX.time_readtest",
         "repeat": 0,
-        "timeout": 60.0,
+        "timeout": 300,
         "type": "time",
         "unit": "seconds"
     },
@@ -114,15 +121,22 @@
         "unit": "seconds"
     },
     "IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest": {
-        "code": "def time_writetest(self):\n    f = self.open(self.path, 'a')\n    writetest(f, self.data)\n    f.close()\n",
+        "code": "def time_writetest(self, backend):\n    f = self.open(self.path, 'a')\n    writetest(f, self.data)\n    f.close()\n",
         "goal_time": 2.0,
         "name": "IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest",
         "number": 0,
-        "param_names": [],
-        "params": [],
+        "param_names": [
+            "backend"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'FUSE'"
+            ]
+        ],
         "pretty_name": "IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest",
         "repeat": 0,
-        "timeout": 60.0,
+        "timeout": 300,
         "type": "time",
         "unit": "seconds"
     },

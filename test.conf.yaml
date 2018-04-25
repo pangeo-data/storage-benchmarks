@@ -5,6 +5,7 @@ gcp_project: null # Google Cloud Platform project ID
 gcs_benchmark_root: null # Google Cloud Platform root bucket holding datasets for benchmarks
 gcs_zarr: null # Google Cloud Storage container holding Zarr datasets
 gcs_zarr_FUSE: null # Google Cloud Storage FUSE mount for Zarr datasets
+gcs_hdf5_fuse: null # Google Cloud Storage FUSE mount for hdf5 datasets
 num_slices: 5  # number of "Z" slices for dataset creation
 ntime_slices: 5 # number of time slices for Xarray dataset creation
 loca_year_start: 1950 
