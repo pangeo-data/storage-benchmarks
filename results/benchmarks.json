@@ -1,8 +1,8 @@
 {
-    "IO_dev.Zarr_GCP_LLC4320.time_max_theta": {
+    "IO_dev.Zarr_GCP_LLC4320.time_read": {
         "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
         "goal_time": 2.0,
-        "name": "IO_dev.Zarr_GCP_LLC4320.time_max_theta",
+        "name": "IO_dev.Zarr_GCP_LLC4320.time_read",
         "number": 5,
         "param_names": [
             "backend",
@@ -10,16 +10,14 @@
         ],
         "params": [
             [
-                "'GCS'"
+                "'FUSE'"
             ],
             [
-                "20",
-                "40",
-                "80"
+                "40"
             ]
         ],
-        "pretty_name": "IO_dev.Zarr_GCP_LLC4320.time_max_theta",
-        "repeat": 1,
+        "pretty_name": "IO_dev.Zarr_GCP_LLC4320.time_read",
+        "repeat": 5,
         "timeout": 600,
         "type": "time",
         "unit": "seconds"

@@ -121,12 +121,19 @@ class ZarrStore(object):
     def open(self, path, mode):
         return zarr.open(self.storage_obj, mode=mode)
 
-    def open_gcsfs(self, gcs_dir):
-        """Use GCSFS and Xarray to open a Google Cloud Storage object"""
-        self.gcsfs_root = get_gcs_root(self.gcp_project_name)
-        self.gcsfsmap   = gcsfs.mapping.GCSMap(gcs_dir, gcs=self.gcsfs_root,
-                                               check=True, create=False)
-        return xr.open_zarr(self.gcsfsmap)
+    def open_store(self, directory):
+        """Use Xarray to open a dataset"""
+
+        if self.backend == 'GCS':
+            self.gcsfs_root = get_gcs_root(self.gcp_project_name)
+            self.gcsfsmap   = gcsfs.mapping.GCSMap('storage-benchmarks/%s' %  
+                                                    directory, gcs=self.gcsfs_root,
+                                                    check=True, create=False)
+            return xr.open_zarr(self.gcsfsmap)
+        elif self.backend == 'FUSE':
+            self.temp_dir    = tempfile.mkdtemp()
+            call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
+            return xr.open_zarr(self.temp_dir + '/' + directory)
 
     def save(self, path, data):
         return zarr.save(path, data)

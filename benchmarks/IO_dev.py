@@ -56,10 +56,10 @@ class Zarr_GCP_LLC4320():
     """
     timer = timeit.default_timer
     timeout = 600
-    repeat = 1
+    repeat = 5
     number = 5
     warmup_time = 0.0
-    params = (['GCS'], [20, 40, 80])
+    params = (['FUSE'], [40])
     param_names = ['backend', 'n_workers']
 
     @test_gcp
@@ -71,10 +71,26 @@ class Zarr_GCP_LLC4320():
         self.target = target_zarr.ZarrStore(backend=backend, dask=True)
 
     @test_gcp
-    def time_max_theta(self, backend, n_workers):
-        self.llc_ds = self.target.open_gcsfs('storage-benchmarks/llc4320_zarr')
+    def time_read(self, backend, n_workers):
+        """Use potential temp as a proxy to load entire data
+           set and get throughput time
+        """
+        if backend == 'GCS':
+            self.llc_ds = self.target.open_store('llc4320_zarr')
+        elif backend == 'FUSE':
+            self.llc_ds = self.target.open_store('llc4320_zarr_fuse')
         ds = self.llc_ds.persist()
-        ds.Theta.max().compute()
+        ds = self.llc_ds.W.max().compute()
+
+
+#    @test_gcp
+#    def time_load_array_compute_mean(self, backend, n_workers):
+#        """Time to persist an array in dataset and compute the mean
+#
+#        """
+#        self.llc_ds = self.target.open_gcsfs('storage-benchmarks/llc4320_zarr')
+#        ds_W = self.llc_ds.W.persist()
+#        ds_W.mean(dim='time').compute()
 
     @test_gcp
     def teardown(self, backend, n_workers):
