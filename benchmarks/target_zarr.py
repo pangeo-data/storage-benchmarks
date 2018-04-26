@@ -6,6 +6,7 @@
 from . import getTestConfigValue
 from . import benchmark_tools as bmt
 import gcsfs
+import xarray as xr
 import zarr
 
 from subprocess import call, Popen
@@ -23,6 +24,15 @@ if _PLATFORM == 'darwin':
     GCSFUSE = '/usr/local/bin/gcsfuse'
 else:
     GCSFUSE = '/usr/bin/gcsfuse'
+
+def get_gcs_root(project):
+    """Get object map of a root GCS bucket"""
+    fs = gcsfs.GCSFileSystem(project=project, token='cache')
+    token = fs.session.credentials
+    gcsfs_root = gcsfs.GCSFileSystem(project=project,
+                                      token=token)
+    return gcsfs_root
+
 
 class ZarrStore(object):
     """Set up necessary variables and bits to run operations Zarr dataset.
@@ -110,6 +120,13 @@ class ZarrStore(object):
 
     def open(self, path, mode):
         return zarr.open(self.storage_obj, mode=mode)
+
+    def open_gcsfs(self, gcs_dir):
+        """Use GCSFS and Xarray to open a Google Cloud Storage object"""
+        self.gcsfs_root = get_gcs_root(self.gcp_project_name)
+        self.gcsfsmap   = gcsfs.mapping.GCSMap(gcs_dir, gcs=self.gcsfs_root,
+                                               check=True, create=False)
+        return xr.open_zarr(self.gcsfsmap)
 
     def save(self, path, data):
         return zarr.save(path, data)
