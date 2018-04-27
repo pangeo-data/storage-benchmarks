@@ -131,9 +131,9 @@ class ZarrStore(object):
                                                     check=True, create=False)
             return xr.open_zarr(self.gcsfsmap)
         elif self.backend == 'FUSE':
-            self.temp_dir    = tempfile.mkdtemp()
-            call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
-            return xr.open_zarr(self.temp_dir + '/' + directory)
+            #self.temp_dir    = tempfile.mkdtemp()
+            #call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
+            return xr.open_zarr('/gcs/storage-benchmarks/' + directory)
 
     def save(self, path, data):
         return zarr.save(path, data)

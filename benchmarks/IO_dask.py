@@ -79,8 +79,8 @@ class Zarr_GCP_write_10GB():
     repeat = 1
     number = 5
     warmup_time = 0.0
-    # params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
-    params = (['GCS'], [1], [40])
+    params = (['GCS'], [5, 10], [10, 20, 40, 80])
+    #params = (['GCS'], [1], [40])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
     @test_gcp
@@ -110,8 +110,50 @@ class Zarr_GCP_write_10GB():
         self.target.rm_objects()
 
 
-class Zarr_GCP_Dask_compute_10GB():
-    """Synthetic random Dask data read and computation test
+#class Zarr_GCP_Dask_compute_10GB():
+#    """Synthetic random Dask data read and computation test
+#
+#    """
+#    timer = timeit.default_timer
+#    timeout = 1200
+#    repeat = 1
+#    number = 5
+#    warmup_time = 0.0
+#    params = (['GCS'], [5, 10], [10, 20, 40, 80])
+#    #params = (['GCS'], [1], [40])
+#    param_names = ['backend', 'n_chunks', 'n_workers']
+#
+#    @test_gcp
+#    def setup(self, backend, n_chunks, n_workers):
+#        self.cluster = KubeCluster(n_workers=n_workers)
+#        self.client = Client(self.cluster)
+#        cluster_wait(self.client, n_workers)
+#
+#        self.chunks=(n_chunks, 1000, 1000)
+#        self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000),
+#                                   chunks=self.chunks)
+#        self.da_size = np.round(self.da.nbytes / 1024**3, 2)
+#        self.target = target_zarr.ZarrStore(backend=backend, dask=True,
+#                                            chunksize=self.chunks,
+#                                            shape=self.da.shape,
+#                                            dtype=self.da.dtype)
+#        self.target.get_temp_filepath()
+#        self.da.store(self.target.storage_obj, lock=False)
+#     
+#    @test_gcp
+#    def time_mean(self, backend, n_chunks, n_workers):
+#        pretty_name = "10 GB - compute mean"
+#        test_da = da.from_array(self.target.storage_obj, chunks=self.chunks)
+#        test_da.mean().compute()
+#
+#    @test_gcp
+#    def teardown(self, backend, n_chunks, n_workers):
+#        self.cluster.close()
+#        self.target.rm_objects()
+
+
+class Zarr_GCP_LLC4320():
+    """Zarr GCP tests on LLC4320 Datasets
 
     """
     timer = timeit.default_timer
@@ -119,37 +161,44 @@ class Zarr_GCP_Dask_compute_10GB():
     repeat = 1
     number = 5
     warmup_time = 0.0
-    # params = (['GCS'], [1, 5, 10], [5, 10, 20, 40, 80])
-    params = (['GCS'], [1], [40])
-    param_names = ['backend', 'n_chunks', 'n_workers']
+    params = (['GCS', 'FUSE'], [10, 20, 40, 80])
+    param_names = ['backend', 'n_workers']
 
     @test_gcp
-    def setup(self, backend, n_chunks, n_workers):
+    def setup(self, backend, n_workers):
+
         self.cluster = KubeCluster(n_workers=n_workers)
         self.client = Client(self.cluster)
         cluster_wait(self.client, n_workers)
-
-        self.chunks=(n_chunks, 1000, 1000)
-        self.da = da.random.normal(10, 0.1, size=(1350, 1000, 1000),
-                                   chunks=self.chunks)
-        self.da_size = np.round(self.da.nbytes / 1024**3, 2)
-        self.target = target_zarr.ZarrStore(backend=backend, dask=True,
-                                            chunksize=self.chunks,
-                                            shape=self.da.shape,
-                                            dtype=self.da.dtype)
-        self.target.get_temp_filepath()
-        self.da.store(self.target.storage_obj, lock=False)
-     
-    @test_gcp
-    def time_mean(self, backend, n_chunks, n_workers):
-        pretty_name = "10 GB - compute mean"
-        test_da = da.from_array(self.target.storage_obj, chunks=self.chunks)
-        test_da.mean().compute()
+        self.target = target_zarr.ZarrStore(backend=backend, dask=True)
 
     @test_gcp
-    def teardown(self, backend, n_chunks, n_workers):
+    def time_read(self, backend, n_workers):
+        """Use potential temp as a proxy to load entire data
+           set and get throughput
+        """
+        if backend == 'GCS':
+            self.llc_ds = self.target.open_store('llc4320_zarr')
+        elif backend == 'FUSE':
+            self.llc_ds = self.target.open_store('llc4320_zarr_fuse')
+        ds = self.llc_ds.persist()
+        ds.Theta.max().compute()
+
+    @test_gcp
+    def time_load_array_compute_SST_time_mean(self, backend, n_workers):
+        """Time to persist an array in dataset and compute the mean
+
+        """
+        if backend == 'GCS':
+            self.llc_ds = self.target.open_store('llc4320_zarr')
+        elif backend == 'FUSE':
+            self.llc_ds = self.target.open_store('llc4320_zarr_fuse')
+        ds_theta = self.llc_ds.Theta.persist()
+        ds_theta[:, 0].mean().compute() # SST mean across time
+
+    @test_gcp
+    def teardown(self, backend, n_workers):
         self.cluster.close()
-        self.target.rm_objects()
 
 # class IOWrite_zarr_POSIX_local(target_zarr.ZarrStore):
 #     def setup(self):
