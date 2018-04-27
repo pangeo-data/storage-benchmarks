@@ -26,6 +26,7 @@ import dask
 import dask.array as da
 import dask.multiprocessing
 import numpy as np
+import xarray as xr
 
 from subprocess import call
 from time import sleep
@@ -151,6 +152,47 @@ class Zarr_GCP_LLC4320():
             self.llc_ds = self.target.open_store('llc4320_zarr')
         elif backend == 'FUSE':
             self.llc_ds = self.target.open_store('llc4320_zarr_fuse')
+        ds_theta = self.llc_ds.Theta.persist()
+        ds_theta[:, 0].mean().compute() # SST mean across time
+
+    @test_gcp
+    def teardown(self, backend, n_workers):
+        self.cluster.close()
+
+
+class NetCDF_GCP_LLC4320():
+    """LLC4320 NetCDF files from GCS FUSE mount
+    """
+    timer = timeit.default_timer
+    timeout = 1200
+    repeat = 1
+    number = 5
+    warmup_time = 0.0
+    params = ([1], [40])
+    param_names = ['n_chunks', 'n_workers']
+
+    @test_gcp
+    def setup(self, n_chunks, n_workers):
+        self.cluster = KubeCluster(n_workers=n_workers)
+        self.client = Client(self.cluster)
+        cluster_wait(self.client, n_workers)
+        self.llc_ds = xr.open_mfdataset('/gcs/storage-benchmarks/llc4320_netcdf/*.nc',
+                                        decode_cf=False, autoclose=True,
+                                        chunks={'k': 1, 'k_l': n_chunks})
+
+    @test_gcp
+    def time_read(self, backend, n_workers):
+        """Use potential temp as a proxy to load entire data
+           set and get throughput
+        """
+        ds = self.llc_ds.persist()
+        ds.Theta.max().compute()
+
+    @test_gcp
+    def time_load_array_compute_SST_time_mean(self, backend, n_workers):
+        """Time to persist an array in dataset and compute the mean
+
+        """
         ds_theta = self.llc_ds.Theta.persist()
         ds_theta[:, 0].mean().compute() # SST mean across time
 
