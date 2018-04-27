@@ -62,7 +62,6 @@ def tasmax_slicetest(f):
 
 class IORead_Random_Zarr():
     timeout = 300
-    #number = 1
     warmup_time = 0.0
     params = (['POSIX', 'GCS', 'FUSE'])
     param_names = ['backend']
@@ -88,7 +87,6 @@ class IORead_Random_Zarr():
 
 class IOWrite_Random_Zarr():
     timeout = 300
-    #number = 1
     warmup_time = 0.0
     params = (['POSIX', 'GCS', 'FUSE'])
     param_names = ['backend']
@@ -117,18 +115,23 @@ class IOWrite_Random_Zarr():
 
 
 class IORead_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
-    def setup(self):
+    timeout = 300
+    warmup_time = 0.0
+    params = (['POSIX', 'FUSE'])
+    param_names = ['backend']
+    def setup(self, backend):
+        self.target = target_hdf5.SingleHDF5POSIXFile(backend=backend)
         self.path = self.get_temp_filepath()
         f = self.open(self.path, 'w')
         bmt.rand_numpy(f, empty=False)
         f.close()
 
-    def time_readtest(self):
+    def time_readtest(self, backend):
         f = self.open(self.path, 'r')
         readtest(f)
         f.close()
 
-    def teardown(self):
+    def teardown(self, backend):
         self.rm_objects()
 
 
@@ -149,8 +152,14 @@ class IORead_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
 
 
 class IOWrite_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
-    def setup(self):
-        self.path = self.get_temp_filepath()    
+    timeout = 300
+    warmup_time = 0.0
+    params = (['POSIX', 'FUSE'])
+    param_names = ['backend']
+
+    def setup(self, backend):
+        self.target = target_hdf5.SingleHDF5POSIXFile(backend=backend)
+        self.path = self.target.get_temp_filepath()    
         f = self.open(self.path, 'w')
         bmt.rand_numpy(f, empty=True)
         dset = f[_DATASET_NAME]
@@ -159,12 +168,12 @@ class IOWrite_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
         f.close()
         self.data = np.random.rand(*self.shape).astype(self.dtype)
 
-    def time_writetest(self):
+    def time_writetest(self, backend):
         f = self.open(self.path, 'a')
         writetest(f, self.data)
         f.close()
 
-    def teardown_files(self):
+    def teardown_files(self, backend):
         self.rm_objects()
 
 
