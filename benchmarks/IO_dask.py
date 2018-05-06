@@ -80,7 +80,7 @@ class Zarr_GCP_write_10GB():
     repeat = 1
     number = 5
     warmup_time = 0.0
-    params = (['GCS'], [5, 10], [10, 20, 40, 80])
+    params = (['GCS'], [5, 10], [20, 40, 60, 80, 100])
     #params = (['GCS'], [1], [40])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
@@ -119,7 +119,7 @@ class Zarr_GCP_LLC4320():
     repeat = 1
     number = 5
     warmup_time = 0.0
-    params = (['GCS', 'FUSE'], [10, 20, 40, 80])
+    params = (['GCS', 'FUSE'], [20, 40, 60, 80, 100])
     param_names = ['backend', 'n_workers']
 
     @test_gcp
@@ -152,7 +152,8 @@ class Zarr_GCP_LLC4320():
         elif backend == 'FUSE':
             self.llc_ds = self.target.open_store('llc4320_zarr_fuse')
         ds_theta = self.llc_ds.Theta.persist()
-        ds_theta[:, 0].mean().compute() # SST mean across time
+        # Need to redo number of chunks so we can saturate workersk
+        ds_theta.mean().compute() # SST mean across time
 
     @test_gcp
     def teardown(self, backend, n_workers):
@@ -167,7 +168,7 @@ class NetCDF_GCP_LLC4320():
     repeat = 1
     number = 5
     warmup_time = 0.0
-    params = ([1], [40])
+    params = ([1], [20, 40, 60, 80, 100])
     param_names = ['n_chunks', 'n_workers']
 
     @test_gcp
@@ -193,7 +194,7 @@ class NetCDF_GCP_LLC4320():
 
         """
         ds_theta = self.llc_ds.Theta.persist()
-        ds_theta[:, 0].mean().compute() # SST mean across time
+        ds_theta.mean().compute() # SST mean across time
 
     @test_gcp
     def teardown(self, backend, n_workers):

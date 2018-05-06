@@ -1,0 +1,549 @@
+· Creating environments
+· Discovering benchmarks
+·· Uninstalling from conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr
+·· Building for conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr
+·· Installing into conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr
+· Running 15 total benchmarks (1 commits * 1 environments * 15 benchmarks)
+[  0.00%] · For pangeo-storage-benchmarks commit hash df3e6f10:
+[  0.00%] ·· Building for conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr
+[  0.00%] ·· Benchmarking conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr
+[  6.67%] ··· Running IO_dask.NetCDF_GCP_LLC4320.time_load_array_compute_SST_time_mean        1/3 failed
+[  6.67%] ···· 
+               ========== ======== ======== ========
+               --                 n_workers         
+               ---------- --------------------------
+                n_chunks     20       40       80   
+               ========== ======== ======== ========
+                   1       failed   49.81s   23.82s 
+               ========== ======== ======== ========
+
+[  6.67%] ····· 
+                
+                For parameters: 1, 20
+                asv: benchmark timed out (timeout 1200s)
+                
+
+[ 13.33%] ··· Running IO_dask.NetCDF_GCP_LLC4320.time_read                                    2/3 failed
+[ 13.33%] ···· 
+               ========== ======== ======== =======
+               --                 n_workers        
+               ---------- -------------------------
+                n_chunks     20       40       80  
+               ========== ======== ======== =======
+                   1       failed   failed   2.44m 
+               ========== ======== ======== =======
+
+[ 13.33%] ····· 
+                
+                For parameters: 1, 20
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 795, in <module>
+                    commands[mode](args)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 772, in main_run
+                    result = benchmark.do_run()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 456, in do_run
+                    return self.run(*self._current_params)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 548, in run
+                    all_runs.extend(timer.repeat(repeat, number))
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/timeit.py", line 206, in repeat
+                    t = self.timeit(number)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/timeit.py", line 178, in timeit
+                    timing = self.inner(it, self.timer)
+                  File "<timeit-src>", line 6, in inner
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 512, in <lambda>
+                    func = lambda: self.func(*param)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 189, in time_read
+                    ds.Theta.max().compute()
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/xarray/core/dataarray.py", line 658, in compute
+                    return new.load(**kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/xarray/core/dataarray.py", line 632, in load
+                    ds = self._to_temp_dataset().load(**kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/xarray/core/dataset.py", line 490, in load
+                    evaluated_data = da.compute(*lazy_data.values(), **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/dask/base.py", line 404, in compute
+                    results = get(dsk, keys, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 2091, in get
+                    direct=direct)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 1503, in gather
+                    asynchronous=asynchronous)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 615, in sync
+                    return sync(self.loop, func, *args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/utils.py", line 253, in sync
+                    six.reraise(*error[0])
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/six.py", line 693, in reraise
+                    raise value
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/utils.py", line 238, in f
+                    result[0] = yield make_coro()
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/tornado/gen.py", line 1099, in run
+                    value = future.result()
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/tornado/gen.py", line 1107, in run
+                    yielded = self.gen.throw(*exc_info)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 1381, in _gather
+                    traceback)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/six.py", line 693, in reraise
+                    raise value
+                distributed.scheduler.KilledWorker: ("('open_dataset-concatenate-d364ea4a8c97e14c523c23f5e2ca42f3', 0, 49, 0, 0)", 'tcp://10.21.201.8:37713')
+                
+                For parameters: 1, 40
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 795, in <module>
+                    commands[mode](args)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 772, in main_run
+                    result = benchmark.do_run()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 456, in do_run
+                    return self.run(*self._current_params)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 548, in run
+                    all_runs.extend(timer.repeat(repeat, number))
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/timeit.py", line 206, in repeat
+                    t = self.timeit(number)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/timeit.py", line 178, in timeit
+                    timing = self.inner(it, self.timer)
+                  File "<timeit-src>", line 6, in inner
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 512, in <lambda>
+                    func = lambda: self.func(*param)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 189, in time_read
+                    ds.Theta.max().compute()
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/xarray/core/dataarray.py", line 658, in compute
+                    return new.load(**kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/xarray/core/dataarray.py", line 632, in load
+                    ds = self._to_temp_dataset().load(**kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/xarray/core/dataset.py", line 490, in load
+                    evaluated_data = da.compute(*lazy_data.values(), **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/dask/base.py", line 404, in compute
+                    results = get(dsk, keys, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 2091, in get
+                    direct=direct)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 1503, in gather
+                    asynchronous=asynchronous)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 615, in sync
+                    return sync(self.loop, func, *args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/utils.py", line 253, in sync
+                    six.reraise(*error[0])
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/six.py", line 693, in reraise
+                    raise value
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/utils.py", line 238, in f
+                    result[0] = yield make_coro()
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/tornado/gen.py", line 1099, in run
+                    value = future.result()
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/tornado/gen.py", line 1107, in run
+                    yielded = self.gen.throw(*exc_info)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 1381, in _gather
+                    traceback)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/six.py", line 693, in reraise
+                    raise value
+                distributed.scheduler.KilledWorker: ("('nanmax-dfdc5b6178410634a639ba6cb81e227d', 0, 74, 0, 0)", 'tcp://10.21.221.8:34823')
+
+[ 20.00%] ··· Running IO_dask.Zarr_GCP_LLC4320.time_load_array_compute_SST_time_mean                  ok
+[ 20.00%] ···· 
+               ========= ======== ======== ========
+               --                n_workers         
+               --------- --------------------------
+                backend     20       40       80   
+               ========= ======== ======== ========
+                  GCS     21.27s   16.48s   14.96s 
+                  FUSE    28.38s   24.17s   22.41s 
+               ========= ======== ======== ========
+
+[ 26.67%] ··· Running IO_dask.Zarr_GCP_LLC4320.time_read                                              ok
+[ 26.67%] ···· 
+               ========= ======== ======== ========
+               --                n_workers         
+               --------- --------------------------
+                backend     20       40       80   
+               ========= ======== ======== ========
+                  GCS     47.07s   27.05s   20.04s 
+                  FUSE    58.02s   35.05s   26.91s 
+               ========= ======== ======== ========
+
+[ 33.33%] ··· Running IO_dask.Zarr_GCP_write_10GB.time_synthetic_write                            failed
+[ 33.33%] ···· 
+               ========= ======== ======== ======== ========= ========= =========
+               --                          n_chunks / n_workers                  
+               --------- --------------------------------------------------------
+                backend   5 / 20   5 / 40   5 / 80   10 / 20   10 / 40   10 / 80 
+               ========= ======== ======== ======== ========= ========= =========
+                  GCS     failed   failed   failed    failed    failed    failed 
+               ========= ======== ======== ======== ========= ========= =========
+
+[ 33.33%] ····· 
+                
+                For parameters: 'GCS', 5, 20
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 795, in <module>
+                    commands[mode](args)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 776, in main_run
+                    benchmark.do_teardown()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 449, in do_teardown
+                    teardown(*self._current_params)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 109, in teardown
+                    if self.is_gcp:
+                AttributeError: 'Zarr_GCP_write_10GB' object has no attribute 'is_gcp'
+                
+                For parameters: 'GCS', 5, 40
+                distributed.scheduler - ERROR - error from worker tcp://10.21.241.19:36679: b'Service Unavailable'
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 772, in main_run
+                    result = benchmark.do_run()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 456, in do_run
+                    return self.run(*self._current_params)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 548, in run
+                    all_runs.extend(timer.repeat(repeat, number))
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/timeit.py", line 206, in repeat
+                    t = self.timeit(number)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/timeit.py", line 178, in timeit
+                    timing = self.inner(it, self.timer)
+                  File "<timeit-src>", line 6, in inner
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 512, in <lambda>
+                    func = lambda: self.func(*param)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 105, in time_synthetic_write
+                    self.da.store(self.target.storage_obj, lock=False)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/dask/array/core.py", line 1211, in store
+                    r = store([self], [target], **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/dask/array/core.py", line 955, in store
+                    result.compute(**kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/dask/base.py", line 155, in compute
+                    (result,) = compute(self, traverse=False, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/dask/base.py", line 404, in compute
+                    results = get(dsk, keys, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 2091, in get
+                    direct=direct)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 1503, in gather
+                    asynchronous=asynchronous)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 615, in sync
+                    return sync(self.loop, func, *args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/utils.py", line 253, in sync
+                    six.reraise(*error[0])
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/six.py", line 693, in reraise
+                    raise value
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/utils.py", line 238, in f
+                    result[0] = yield make_coro()
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/tornado/gen.py", line 1099, in run
+                    value = future.result()
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/tornado/gen.py", line 1107, in run
+                    yielded = self.gen.throw(*exc_info)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/distributed/client.py", line 1381, in _gather
+                    traceback)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/.asv/env/4147cb8bacd14ebb1c15e8248dc80f49/lib/python3.6/site-packages/six.py", line 692, in reraise
+                    raise value.with_traceback(tb)
+                  File "/opt/conda/lib/python3.6/site-packages/dask/array/core.py", line 2693, in store_chunk
+                    return load_store_chunk(x, out, index, lock, return_stored, False)
+                  File "/opt/conda/lib/python3.6/site-packages/dask/array/core.py", line 2682, in load_store_chunk
+                    out[index] = np.asanyarray(x)
+                  File "/opt/conda/lib/python3.6/site-packages/zarr/core.py", line 1102, in __setitem__
+                    self.set_basic_selection(selection, value, fields=fields)
+                  File "/opt/conda/lib/python3.6/site-packages/zarr/core.py", line 1197, in set_basic_selection
+                    return self._set_basic_selection_nd(selection, value, fields=fields)
+                  File "/opt/conda/lib/python3.6/site-packages/zarr/core.py", line 1488, in _set_basic_selection_nd
+                    self._set_selection(indexer, value, fields=fields)
+                  File "/opt/conda/lib/python3.6/site-packages/zarr/core.py", line 1536, in _set_selection
+                    self._chunk_setitem(chunk_coords, chunk_selection, chunk_value, fields=fields)
+                  File "/opt/conda/lib/python3.6/site-packages/zarr/core.py", line 1644, in _chunk_setitem
+                    fields=fields)
+                  File "/opt/conda/lib/python3.6/site-packages/zarr/core.py", line 1721, in _chunk_setitem_nosync
+                    self.chunk_store[ckey] = cdata
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/mapping.py", line 75, in __setitem__
+                    f.write(value)
+                  File "<decorator-gen-41>", line 2, in __exit__
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 51, in _tracemethod
+                    return f(self, *args, **kwargs)
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 1405, in __exit__
+                    def readable(self):
+                  File "<decorator-gen-38>", line 2, in close
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 51, in _tracemethod
+                    return f(self, *args, **kwargs)
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 1369, in close
+                    """
+                  File "<decorator-gen-33>", line 2, in flush
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 51, in _tracemethod
+                    return f(self, *args, **kwargs)
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 1221, in flush
+                    if self.mode not in {'wb', 'ab'}:
+                  File "<decorator-gen-34>", line 2, in _upload_chunk
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 51, in _tracemethod
+                    return f(self, *args, **kwargs)
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 1249, in _upload_chunk
+                
+                  File "/opt/conda/lib/python3.6/site-packages/gcsfs/core.py", line 164, in validate_response
+                    raise RuntimeError(m)
+                RuntimeError: b'Service Unavailable'
+                
+                During handling of the above exception, another exception occurred:
+                
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 795, in <module>
+                    commands[mode](args)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 776, in main_run
+                    benchmark.do_teardown()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 449, in do_teardown
+                    teardown(*self._current_params)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 109, in teardown
+                    if self.is_gcp:
+                AttributeError: 'Zarr_GCP_write_10GB' object has no attribute 'is_gcp'
+                
+                For parameters: 'GCS', 5, 80
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 795, in <module>
+                    commands[mode](args)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 776, in main_run
+                    benchmark.do_teardown()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 449, in do_teardown
+                    teardown(*self._current_params)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 109, in teardown
+                    if self.is_gcp:
+                AttributeError: 'Zarr_GCP_write_10GB' object has no attribute 'is_gcp'
+                
+                For parameters: 'GCS', 10, 20
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 795, in <module>
+                    commands[mode](args)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 776, in main_run
+                    benchmark.do_teardown()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 449, in do_teardown
+                    teardown(*self._current_params)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 109, in teardown
+                    if self.is_gcp:
+                AttributeError: 'Zarr_GCP_write_10GB' object has no attribute 'is_gcp'
+                
+                For parameters: 'GCS', 10, 40
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 795, in <module>
+                    commands[mode](args)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 776, in main_run
+                    benchmark.do_teardown()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 449, in do_teardown
+                    teardown(*self._current_params)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 109, in teardown
+                    if self.is_gcp:
+                AttributeError: 'Zarr_GCP_write_10GB' object has no attribute 'is_gcp'
+                
+                For parameters: 'GCS', 10, 80
+                Traceback (most recent call last):
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 795, in <module>
+                    commands[mode](args)
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 776, in main_run
+                    benchmark.do_teardown()
+                  File "/home/jovyan/.local/lib/python3.6/site-packages/asv/benchmark.py", line 449, in do_teardown
+                    teardown(*self._current_params)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 65, in func_wrapper
+                    func(*args, **kwargs)
+                  File "/home/jovyan/dev/storage-benchmarks-kai/benchmarks/IO_dask.py", line 109, in teardown
+                    if self.is_gcp:
+                AttributeError: 'Zarr_GCP_write_10GB' object has no attribute 'is_gcp'
+
+[ 40.00%] ··· Running IO_numpy.IORead_Random_HDF5_POSIX.time_readtest                                 ok
+[ 40.00%] ···· 
+               ========= =========
+                backend           
+               --------- ---------
+                 POSIX    15.05ms 
+                  FUSE    15.08ms 
+               ========= =========
+
+[ 46.67%] ··· Running IO_numpy.IORead_Random_HSDS.time_readtest                                 261.35ms
+[ 53.33%] ··· Running IO_numpy.IORead_Random_Zarr.time_readtest                                       ok
+[ 53.33%] ···· 
+               ========= ==========
+                backend            
+               --------- ----------
+                 POSIX    238.08ms 
+                  GCS      3.54s   
+                  FUSE    294.31ms 
+               ========= ==========
+
+[ 53.33%] ····· 
+                
+                For parameters: 'GCS'
+                CommandException: 1 files/objects could not be removed.
+                CommandException: 34 files/objects could not be removed.
+                CommandException: 1 files/objects could not be removed.
+                CommandException: No URLs matched
+                CommandException: 1 files/objects could not be removed.
+                
+                For parameters: 'FUSE'
+                Using mount point: /tmp/tmpdd8oobmf
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+                Using mount point: /tmp/tmpp2c_s00w
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+                Using mount point: /tmp/tmprzmo3y4w
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+
+[ 60.00%] ··· Running IO_numpy.IOSelect_LOCA_HSDS.time_readslice                                 32.39ms
+[ 66.67%] ··· Running IO_numpy.IOWrite_Random_HDF5_POSIX.time_writetest                               ok
+[ 66.67%] ···· 
+               ========= =========
+                backend           
+               --------- ---------
+                 POSIX    29.36ms 
+                  FUSE    32.19ms 
+               ========= =========
+
+[ 66.67%] ····· 
+                
+                For parameters: 'FUSE'
+                Using mount point: /tmp/tmpj8z6qjzg
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+                Using mount point: /tmp/tmpoub766_p
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+                Using mount point: /tmp/tmpgct6ienp
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+
+[ 73.33%] ··· Running IO_numpy.IOWrite_Random_HSDS.time_writetest                               148.72ms
+[ 80.00%] ··· Running IO_numpy.IOWrite_Random_Zarr.time_writetest                                     ok
+[ 80.00%] ···· 
+               ========= ==========
+                backend            
+               --------- ----------
+                 POSIX    814.04ms 
+                  GCS      4.34s   
+                  FUSE     1.36s   
+               ========= ==========
+
+[ 80.00%] ····· 
+                
+                For parameters: 'GCS'
+                CommandException: 1 files/objects could not be removed.
+                CommandException: 1 files/objects could not be removed.
+                CommandException: 34 files/objects could not be removed.
+                CommandException: 1 files/objects could not be removed.
+                CommandException: 34 files/objects could not be removed.
+                CommandException: 1 files/objects could not be removed.
+                
+                For parameters: 'FUSE'
+                Using mount point: /tmp/tmpwy9ovhd7
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+                Using mount point: /tmp/tmp2idfmkrw
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+                Using mount point: /tmp/tmp0iixbz2n
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+
+[ 86.67%] ··· Running IO_xarray.IORead_Zarr.time_synthetic_mean                               1/3 failed
+[ 86.67%] ···· 
+               ========= ==========
+                backend            
+               --------- ----------
+                 POSIX    872.51ms 
+                  GCS     15.03ms  
+                  FUSE     failed  
+               ========= ==========
+
+[ 86.67%] ····· 
+                
+                For parameters: 'GCS'
+                CommandException: 1 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                
+                For parameters: 'FUSE'
+                asv: benchmark timed out (timeout 300s)
+                Using mount point: /tmp/tmpn8jq0ev2
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+
+[ 93.33%] ··· Running IO_xarray.IORead_Zarr.time_synthetic_read                               1/3 failed
+[ 93.33%] ···· 
+               ========= ==========
+                backend            
+               --------- ----------
+                 POSIX    703.40ms 
+                  GCS     15.57ms  
+                  FUSE     failed  
+               ========= ==========
+
+[ 93.33%] ····· 
+                
+                For parameters: 'GCS'
+                CommandException: 1 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                
+                For parameters: 'FUSE'
+                asv: benchmark timed out (timeout 300s)
+                Using mount point: /tmp/tmptyu60tcd
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+
+[100.00%] ··· Running IO_xarray.IOWrite_Zarr.time_synthetic_write                                     ok
+[100.00%] ···· 
+               ========= ========
+                backend          
+               --------- --------
+                 POSIX    9.87s  
+                  GCS     11.01s 
+                  FUSE    10.15s 
+               ========= ========
+
+[100.00%] ····· 
+                
+                For parameters: 'GCS'
+                CommandException: 1 files/objects could not be removed.
+                CommandException: 281 files/objects could not be removed.
+                CommandException: 200 files/objects could not be removed.
+                
+                For parameters: 'FUSE'
+                Using mount point: /tmp/tmpd3r8kpm5
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+                Using mount point: /tmp/tmp2hfma6ck
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+                Using mount point: /tmp/tmpoe6lg6iy
+                Opening GCS connection...
+                Opening bucket...
+                Mounting file system...
+                File system has been successfully mounted.
+
