@@ -47,11 +47,11 @@ def rand_numpy(f, nz=None, empty=True):
 
     """
     if nz == None:
-        nz = getTestConfigValue("num_slices")
+        nz = getTestConfigValue("np_nz")
     if not nz or nz <= 0: 
         raise NotImplementedError("num_slices invalid")
-    ny = 256
-    nx = 512
+    nx = getTestConfigValue("np_nx")
+    ny = getTestConfigValue("np_ny")
     dtype = 'f8'
     # Create a dataset
     dset = f.create_dataset(_DATASET_NAME, shape=(nz,ny,nx), dtype=dtype)

@@ -3,9 +3,18 @@ hs_password: null  # HSDS Password
 hs_endpoint: http://35.166.11.248:5101 # HSDS endpoint
 gcp_project: null # Google Cloud Platform project ID
 gcs_benchmark_root: null # Google Cloud Platform root bucket holding datasets for benchmarks
+gcs_bucket: null # Main bucket we need to mount to get to benchmarks
 gcs_zarr: null # Google Cloud Storage container holding Zarr datasets
 gcs_zarr_FUSE: null # Google Cloud Storage FUSE mount for Zarr datasets
 gcs_hdf5_fuse: null # Google Cloud Storage FUSE mount for hdf5 datasets
+np_nx: 1000
+np_ny: 1000
+np_nz: 25
+np_dtype: f8
 num_slices: 5  # number of "Z" slices for dataset creation
+xr_nx: 1000
+xr_ny: 1000
+xr_nz: 1000
+xr_dtype: f8
 ntime_slices: 5 # number of time slices for Xarray dataset creation
 loca_year_start: 1950 
