@@ -106,9 +106,8 @@ class Zarr_GCP_write_10GB():
     
     @test_gcp
     def teardown(self, backend, n_chunks, n_workers):
-        if self.is_gcp:
-            self.cluster.close()
-            self.target.rm_objects()
+        self.cluster.close()
+        self.target.rm_objects()
 
 class Zarr_GCP_LLC4320():
     """Zarr GCP tests on LLC4320 Datasets
