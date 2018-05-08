@@ -34,8 +34,8 @@ class SingleHDF5POSIXFile(object):
 
     def __init__(self, backend='POSIX'):
         self.backend = backend
-        self.gcs_benchmark_root = getTestConfigValue("gcs_benchmark_root")
-        self.gcs_hdf5_fuse      = getTestConfigValue("gcs_hdf5_fuse")
+        self.gcs_bucket = getTestConfigValue("gcs_bucket")
+        self.gcs_hdf5_fuse = getTestConfigValue("gcs_hdf5_fuse")
         self.temp_dir = None
         self.suffix = ".h5"
 
@@ -50,7 +50,7 @@ class SingleHDF5POSIXFile(object):
             if not self.gcs_hdf5_fuse:
                 raise NotImplementedError("Missing config for hdf5 FUSE test.")
             self.dir_store = self.temp_dir + '/%s' % self.gcs_hdf5_fuse
-            call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
+            call([GCSFUSE, self.gcs_bucket, self.temp_dir])
             # Remove previous test runs
             if os.path.exists(self.dir_store):
                 shutil.rmtree(self.dir_store)
