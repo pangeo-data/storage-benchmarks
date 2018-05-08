@@ -60,14 +60,15 @@ def tasmax_slicetest(f):
         raise ValueError(msg)
 
 
-class IORead_Random_Zarr():
-    timeout = 300
-    #number = 1
+class Read_Random_Zarr():
+    timeout = 600
+    number = 5
+    repeat = 5
     warmup_time = 0.0
-    params = (['POSIX', 'GCS', 'FUSE'])
-    param_names = ['backend']
+    params = (['POSIX', 'GCS', 'FUSE'],  [1], [1])
+    param_names = ['backend', 'n_chunks', 'n_workers']
 
-    def setup(self, backend):
+    def setup(self, backend, n_chunks, n_workers):
         self.target = target_zarr.ZarrStore(backend=backend)
         self.target.get_temp_filepath()
 
@@ -78,22 +79,23 @@ class IORead_Random_Zarr():
         f = self.target.open(self.target.storage_obj, 'w')
         bmt.rand_numpy(f, empty=False)
 
-    def time_readtest(self, backend):
+    def time_readtest(self, backend, n_chunks, n_workers):
         f = self.target.open(self.target.storage_obj, 'r')
         readtest(f)
 
-    def teardown(self, backend):
+    def teardown(self, backend, n_chunks, n_workers):
         self.target.rm_objects()
 
 
-class IOWrite_Random_Zarr():
-    timeout = 300
-    #number = 1
+class Write_Random_Zarr():
+    timeout = 600
+    number = 5
+    repeat = 5
     warmup_time = 0.0
-    params = (['POSIX', 'GCS', 'FUSE'])
-    param_names = ['backend']
+    params = (['POSIX', 'GCS', 'FUSE'], [1], [1])
+    param_names = ['backend', 'n_chunks', 'n_workers']
 
-    def setup(self, backend):
+    def setup(self, backend, n_chunks, n_workers):
         self.target = target_zarr.ZarrStore(backend=backend)
         self.target.get_temp_filepath()
 
@@ -108,49 +110,72 @@ class IOWrite_Random_Zarr():
         self.shape = dset.shape
         self.data = np.random.rand(*self.shape).astype(self.dtype)
 
-    def time_writetest(self, backend):
+    def time_writetest(self, backend, n_chunks, n_workers):
         f = self.target.open(self.target.storage_obj, 'a')
         writetest(f, self.data)
 
-    def teardown(self, backend):
+    def teardown(self, backend, n_chunks, n_workers):
         self.target.rm_objects()
 
 
-class IORead_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
-    def setup(self):
+class Read_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
+    timeout = 600
+    number = 5
+    repeat = 5
+    warmup_time = 0.0
+    params = (['POSIX', 'FUSE'], [1], [1])
+    param_names = ['backend', 'n_chunks', 'n_workers']
+
+    def setup(self, backend, n_chunks, n_workers):
+        self.target = target_hdf5.SingleHDF5POSIXFile(backend=backend)
         self.path = self.get_temp_filepath()
         f = self.open(self.path, 'w')
         bmt.rand_numpy(f, empty=False)
         f.close()
 
-    def time_readtest(self):
+    def time_readtest(self, backend, n_chunks, n_workers):
         f = self.open(self.path, 'r')
         readtest(f)
         f.close()
 
-    def teardown(self):
+    def teardown(self, backend, n_chunks, n_workers):
         self.rm_objects()
 
 
-class IORead_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
-    def setup(self):
+class Read_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
+    timeout = 600
+    number = 5
+    repeat = 5
+    warmup_time = 0.0
+    params = (['POSIX'], [1], [1])
+    param_names = ['backend', 'n_chunks', 'n_workers']
+
+    def setup(self, backend, n_chunks, n_workers):
         self.path = self.get_temp_filepath()
         f = self.open(self.path, 'w')
         bmt.rand_numpy(f, empty=False)
         f.close()
 
-    def time_readtest(self):
+    def time_readtest(self, backend, n_chunks, n_workers):
         f = self.open(self.path, 'r')
         readtest(f)
         f.close()
 
-    def teardown(self):
+    def teardown(self, backend, n_chunks, n_workers):
         self.rm_objects()
 
 
-class IOWrite_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
-    def setup(self):
-        self.path = self.get_temp_filepath()    
+class Write_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
+    timeout = 600
+    number = 5
+    repeat = 5
+    warmup_time = 0.0
+    params = (['POSIX', 'FUSE'], [1], [1])
+    param_names = ['backend', 'n_chunks', 'n_workers']
+
+    def setup(self, backend, n_chunks, n_workers):
+        self.target = target_hdf5.SingleHDF5POSIXFile(backend=backend)
+        self.path = self.target.get_temp_filepath()    
         f = self.open(self.path, 'w')
         bmt.rand_numpy(f, empty=True)
         dset = f[_DATASET_NAME]
@@ -159,17 +184,24 @@ class IOWrite_Random_HDF5_POSIX(target_hdf5.SingleHDF5POSIXFile):
         f.close()
         self.data = np.random.rand(*self.shape).astype(self.dtype)
 
-    def time_writetest(self):
+    def time_writetest(self, backend, n_chunks, n_workers):
         f = self.open(self.path, 'a')
         writetest(f, self.data)
         f.close()
 
-    def teardown_files(self):
+    def teardown_files(self, backend, n_chunks, n_workers):
         self.rm_objects()
 
 
-class IOWrite_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
-    def setup(self):
+class Write_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
+    timeout = 600
+    number = 5
+    repeat = 5
+    warmup_time = 0.0
+    params = (['HSDS'], [1], [1])
+    param_names = ['backend', 'n_chunks', 'n_workers']
+
+    def setup(self, backend, n_chunks, n_workers):
         self.path = self.get_temp_filepath()
         f = self.open(self.path, 'w')
         bmt.rand_numpy(f, empty=True)
@@ -179,24 +211,49 @@ class IOWrite_Random_HSDS(target_hsds.SingleHDF5HSDSFile):
         f.close()
         self.data = np.random.rand(*self.shape).astype(self.dtype)
 
-    def time_writetest(self):
+    def time_writetest(self, backend, n_chunks, n_workers):
         f = self.open(self.path, 'a')
         writetest(f, self.data)
         f.close()
 
-    def teardown_files(self):
+    def teardown_files(self, backend, n_chunks, n_workers):
         self.rm_objects()
 
 
-class IOSelect_LOCA_HSDS(target_hsds.SingleHDF5HSDSFile):
-    def setup(self):
+class Select_LOCA_HSDS(target_hsds.SingleHDF5HSDSFile):
+    timeout = 600
+    number = 5
+    repeat = 5
+    warmup_time = 0.0
+    params = (['HSDS'], [1], [1])
+    param_names = ['backend', 'n_chunks', 'n_workers']
+
+    def setup(self, backend, n_chunks, n_workers):
         self.year = getTestConfigValue("loca_year_start")
         self.filepath = self.get_tasmax_filepath(year=self.year)
 
-    def time_readslice(self):
+    def time_readslice(self, backend, n_chunks, n_workers):
         f = self.open(self.filepath, 'r')
         tasmax_slicetest(f)
         f.close()
 
-    def teardown(self):
+    def teardown(self, backend, n_chunks, n_workers):
         pass
+
+
+class Report_dataset_size():
+    number = 1
+    repeat = 1
+    warmup_time = 0.0
+    params = (['POSIX'], [1], [1])
+    param_names = ['backend', 'n_chunks', 'n_workers']
+
+    def setup(self, backend, n_chunks, n_workers):
+        self.nx = getTestConfigValue("np_nx")
+        self.ny = getTestConfigValue("np_ny")
+        self.nz = getTestConfigValue("np_nz")
+        self.dtype = getTestConfigValue("np_dtype")
+        self.ds = np.random.rand(*(self.nx,self.ny,self.nz)).astype(self.dtype)
+
+    def track_ds_size(self, backend, n_chunks, n_workers):
+        return self.ds.nbytes / 1024**2
