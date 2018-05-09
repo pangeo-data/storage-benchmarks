@@ -70,7 +70,7 @@ def test_gcp(func):
 def cluster_wait(client, n_workers):
     """Delay process until Kubernetes cluster has provisioned worker pods"""
     start = timeit.default_timer()
-    wait_threshold = 600
+    wait_threshold = 300
     worker_threshold = n_workers * .95
     while len(client.cluster.scheduler.workers) < n_workers:
         sleep(2)
@@ -85,7 +85,7 @@ class Zarr_GCP_synthetic_write():
 
     """
     timer = timeit.default_timer
-    timeout = 1200
+    timeout = 600
     repeat = 1
     number = 5
     warmup_time = 0.0
@@ -125,7 +125,7 @@ class Zarr_GCP_LLC4320():
 
     """
     timer = timeit.default_timer
-    timeout = 1200
+    timeout = 600
     repeat = 1
     number = 5
     warmup_time = 0.0
@@ -146,6 +146,7 @@ class Zarr_GCP_LLC4320():
             self.llc_ds = self.target.open_store('llc4320_zarr')
         elif backend == 'FUSE':
             self.llc_ds = self.target.open_store('llc4320_zarr_fuse')
+        ds_theta = self.llc_ds.Theta
         ds_theta.mean().compute() 
 
     @test_gcp
@@ -157,7 +158,7 @@ class NetCDF_GCP_LLC4320():
     """LLC4320 NetCDF files from GCS FUSE mount
     """
     timer = timeit.default_timer
-    timeout = 1200
+    timeout = 600
     repeat = 1
     number = 5
     warmup_time = 0.0
