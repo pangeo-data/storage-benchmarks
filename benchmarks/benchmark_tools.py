@@ -76,9 +76,9 @@ def rand_xarray(nt=None):
 
     ds = xr.Dataset()
     if nt == None:
-        nt = getTestConfigValue("ntime_slices")
-    ny = 1000
-    nx = 1000
+        nt = getTestConfigValue("xr_nt")
+    ny = getTestConfigValue("xr_ny")
+    nx = getTestConfigValue("xr_nx")
     block_chunks = {'time': nt / 4,
                              'lon': nx / 3,
                              'lat': ny / 3}

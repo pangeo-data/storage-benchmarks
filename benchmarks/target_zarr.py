@@ -128,7 +128,7 @@ class ZarrStore(object):
             self.gcsfs_root = get_gcs_root(self.gcp_project_name)
             self.gcsfsmap   = gcsfs.mapping.GCSMap('pangeo-data/storage-benchmarks/%s' %  
                                                     directory, gcs=self.gcsfs_root,
-                                                    check=True, create=False)
+                                                    check=False, create=False)
             return xr.open_zarr(self.gcsfsmap)
         elif self.backend == 'FUSE':
             #self.temp_dir    = tempfile.mkdtemp()

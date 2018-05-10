@@ -85,7 +85,7 @@ class Zarr_GCP_synthetic_write():
 
     """
     timer = timeit.default_timer
-    timeout = 600
+    timeout = 1200
     repeat = 1
     number = 5
     warmup_time = 0.0
@@ -100,7 +100,7 @@ class Zarr_GCP_synthetic_write():
         cluster_wait(self.client, n_workers)
 
         self.chunks = (n_chunks, 3000, 3000)
-        self.da = da.random.normal(10, 0.1, size=(500, 3000, 3000), 
+        self.da = da.random.normal(10, 0.1, size=(1000, 3000, 3000), 
                                        chunks=self.chunks)
         _rand_da_nbytes = self.da.nbytes
         self.target = target_zarr.ZarrStore(backend=backend, dask=True,
@@ -125,7 +125,7 @@ class Zarr_GCP_LLC4320():
 
     """
     timer = timeit.default_timer
-    timeout = 600
+    timeout = 1200
     repeat = 1
     number = 5
     warmup_time = 0.0
@@ -158,11 +158,11 @@ class NetCDF_GCP_LLC4320():
     """LLC4320 NetCDF files from GCS FUSE mount
     """
     timer = timeit.default_timer
-    timeout = 600
+    timeout = 3600
     repeat = 1
     number = 5
     warmup_time = 0.0
-    params = (['FUSE'], [1], [25, 50, 75, 100])
+    params = (['FUSE'], [1], [50, 75, 100])
     #params = (['FUSE'], [1], [50])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
@@ -196,7 +196,7 @@ class Report_dataset_sizes():
     def track_rand_da_size(self, backend, n_chunks, n_workers):
         # HACK make it cleaner later
         chunks = (1, 3000, 3000)
-        size = (500, 3000, 3000)
+        size = (1000, 3000, 3000)
         dask_arr = da.random.normal(10, 0.1, size=size, chunks=chunks)
         return dask_arr.nbytes / 1024**3
 
