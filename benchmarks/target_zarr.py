@@ -52,8 +52,8 @@ class ZarrStore(object):
         self.backend            = backend
         self.gcp_project_name   = getTestConfigValue("gcp_project")
         self.gcs_zarr           = getTestConfigValue("gcs_zarr")
-        self.gcs_zarr_FUSE      = getTestConfigValue("gcs_zarr_FUSE")
-        self.gcs_benchmark_root = getTestConfigValue("gcs_benchmark_root")
+        self.gcs_zarr_fuse      = getTestConfigValue("gcs_zarr_fuse")
+        self.gcs_bucket         = getTestConfigValue("gcs_bucket")
         self.suffix             = ".zarr" 
         self.dask               = dask
         self.shape              = shape
@@ -95,12 +95,12 @@ class ZarrStore(object):
                                                overwrite=True)
             
         elif self.backend == 'FUSE':
-            if not self.gcs_zarr_FUSE:
+            if not self.gcs_zarr_fuse:
                 raise NotImplementedError("Missing config for FUSE test")
 
             self.temp_dir    = tempfile.mkdtemp()
-            self.dir_store = self.temp_dir + "/zarr_FUSE"
-            call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
+            self.dir_store = self.temp_dir + self.gcs_zarr_fuse
+            call([GCSFUSE, self.gcs_bucket, self.temp_dir])
 
             # Remove previous test runs
             if os.path.exists(self.dir_store):
@@ -126,13 +126,13 @@ class ZarrStore(object):
 
         if self.backend == 'GCS':
             self.gcsfs_root = get_gcs_root(self.gcp_project_name)
-            self.gcsfsmap   = gcsfs.mapping.GCSMap('storage-benchmarks/%s' %  
+            self.gcsfsmap   = gcsfs.mapping.GCSMap('pangeo-data/storage-benchmarks/%s' %  
                                                     directory, gcs=self.gcsfs_root,
-                                                    check=True, create=False)
+                                                    check=False, create=False)
             return xr.open_zarr(self.gcsfsmap)
         elif self.backend == 'FUSE':
             #self.temp_dir    = tempfile.mkdtemp()
-            #call([GCSFUSE, self.gcs_benchmark_root, self.temp_dir])
+            #call([GCSFUSE, self.gcs_bucket, self.temp_dir])
             return xr.open_zarr('/gcs/storage-benchmarks/' + directory)
 
     def save(self, path, data):
@@ -150,7 +150,7 @@ class ZarrStore(object):
             Popen(["gsutil", "-q", "-m", "rm", "-r", gsutil_arg])
 
         elif self.backend == 'FUSE':
-            if not self.gcs_zarr_FUSE or not self.gcp_project_name:
+            if not self.gcs_zarr_fuse or not self.gcp_project_name:
                 return
             shutil.rmtree(self.dir_store)
             if platform == 'darwin':

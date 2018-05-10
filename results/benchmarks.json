@@ -1,0 +1,165 @@
+{
+    "IO_dask.NetCDF_GCP_LLC4320.time_load_array_compute_theta_mean": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.NetCDF_GCP_LLC4320.time_load_array_compute_theta_mean",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'FUSE'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "50",
+                "75",
+                "100"
+            ]
+        ],
+        "pretty_name": "IO_dask.NetCDF_GCP_LLC4320.time_load_array_compute_theta_mean",
+        "repeat": 1,
+        "timeout": 3600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_dask.Report_dataset_sizes.track_llc4320_da_full_size": {
+        "code": "def track_llc4320_da_full_size(self, backend, n_chunks, n_workers):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store('llc4320_zarr')\n    return llc_ds.nbytes / 1024**3\n",
+        "name": "IO_dask.Report_dataset_sizes.track_llc4320_da_full_size",
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'ALL'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_dask.Report_dataset_sizes.track_llc4320_da_full_size",
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit"
+    },
+    "IO_dask.Report_dataset_sizes.track_llc4320_da_theta_size": {
+        "code": "def track_llc4320_da_theta_size(self, backend, n_chunks, n_workers):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store('llc4320_zarr')\n    return llc_ds.Theta.nbytes / 1024**3\n",
+        "name": "IO_dask.Report_dataset_sizes.track_llc4320_da_theta_size",
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'ALL'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_dask.Report_dataset_sizes.track_llc4320_da_theta_size",
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit"
+    },
+    "IO_dask.Report_dataset_sizes.track_rand_da_size": {
+        "code": "def track_rand_da_size(self, backend, n_chunks, n_workers):\n    # HACK make it cleaner later\n    chunks = (1, 3000, 3000)\n    size = (1000, 3000, 3000)\n    dask_arr = da.random.normal(10, 0.1, size=size, chunks=chunks)\n    return dask_arr.nbytes / 1024**3\n",
+        "name": "IO_dask.Report_dataset_sizes.track_rand_da_size",
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'ALL'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_dask.Report_dataset_sizes.track_rand_da_size",
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit"
+    },
+    "IO_dask.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'GCS'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "25",
+                "50",
+                "75",
+                "100"
+            ]
+        ],
+        "pretty_name": "IO_dask.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean",
+        "repeat": 1,
+        "timeout": 1200,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_dask.Zarr_GCP_synthetic_write.time_synthetic_write": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.Zarr_GCP_synthetic_write.time_synthetic_write",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'GCS'"
+            ],
+            [
+                "1",
+                "5"
+            ],
+            [
+                "25",
+                "50",
+                "75",
+                "100"
+            ]
+        ],
+        "pretty_name": "IO_dask.Zarr_GCP_synthetic_write.time_synthetic_write",
+        "repeat": 1,
+        "timeout": 1200,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "version": 1
+}

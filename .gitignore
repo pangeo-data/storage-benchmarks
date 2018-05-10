@@ -102,7 +102,7 @@ ENV/
 
 # asv
 .asv/
-results
+.results
 
 # kai
 test-kai.conf.yaml
