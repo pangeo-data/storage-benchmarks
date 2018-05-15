@@ -29,7 +29,8 @@ import dask.multiprocessing
 import numpy as np
 import xarray as xr
 
-from subprocess import call
+from os.path import abspath, dirname, join
+from subprocess import call, Popen
 from time import sleep
 from pathlib import Path
 import os
@@ -42,8 +43,7 @@ import tempfile
 
 _counter = itertools.count()
 _DATASET_NAME = "default"
-_rand_ds_nbytes = 0
-_llc4320_ds_theta = 0
+_retries = 3
 
 def test_gcp(func):
     """A very simple test to see if we're on Pangeo GCP environment
@@ -68,11 +68,16 @@ def test_gcp(func):
     return func_wrapper
 
 def cluster_wait(client, n_workers):
-    """Delay process until Kubernetes cluster has provisioned worker pods"""
+    """Delay process until Kubernetes cluster has provisioned worker pods
+       and clean up completed pods in the process.
+    
+    """
     start = timeit.default_timer()
     wait_threshold = 300
     worker_threshold = n_workers * .95
+
     while len(client.cluster.scheduler.workers) < n_workers:
+        kill_daskpods()
         sleep(2)
         elapsed = timeit.default_timer() - start
         # If we're getting close to timeout but cluster is mostly provisioned,
@@ -80,16 +85,27 @@ def cluster_wait(client, n_workers):
         if elapsed > wait_threshold and len(client.cluster.scheduler.workers) >= worker_threshold:
             break
 
+def kill_daskpods():
+    """Invoke kill script to clean up completed Dask pods provisioned for 
+       user running this test
+
+       HACK: this needs improvement
+
+    """
+
+    path = abspath(join(dirname(__file__), '../bin/kill_daskpods.sh'))
+    call([ path ])
+
 class Zarr_GCP_synthetic_write():
     """Synthetic random Dask data write test
 
     """
     timer = timeit.default_timer
-    timeout = 1200
+    timeout = 600
     repeat = 1
-    number = 5
+    number = 8
     warmup_time = 0.0
-    params = (['GCS'], [1, 5], [25, 50, 75, 100])
+    params = (['GCS'], [1, 5, 10], [20, 40, 80, 120])
     #params = (['GCS'], [1, 5], [50, 100])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
@@ -98,7 +114,6 @@ class Zarr_GCP_synthetic_write():
         self.cluster = KubeCluster(n_workers=n_workers)
         self.client = Client(self.cluster)
         cluster_wait(self.client, n_workers)
-
         self.chunks = (n_chunks, 3000, 3000)
         self.da = da.random.normal(10, 0.1, size=(1000, 3000, 3000), 
                                        chunks=self.chunks)
@@ -125,12 +140,12 @@ class Zarr_GCP_LLC4320():
 
     """
     timer = timeit.default_timer
-    timeout = 1200
-    repeat = 1
-    number = 5
+    timeout = 2400
+    #repeat = 3
+    number = 3
     warmup_time = 0.0
-    params = (['GCS'], [1], [25, 50, 75, 100])
-    #params = (['GCS'], [1], [50])
+    params = (['GCS'], [1], [20, 40, 80, 120])
+    #params = (['GCS'], [1], [120])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
     @test_gcp
@@ -147,7 +162,8 @@ class Zarr_GCP_LLC4320():
         elif backend == 'FUSE':
             self.llc_ds = self.target.open_store('llc4320_zarr_fuse')
         ds_theta = self.llc_ds.Theta
-        ds_theta.mean().compute() 
+        ds_theta.mean().load(retries=_retries) 
+        del ds_theta
 
     @test_gcp
     def teardown(self, backend, n_chunks, n_workers):
@@ -160,9 +176,9 @@ class NetCDF_GCP_LLC4320():
     timer = timeit.default_timer
     timeout = 3600
     repeat = 1
-    number = 5
+    number = 8
     warmup_time = 0.0
-    params = (['FUSE'], [1], [50, 75, 100])
+    params = (['FUSE'], [10, 90], [40, 80, 120])
     #params = (['FUSE'], [1], [50])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
@@ -173,12 +189,13 @@ class NetCDF_GCP_LLC4320():
         cluster_wait(self.client, n_workers)
         self.llc_ds = xr.open_mfdataset('/gcs/storage-benchmarks/llc4320_netcdf/*.nc',
                                         decode_cf=False, autoclose=True,
-                                        chunks={'k': 1, 'k_l': n_chunks})
+                                        chunks={'k': n_chunks, 'k_l': n_chunks})
 
     @test_gcp
     def time_load_array_compute_theta_mean(self, backend, n_chunks, n_workers):
         ds_theta = self.llc_ds.Theta
-        ds_theta.mean().compute() # SST mean across time
+        ds_theta.mean().load(retries=_retries) # SST mean across time
+        del ds_theta
 
     @test_gcp
     def teardown(self, backend, n_chunks, n_workers):
@@ -192,20 +209,19 @@ class Report_dataset_sizes():
     params = (['ALL'], [1], [1])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
-
-    def track_rand_da_size(self, backend, n_chunks, n_workers):
+    def track_Zarr_GCP_synthetic_write_dataset_size(self, backend, n_chunks, n_workers):
         # HACK make it cleaner later
         chunks = (1, 3000, 3000)
         size = (1000, 3000, 3000)
         dask_arr = da.random.normal(10, 0.1, size=size, chunks=chunks)
         return dask_arr.nbytes / 1024**3
 
-    def track_llc4320_da_theta_size(self, backend, n_chunks, n_workers):
+    def track_Zarr_GCP_LLC4320_dataset_size(self, backend, n_chunks, n_workers):
         target = target_zarr.ZarrStore(backend='GCS', dask=True)
         llc_ds = target.open_store('llc4320_zarr')
-        return llc_ds.Theta.nbytes / 1024**3
+        return llc_ds.nbytes / 1024**3
 
-    def track_llc4320_da_full_size(self, backend, n_chunks, n_workers):
-        target = target_zarr.ZarrStore(backend='GCS', dask=True)
-        llc_ds = target.open_store('llc4320_zarr')
+    def track_NetCDF_GCP_LLC4320_dataset_size(self, backend, n_chunks, n_workers):
+        llc_ds = xr.open_mfdataset('/gcs/storage-benchmarks/llc4320_netcdf/*.nc',
+                                   decode_cf=False, autoclose=True)
         return llc_ds.nbytes / 1024**3
