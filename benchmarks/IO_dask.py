@@ -209,6 +209,7 @@ class Report_dataset_sizes():
     params = (['ALL'], [1], [1])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
+    @test_gcp
     def track_Zarr_GCP_synthetic_write_dataset_size(self, backend, n_chunks, n_workers):
         # HACK make it cleaner later
         chunks = (1, 3000, 3000)
@@ -216,11 +217,13 @@ class Report_dataset_sizes():
         dask_arr = da.random.normal(10, 0.1, size=size, chunks=chunks)
         return dask_arr.nbytes / 1024**3
 
+    @test_gcp
     def track_Zarr_GCP_LLC4320_dataset_size(self, backend, n_chunks, n_workers):
         target = target_zarr.ZarrStore(backend='GCS', dask=True)
         llc_ds = target.open_store('llc4320_zarr')
         return llc_ds.nbytes / 1024**3
 
+    @test_gcp
     def track_NetCDF_GCP_LLC4320_dataset_size(self, backend, n_chunks, n_workers):
         llc_ds = xr.open_mfdataset('/gcs/storage-benchmarks/llc4320_netcdf/*.nc',
                                    decode_cf=False, autoclose=True)
