@@ -1,0 +1,88 @@
+{
+    "commit_hash": "45c0ba242945972cac6e929ac66968a04f322210",
+    "date": 1529112143000,
+    "ended_at": {
+        "gcp_zarr_dask_read.Report_dataset_sizes.track_Zarr_GCP_LLC4320_dataset_size": 1531793568000,
+        "gcp_zarr_dask_read.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean": 1531793961000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Xeon(R) CPU @ 2.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "lz4": "",
+        "machine": "kubernetes-gcp",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Linux 4.4.111+",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "26760068",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "lz4": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "gcp_zarr_dask_read.Report_dataset_sizes.track_Zarr_GCP_LLC4320_dataset_size": {
+            "params": [
+                [
+                    "'ALL'"
+                ],
+                [
+                    "1"
+                ],
+                [
+                    "1"
+                ]
+            ],
+            "result": [
+                107.93425346910954
+            ]
+        },
+        "gcp_zarr_dask_read.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean": {
+            "params": [
+                [
+                    "'GCS'"
+                ],
+                [
+                    "5"
+                ],
+                [
+                    "120"
+                ]
+            ],
+            "result": [
+                88.63612948400078
+            ]
+        }
+    },
+    "started_at": {
+        "gcp_zarr_dask_read.Report_dataset_sizes.track_Zarr_GCP_LLC4320_dataset_size": 1531793562000,
+        "gcp_zarr_dask_read.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean": 1531793568000
+    },
+    "version": 1
+}

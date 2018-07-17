@@ -105,8 +105,8 @@ class Zarr_GCP_LLC4320():
     repeat = 1
     number = 1
     warmup_time = 0.0
-    #params = (['GCS'], [1, 5, 10], [60, 80, 100, 120, 140, 160])
-    params = (['GCS'], [5], [120])
+    params = (['GCS'], [1, 5, 10], [60, 80, 100, 120, 140, 160])
+    #params = (['GCS'], [5], [120])
     param_names = ['backend', 'n_chunks', 'n_workers']
 
     @test_gcp
