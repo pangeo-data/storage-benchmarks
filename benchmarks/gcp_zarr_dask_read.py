@@ -119,7 +119,7 @@ class Zarr_GCP_LLC4320():
     @test_gcp
     def time_load_array_compute_theta_mean(self, backend, n_chunks, n_workers):
         if backend == 'GCS':
-            self.llc_ds = self.target.open_store('llc4320_zarr_100')
+            self.llc_ds = self.target.open_store('llc4320_zarr_1000')
         elif backend == 'FUSE':
             self.llc_ds = self.target.open_store('llc4320_zarr_fuse')
         ds_theta = self.llc_ds.Theta
@@ -140,5 +140,5 @@ class Report_dataset_sizes():
 
     def track_Zarr_GCP_LLC4320_dataset_size(self, backend, n_chunks, n_workers):
         target = target_zarr.ZarrStore(backend='GCS', dask=True)
-        llc_ds = target.open_store('llc4320_zarr_100')
+        llc_ds = target.open_store('llc4320_zarr_1000')
         return llc_ds.nbytes / 1024**3

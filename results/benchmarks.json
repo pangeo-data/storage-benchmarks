@@ -494,7 +494,7 @@
         "unit": "seconds"
     },
     "gcp_zarr_dask_read.Report_dataset_sizes.track_Zarr_GCP_LLC4320_dataset_size": {
-        "code": "def track_Zarr_GCP_LLC4320_dataset_size(self, backend, n_chunks, n_workers):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store('llc4320_zarr_100')\n    return llc_ds.nbytes / 1024**3\n",
+        "code": "def track_Zarr_GCP_LLC4320_dataset_size(self, backend, n_chunks, n_workers):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store('llc4320_zarr_1000')\n    return llc_ds.nbytes / 1024**3\n",
         "name": "gcp_zarr_dask_read.Report_dataset_sizes.track_Zarr_GCP_LLC4320_dataset_size",
         "param_names": [
             "backend",
@@ -532,10 +532,17 @@
                 "'GCS'"
             ],
             [
-                "5"
+                "1",
+                "5",
+                "10"
             ],
             [
-                "120"
+                "60",
+                "80",
+                "100",
+                "120",
+                "140",
+                "160"
             ]
         ],
         "pretty_name": "gcp_zarr_dask_read.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean",
