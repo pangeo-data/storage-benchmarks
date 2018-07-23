@@ -189,7 +189,7 @@ class NetCDF_GCP_LLC4320():
         cluster_wait(self.client, n_workers)
         self.llc_ds = xr.open_mfdataset('/gcs/storage-benchmarks/llc4320_netcdf/*.nc',
                                         decode_cf=False, autoclose=True,
-                                        chunks={'k': n_chunks, 'k_l': n_chunks})
+                                        chunks={'Z': n_chunks})
 
     @test_gcp
     def time_load_array_compute_theta_mean(self, backend, n_chunks, n_workers):
