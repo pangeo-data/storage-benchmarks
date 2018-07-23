@@ -493,57 +493,51 @@
         "type": "time",
         "unit": "seconds"
     },
-    "gcp_kubernetes_read_netCDF_LLC4320.Theta_max.time_read": {
+    "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read": {
         "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
         "goal_time": 2.0,
-        "name": "gcp_kubernetes_read_netCDF_LLC4320.Theta_max.time_read",
+        "name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
         "number": 1,
         "param_names": [
             "backend",
-            "n_chunks",
+            "z_chunksize",
             "n_workers"
         ],
         "params": [
             [
-                "'GCS'"
+                "'FUSE'"
             ],
             [
-                "1",
-                "5",
-                "10"
+                "5"
             ],
             [
-                "60",
-                "80",
-                "100",
-                "120",
-                "140",
-                "160"
+                "60"
             ]
         ],
-        "pretty_name": "gcp_kubernetes_read_netCDF_LLC4320.Theta_max.time_read",
+        "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
         "repeat": 1,
         "timeout": 3600,
         "type": "time",
         "unit": "seconds"
     },
-    "gcp_kubernetes_read_netCDF_LLC4320.report_ds_mbytes.track_gcp_llc4320_netcdf_10": {
-        "code": "def track_gcp_llc4320_netcdf_10(self):\n    ds = xr.open_mfdataset('/gcs/storage-benchmarks/llc4320_netcdf_10/*.nc',\n                           decode_cf=False, autoclose=True)\n    return ds.nbytes / 2**20\n",
-        "name": "gcp_kubernetes_read_netCDF_LLC4320.report_ds_mbytes.track_gcp_llc4320_netcdf_10",
+    "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_gigabytes": {
+        "code": "def track_gigabytes(self):\n    ds = xr.open_mfdataset(DS_FILES, decode_cf=False, autoclose=True)\n    return ds.nbytes / 2**20\n",
+        "name": "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_gigabytes",
         "param_names": [],
         "params": [],
-        "pretty_name": "gcp_kubernetes_read_netCDF_LLC4320.report_ds_mbytes.track_gcp_llc4320_netcdf_10",
+        "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_gigabytes",
         "timeout": 1200,
         "type": "track",
         "unit": "unit"
     },
-    "gcp_kubernetes_read_zarr_LLC4320.Theta_max.time_read": {
+    "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read": {
         "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
         "goal_time": 2.0,
-        "name": "gcp_kubernetes_read_zarr_LLC4320.Theta_max.time_read",
+        "name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",
         "number": 1,
         "param_names": [
             "backend",
+            "z_chunksize",
             "n_workers"
         ],
         "params": [
@@ -551,27 +545,25 @@
                 "'GCS'"
             ],
             [
-                "60",
-                "80",
-                "100",
-                "120",
-                "140",
-                "160"
+                "1"
+            ],
+            [
+                "60"
             ]
         ],
-        "pretty_name": "gcp_kubernetes_read_zarr_LLC4320.Theta_max.time_read",
+        "pretty_name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",
         "repeat": 1,
         "timeout": 3600,
         "type": "time",
         "unit": "seconds"
     },
-    "gcp_kubernetes_read_zarr_LLC4320.report_ds_mbytes.track_gcp_llc4320_zarr_10": {
-        "code": "def track_gcp_llc4320_zarr_10(self):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store('llc4320_zarr_10')\n    return llc_ds.nbytes / 2**20 \n",
-        "name": "gcp_kubernetes_read_zarr_LLC4320.report_ds_mbytes.track_gcp_llc4320_zarr_10",
+    "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes": {
+        "code": "def track_gigabytes(self):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store(DS_STORE)\n    return llc_ds.nbytes / 2**20 \n",
+        "name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes",
         "param_names": [],
         "params": [],
-        "pretty_name": "gcp_kubernetes_read_zarr_LLC4320.report_ds_mbytes.track_gcp_llc4320_zarr_10",
-        "timeout": 1200,
+        "pretty_name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes",
+        "timeout": 300,
         "type": "track",
         "unit": "unit"
     },

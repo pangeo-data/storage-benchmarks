@@ -44,8 +44,9 @@ import tempfile
 _counter = itertools.count()
 _DATASET_NAME = "default"
 _retries = 5
+DS_FILES = '/gcs/storage-benchmarks/llc4320_netcdf_10/*.nc'
 
-class Theta_max():
+class llc4320_benchmarks():
     """netCDF GCP tests on LLC4320 Datasets
 
     """
@@ -54,41 +55,37 @@ class Theta_max():
     repeat = 1
     number = 1
     warmup_time = 0.0
-    params = (['GCS'], [1, 5, 10], [60, 80, 100, 120, 140, 160])
-    #params = (['GCS'], [5], [60])
-    param_names = ['backend', 'n_chunks', 'n_workers']
+    #params = (['GCS'], [1, 5, 10], [60, 80, 100, 120, 140, 160])
+    params = (['FUSE'], [5], [60])
+    param_names = ['backend', 'z_chunksize', 'n_workers']
 
     @bmt.test_gcp
-    def setup(self, backend, n_chunks, n_workers):
+    def setup(self, backend, z_chunksize, n_workers):
         self.cluster = KubeCluster(n_workers=n_workers)
         self.client = Client(self.cluster)
         bmt.cluster_wait(self.client, n_workers)
         self.target = target_zarr.ZarrStore(backend=backend, dask=True)
         # Open netCDF DS
-        self.ds_netcdf = xr.open_mfdataset('/gcs/storage-benchmarks'
-                                                '/llc4320_netcdf_10/*.nc',
-                                                decode_cf=False, autoclose=True,
-                                                chunks={'Z': n_chunks})
+        self.ds_netcdf = xr.open_mfdataset(DS_FILES, decode_cf=False, 
+                                           autoclose=True, 
+                                           chunks={'Z': z_chunksize})
         self.ds_netcdf_theta = self.ds_netcdf.Theta
 
     @bmt.test_gcp
-    def time_read(self, backend, n_chunks, n_workers):
+    def time_read(self, backend, z_chunksize, n_workers):
         self.ds_netcdf_theta.max().load(retries=_retries)
 
     @bmt.test_gcp
-    def teardown(self, backend, n_chunks, n_workers):
+    def teardown(self, backend, z_chunksize, n_workers):
         del self.ds_netcdf_theta
         self.cluster.close()
 
-class report_ds_mbytes():
+class llc4320_ds_size():
     number = 1
     timeout = 1200
     repeat = 1
     warmup_time = 0.0
-    #params = (['ALL'], [1], [1])
-    #param_names = ['backend', 'n_chunks', 'n_workers']
 
-    def track_gcp_llc4320_netcdf_10(self):
-        ds = xr.open_mfdataset('/gcs/storage-benchmarks/llc4320_netcdf_10/*.nc',
-                               decode_cf=False, autoclose=True)
+    def track_gigabytes(self):
+        ds = xr.open_mfdataset(DS_FILES, decode_cf=False, autoclose=True)
         return ds.nbytes / 2**20
