@@ -20,6 +20,7 @@ ASV Parameters:
 
 from . import target_zarr
 from . import benchmark_tools as bmt
+from . import getTestConfigValue
 
 from dask.distributed import Client
 from dask_kubernetes import KubeCluster
@@ -55,8 +56,9 @@ class llc4320_benchmarks():
     repeat = 1
     number = 1
     warmup_time = 0.0
-    #params = (['GCS'], [1], [60, 80, 100, 120, 140, 160])
-    params = (['GCS'], [1], [60])
+    params = (['GCS'], [1], [60, 80, 100, 120, 140, 160])
+    #params = (['GCS'], [1], [60])
+    #params = getTestConfigValue("gcp_kubernetes_read_zarr.llc4320_benchmarks")
     param_names = ['backend', 'z_chunksize', 'n_workers']
 
     @bmt.test_gcp

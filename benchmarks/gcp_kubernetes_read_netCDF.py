@@ -55,8 +55,8 @@ class llc4320_benchmarks():
     repeat = 1
     number = 1
     warmup_time = 0.0
-    #params = (['GCS'], [1, 5, 10], [60, 80, 100, 120, 140, 160])
-    params = (['FUSE'], [5], [60])
+    params = (['FUSE'], [1, 5, 10], [60, 80, 100, 120, 140, 160])
+    #params = (['FUSE'], [5], [60])
     param_names = ['backend', 'z_chunksize', 'n_workers']
 
     @bmt.test_gcp
