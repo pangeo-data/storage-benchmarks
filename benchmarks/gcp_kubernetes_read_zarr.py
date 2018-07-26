@@ -21,31 +21,17 @@ ASV Parameters:
 from . import target_zarr
 from . import benchmark_tools as bmt
 from . import getTestConfigValue
-
 from dask.distributed import Client
 from dask_kubernetes import KubeCluster
-import dask
-import dask.array as da
-import dask.multiprocessing
-import numpy as np
-import xarray as xr
-
-from os.path import abspath, dirname, join
-from subprocess import call, Popen
-from time import sleep
-from pathlib import Path
-import os
-import tempfile
 import itertools
-import shutil
+import numpy as np
 import timeit
+import xarray as xr
 import zarr
-import tempfile
 
-_counter = itertools.count()
-_DATASET_NAME = "default"
-_retries = 5
+RETRIES = 5
 DS_STORE = 'llc4320_zarr_10'
+RUNS = getTestConfigValue('n_runs')
 
 class llc4320_benchmarks():
     """Zarr GCP tests on LLC4320 Datasets
@@ -56,13 +42,14 @@ class llc4320_benchmarks():
     repeat = 1
     number = 1
     warmup_time = 0.0
-    params = (['GCS'], [1], [60, 80, 100, 120, 140, 160])
-    #params = (['GCS'], [1], [60])
+    run_nums = np.arange(1, RUNS + 1)
+    #params = (['GCS'], [1], [60, 80, 100, 120, 140, 160], run_nums)
+    params = (['GCS'], [1], [50, 60], run_nums)
     #params = getTestConfigValue("gcp_kubernetes_read_zarr.llc4320_benchmarks")
-    param_names = ['backend', 'z_chunksize', 'n_workers']
+    param_names = ['backend', 'z_chunksize', 'n_workers', 'run_num']
 
     @bmt.test_gcp
-    def setup(self, backend, z_chunksize, n_workers):
+    def setup(self, backend, z_chunksize, n_workers, run_num):
         self.cluster = KubeCluster(n_workers=n_workers)
         self.client = Client(self.cluster)
         bmt.cluster_wait(self.client, n_workers)
@@ -72,11 +59,11 @@ class llc4320_benchmarks():
         self.ds_zarr_theta = self.ds_zarr.Theta
 
     @bmt.test_gcp
-    def time_read(self, backend, z_chunksize, n_workers):
-        self.ds_zarr_theta.max().load(retries=_retries) 
+    def time_read(self, backend, z_chunksize, n_workers, run_num):
+        self.ds_zarr_theta.max().load(retries=RETRIES) 
 
     @bmt.test_gcp
-    def teardown(self, backend, z_chunksize, n_workers):
+    def teardown(self, backend, z_chunksize, n_workers, run_num):
         del self.ds_zarr_theta
         self.cluster.close()
 

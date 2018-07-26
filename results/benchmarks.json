@@ -501,24 +501,23 @@
         "param_names": [
             "backend",
             "z_chunksize",
-            "n_workers"
+            "n_workers",
+            "run_num"
         ],
         "params": [
             [
                 "'FUSE'"
             ],
             [
-                "1",
-                "5",
-                "10"
+                "5"
             ],
             [
-                "60",
-                "80",
-                "100",
-                "120",
-                "140",
-                "160"
+                "60"
+            ],
+            [
+                "1",
+                "2",
+                "3"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
@@ -545,7 +544,8 @@
         "param_names": [
             "backend",
             "z_chunksize",
-            "n_workers"
+            "n_workers",
+            "run_num"
         ],
         "params": [
             [
@@ -555,12 +555,13 @@
                 "1"
             ],
             [
-                "60",
-                "80",
-                "100",
-                "120",
-                "140",
-                "160"
+                "50",
+                "60"
+            ],
+            [
+                "1",
+                "2",
+                "3"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",

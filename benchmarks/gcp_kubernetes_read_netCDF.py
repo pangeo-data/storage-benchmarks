@@ -17,34 +17,19 @@ ASV Parameters:
     n_workers (int): Number of Kubernetes Dask workers to spawn
 
 """
-
-from . import target_zarr
 from . import benchmark_tools as bmt
+from . import getTestConfigValue
+from . import target_zarr
 
 from dask.distributed import Client
 from dask_kubernetes import KubeCluster
-import dask
-import dask.array as da
-import dask.multiprocessing
 import numpy as np
+import timeit
 import xarray as xr
 
-from os.path import abspath, dirname, join
-from subprocess import call, Popen
-from time import sleep
-from pathlib import Path
-import os
-import tempfile
-import itertools
-import shutil
-import timeit
-import zarr
-import tempfile
-
-_counter = itertools.count()
-_DATASET_NAME = "default"
-_retries = 5
+RETRIES = 5
 DS_FILES = '/gcs/storage-benchmarks/llc4320_netcdf_10/*.nc'
+RUNS = getTestConfigValue('n_runs')
 
 class llc4320_benchmarks():
     """netCDF GCP tests on LLC4320 Datasets
@@ -55,12 +40,13 @@ class llc4320_benchmarks():
     repeat = 1
     number = 1
     warmup_time = 0.0
-    params = (['FUSE'], [1, 5, 10], [60, 80, 100, 120, 140, 160])
-    #params = (['FUSE'], [5], [60])
-    param_names = ['backend', 'z_chunksize', 'n_workers']
+    run_nums = np.arange(1, RUNS + 1)
+    #params = (['FUSE'], [1, 5, 10], [60, 80, 100, 120, 140, 160], run_num)
+    params = (['FUSE'], [5], [60], run_nums)
+    param_names = ['backend', 'z_chunksize', 'n_workers', 'run_num']
 
     @bmt.test_gcp
-    def setup(self, backend, z_chunksize, n_workers):
+    def setup(self, backend, z_chunksize, n_workers, run_num):
         self.cluster = KubeCluster(n_workers=n_workers)
         self.client = Client(self.cluster)
         bmt.cluster_wait(self.client, n_workers)
@@ -72,11 +58,11 @@ class llc4320_benchmarks():
         self.ds_netcdf_theta = self.ds_netcdf.Theta
 
     @bmt.test_gcp
-    def time_read(self, backend, z_chunksize, n_workers):
-        self.ds_netcdf_theta.max().load(retries=_retries)
+    def time_read(self, backend, z_chunksize, n_workers, run_num):
+        self.ds_netcdf_theta.max().load(retries=RETRIES)
 
     @bmt.test_gcp
-    def teardown(self, backend, z_chunksize, n_workers):
+    def teardown(self, backend, z_chunksize, n_workers, run_num):
         del self.ds_netcdf_theta
         self.cluster.close()
 
