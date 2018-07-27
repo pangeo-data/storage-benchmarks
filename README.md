@@ -1,25 +1,25 @@
 # storage-benchmarks
-testing performance of different storage layers
+Modified and somewhat abused ASV suite of tests for running storage IO benchmarks against
+Pangeo environments.
 
-Uses [airspeedvelocity](http://asv.readthedocs.io/en/latest) to organize benchmarks.
+[airspeedvelocity](http://asv.readthedocs.io/en/latest) is the basis of these benchmarks.
 
-Latest github master of asv is required
 
-    $ pip install git+https://github.com/airspeed-velocity/asv.git
+## Basics and running the benchmarks.
+You typically run ASV benchmarks through the command line, but with this implementation, this is done through a Python script:
 
-To run the benchmarks (from repo root directory)
+```
+usage: run_benchmarks.py [-h] -b BENCHMARK [BENCHMARK ...]
+                         [-n N_RUNS [N_RUNS ...]]
+```
 
-    $ asv run
+For example, if you want to run all the GCP Kubernetes tests 6 times, you'd execute,
 
-Then, update reports
+```
+python run_benchmarks.py -b gcp_kubernetes -n 6
+```
 
-    $ asv publish
-
-Finally, you can run a local webserver to view results:
-
-    $ asv preview
-
-Browsing to http://127.0.0.1:8080 will show your reports.
+This will then generate all the benchmark runs, and scrape the resultant JSON output and append them to a CSV file.
 
 ## Suite of Tests
 

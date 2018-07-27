@@ -509,15 +509,24 @@
                 "'FUSE'"
             ],
             [
-                "5"
+                "1",
+                "5",
+                "10"
             ],
             [
-                "60"
+                "60",
+                "80",
+                "100",
+                "120",
+                "140",
+                "160"
             ],
             [
                 "1",
                 "2",
-                "3"
+                "3",
+                "4",
+                "5"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
@@ -555,13 +564,19 @@
                 "1"
             ],
             [
-                "50",
-                "60"
+                "60",
+                "80",
+                "100",
+                "120",
+                "140",
+                "160"
             ],
             [
                 "1",
                 "2",
-                "3"
+                "3",
+                "4",
+                "5"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",
@@ -580,5 +595,40 @@
         "type": "track",
         "unit": "unit"
     },
-    "version": 1
+    "version": 1,
+    "workstation_dask_read_zarr.synthetic_benchmarks.time_read": {
+        "code": "def time_read(self, backend, z_chunksize, n_workers, run_num):\n    ds = xr.open_zarr(self.target.storage_obj).load()\n",
+        "goal_time": 2.0,
+        "name": "workstation_dask_read_zarr.synthetic_benchmarks.time_read",
+        "number": 1,
+        "param_names": [
+            "backend",
+            "z_chunksize",
+            "n_workers",
+            "run_num"
+        ],
+        "params": [
+            [
+                "'POSIX'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ]
+        ],
+        "pretty_name": "workstation_dask_read_zarr.synthetic_benchmarks.time_read",
+        "repeat": 1,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    }
 }

@@ -35,6 +35,10 @@ def getTestConfigValue(k):
         config_file_path = os.path.join(cwd, _CONFIG_FILE)
         with open(config_file_path, "r") as f:
             cfg = yaml.load(f)
-        if k in cfg:
+        try:
             val = cfg[k]
+        #if k in cfg:
+        #    val = cfg[k]
+        except ValueError:
+            print("Value for %k is undefined or not found in config file." % k)
     return val
