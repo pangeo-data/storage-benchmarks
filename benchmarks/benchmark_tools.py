@@ -7,13 +7,68 @@
 
 """
 from . import getTestConfigValue
+from time import sleep
+import timeit
 import numpy as np
 import pandas as pd
 import xarray as xr
 
+
 from pathlib import Path
 
 _DATASET_NAME = "default"
+
+def test_gcp(func):
+    """A very simple test to see if we're on Pangeo GCP environment
+
+    Check existence of jovyan homedir and worker-template to determine if on
+    Kubernetes based cluster. Not very robust, but ok for now.
+
+    Raises:
+        NotImplementedError: Causes ASV to skip this test with assumption we're
+        not on Pangeo GCP environment
+
+    """
+    pod_conf = Path('/home/jovyan/worker-template.yaml')
+
+    def func_wrapper(*args, **kwargs):
+        if not pod_conf.is_file():
+            if func.__name__ == 'setup':
+                raise NotImplementedError("Not on GCP Pangeo environment... skipping")
+            else:
+                return
+        else:
+            func(*args, **kwargs)
+    return func_wrapper
+
+def cluster_wait(client, n_workers):
+    """Delay process until Kubernetes cluster has provisioned worker pods
+       and clean up completed pods in the process.
+
+    """
+    start = timeit.default_timer()
+    wait_threshold = 300
+    worker_threshold = n_workers * .95
+
+    while len(client.cluster.scheduler.workers) < n_workers:
+        # kill_daskpods()
+        sleep(2)
+        elapsed = timeit.default_timer() - start
+        # If we're getting close to timeout but cluster is mostly provisioned,
+        # just break out or test will fail
+        if elapsed > wait_threshold and len(client.cluster.scheduler.workers) >= worker_threshold:
+            break
+
+def kill_daskpods():
+    """Invoke kill script to clean up completed Dask pods provisioned for
+       user running this test
+
+       HACK: this needs improvement
+
+    """
+
+    path = abspath(join(dirname(__file__), '../bin/kill_daskpods.sh'))
+    call([ path ])
 
 def randn(shape, frac_nan=None, chunks=None, seed=0):
     rng = np.random.RandomState(seed)
