@@ -1,46 +1,43 @@
 # storage-benchmarks
-Modified and somewhat abused ASV suite of tests for running storage IO benchmarks against
-Pangeo environments.
+Modified ASV suite of benchmark tests to gather IO performance metrics in Pangeo environments. Set of tests exist for cloud, HPC, and workstation-like environments across different mixture of storage backends and APIs. We're mainly concerned with benchmarking Xarray/Dask performance in both single and multiprocessor/multithreaded/clustered environments.
 
-[airspeedvelocity](http://asv.readthedocs.io/en/latest) is the basis of these benchmarks.
-
+[airspeedvelocity](http://asv.readthedocs.io/en/latest) is the basis of these benchmarks, although workflow has been modified to accomodate gathering IO statistics.
 
 ## Basics and running the benchmarks.
-You typically run ASV benchmarks through the command line, but with this implementation, this is done through a Python script:
+
+You typically run ASV benchmarks through its command line tool, but with this implementation, the runs are conducted through a Python script:
 
 ```
 usage: run_benchmarks.py [-h] -b BENCHMARK [BENCHMARK ...]
                          [-n N_RUNS [N_RUNS ...]]
-```
-
-For example, if you want to run all the GCP Kubernetes tests 6 times, you'd execute,
 
 ```
-python run_benchmarks.py -b gcp_kubernetes -n 6
+
+Where `BENCHMARK` is a regex of the benchmark test you'd like to run. For example, if you want to run all the GCP Kubernetes read tests 10 times, you'd execute,
+
+```
+python run_benchmarks.py -b gcp_kubernetes_read* -n 10
+
 ```
 
-This will then generate all the benchmark runs, and scrape the resultant JSON output and append them to a CSV file.
+This will then generate all the benchmark runs, and scrape the resultant JSON output and append them to a CSV file. Data is collected from most recent ASV JSON results file for the machine the tests are being run on. If your directory has results from a different machine, this script will not collect data from that at this time. 
 
 ## Suite of Tests
 
-For all use cases, the following perfomance tests are conducted:
+The following perfomance tests are conducted:
 
 * IO
-	* Copy file from cloud to local
-	* Write to cloud storage
-	* Delete file
-* Get time series at a single point
+	* Read
+	* Write
 * Aggregations
-	* global mean / variance of SST as a function of time
- 	* mean / variance over longitude and time (i.e. zonal mean)
-	* monthly climatology
+	* mean / variance
 	* convolution (smoothing) over spatial dimensions
 	* multidimensional Fourier transforms
 
 ## Storage/Backend/API Combinations
 
 1. netcdf -> POSIX -> local storage
-1. netcdf -> POSIX -> some sort of disk presentation layer (e.g. fuse) -> cloud bucket
+1. netcdf -> POSIX -> some sort of disk presentation layer (e.g. FUSE) -> cloud bucket
 1. Zarr -> POSIX -> local storage
 1. Zarr -> cloud bucket
 1. h5netcdf -> POSIX -> local storage

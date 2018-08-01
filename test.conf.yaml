@@ -1,17 +1,21 @@
-hs_username: null  # HSDS Username account
-hs_password: null  # HSDS Password
-hs_endpoint: http://35.166.11.248:5101 # HSDS endpoint
-gcp_project: null # Google Cloud Platform project ID
-gcs_bucket: null # Main bucket we need to mount to get to benchmarks
-gcs_zarr: null # Google Cloud Storage container holding Zarr datasets
-gcs_zarr_fuse: null # Google Cloud Storage FUSE mount for Zarr datasets
-gcs_hdf5_fuse: null # Google Cloud Storage FUSE mount for hdf5 datasets
+# General
+hs_username: # HSDS Username account
+hs_password: # HSDS Password
+hs_endpoint: # http endpoint
+gcp_project: # Google Cloud Platform project ID
+gcs_bucket:  # Google Cloud Platform root bucket holding datasets for benchmarks
+gcs_zarr: # Google Cloud Storagecontainer holding Zarr datasets
+gcs_zarr_fuse: # Google Cloud Storage FUSE mount for Zarr datasets
+gcs_hdf5_fuse: # Google Cloud Storage FUSE mount for hdf5 dataset
+n_runs: 1 # Number of times to repeat benchmark. This applies to all benchmarks in a given run.
+
+# Dataset parameters
 np_nx: 1000
 np_ny: 1000
-np_nz: 5
+np_nz: 8
 np_dtype: f8
 xr_nx: 1000
 xr_ny: 1000
-xr_nt: 5
+xr_nt: 4
 xr_dtype: f8
-loca_year_start: 1950 
+loca_year_start: 1950
