@@ -7,8 +7,10 @@
 
 """
 
+from pathlib import Path
 from subprocess import call
 import argparse
+import datetime
 import fileinput
 import glob
 import os
@@ -17,9 +19,18 @@ import json
 import re
 import sys
 
-ASV_MACHINE = os.path.expanduser('~/.asv-machine.json')
-ASV_CONF    = 'asv.conf.json'
-INIT_PY     = 'benchmarks/__init__.py'
+# Handle Numpy binary incompatibality warning messages
+import warnings
+warnings.filterwarnings("ignore", message="numpy.dtype size changed")
+warnings.filterwarnings("ignore", message="numpy.ufunc size changed")
+
+ASV_MACHINE  = os.path.expanduser('~/.asv-machine.json')
+ASV_CONF     = 'asv.conf.json'
+INIT_PY      = 'benchmarks/__init__.py'
+RESULTS_FILE = 'storage-benchmarks-results.csv'
+CSV_HEADER   = 'datetime,machine_name,arch,cpu,machine_type,os,'\
+               'memory,benchmark,platform,z_chunk,n_worker,'\
+               'result'
 
 class results_parser:
     """
@@ -85,18 +96,46 @@ class results_parser:
                         for k, n_worker in enumerate(n_workers):
                             for l, run_num in enumerate(run_nums):
                                 nth_run = i+j+k+l
-                                result_str = ('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,'
+                                result_str = ('%s,%s,%s,%s,%s,%s,%s,%s,%s,'
                                               '%s,%s' % (self.machine_name,
                                               self.arch, self.cpu,
                                               self.machine, self.op_sys,
                                               self.ram, benchmark, platform,
-                                              z_chunk, n_worker, run_num,
+                                              z_chunk, n_worker,
                                               results[nth_run]))
                                 self.results.append(result_str)
 
     def get_results(self):
-        """Spot check raw JSON output. Might be useful for debugging"""
+        """
+            Output CSV results to stdout
+
+        """
         return self.results
+
+
+    def output_file(self, dir, results):
+        """
+            Output results to CSV in results directory configured in
+            asv.conf.json.
+
+        """
+        filepath = Path(dir + '/' + RESULTS_FILE)
+        # Create a new CSV with header if the file doesn't exist
+        if not filepath.is_file():
+            with filepath.open(mode='w') as file_handle:
+                file_handle.write('%s\n' % (CSV_HEADER))
+
+        try:
+            with filepath.open(mode='a') as file_handle:
+                for result in results:
+                    file_handle.write('%s,%s\n' % (datetime.datetime.now(),
+                                                   result))
+        except FileNotFoundError:
+            print('%s not found or cannot be read.' %s (filepath))
+            sys.exit(1)
+
+        print(filepath)
+
 
 ###############################################################################
 #
@@ -125,8 +164,10 @@ def get_env():
     machine      = ''
     op_sys       = ''
     ram          = ''
-    results_root = ''
-    results_dir  = ''
+    results_root = '' # directory where all results kept. Configured in
+                      # asv.conf.json
+    results_dir  = '' # subdir of results_root where machine specific
+                      # results reside
 
     # Get machine name
     try:
@@ -139,8 +180,9 @@ def get_env():
             op_sys       = machine_info[machine_name]['os']
             ram          = machine_info[machine_name]['ram']
 
-    except IOError:
+    except FileNotFoundError:
         print('%s not found or cannot be read.' %s (ASV_MACHINE_JSON))
+        sys.exit()
 
     
     # Get results directory
@@ -149,6 +191,7 @@ def get_env():
         # Unfortunately, need to remove C-style comments from file
         # which are non-standard.
         pattern = re.compile(r"\/\/") # if we find a comment in file
+        
         with open(ASV_CONF) as asv_conf_f:
             for line in asv_conf_f:
                 if pattern.search(line):
@@ -157,8 +200,9 @@ def get_env():
                     asv_conf_str += line
         asv_conf = json.loads(asv_conf_str)
         results_root = asv_conf["results_dir"]
-    except IOError:
+    except FileNotFoundError:
         print('%s not found or cannot be read.' %s (ASV_CONF))
+        sys.exit(1)
 
     # Get test.conf.yaml file
     try:
@@ -169,17 +213,18 @@ def get_env():
                     matched_line = line.split(' ')
                     # strip end spaces, then strip quotes
                     test_conf = matched_line[2].strip().strip("\"")
-    except IOError:
+    except FileNotFoundError:
         print('%s missing or cannot be read.' %s (INIT_PY))
+        sys.exit(1)
 
     results_dir = results_root + '/' + machine_name
     
     return (test_conf, machine_name, arch, cpu,
-            machine, op_sys, ram, results_dir)
+            machine, op_sys, ram, results_root, results_dir)
 
 def main():
     (test_conf, machine_name, arch, cpu,
-     machine, op_sys, ram, results_dir) = get_env()
+     machine, op_sys, ram, results_root, results_dir) = get_env()
 
     # Handle commandline arguments and options to the application
     parser = argparse.ArgumentParser()
@@ -206,6 +251,7 @@ def main():
             open_file.close()
         except IOError:
             print('%s not found' % test_conf)
+            sys.exit(1)
 
 
     # Run ASV benchmarks according to user input.
@@ -217,9 +263,8 @@ def main():
     results = results_parser(results_file, machine_name,
                              arch, cpu, machine, op_sys, ram)
     csv_output = results.get_results()
- 
-    for item in csv_output:
-        print(item)
+    results.output_file(results_root, csv_output)
+
 
 if __name__ == '__main__':
     main()
