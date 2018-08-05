@@ -522,7 +522,12 @@
                 "160"
             ],
             [
-                "1"
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
@@ -568,7 +573,12 @@
                 "160"
             ],
             [
-                "1"
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",
@@ -577,12 +587,12 @@
         "type": "time",
         "unit": "seconds"
     },
-    "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes": {
-        "code": "def track_gigabytes(self):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store(DS_STORE)\n    return llc_ds.nbytes / 2**20 \n",
-        "name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes",
+    "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes": {
+        "code": "def track_megabytes(self):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store(DS_STORE)\n    return llc_ds.nbytes / 2**20 \n",
+        "name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes",
         "param_names": [],
         "params": [],
-        "pretty_name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes",
+        "pretty_name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes",
         "timeout": 300,
         "type": "track",
         "unit": "unit"
@@ -610,7 +620,12 @@
                 "1"
             ],
             [
-                "1"
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
             ]
         ],
         "pretty_name": "workstation_dask_read_zarr.synthetic_benchmarks.time_read",

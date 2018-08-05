@@ -29,8 +29,8 @@ ASV_CONF     = 'asv.conf.json'
 INIT_PY      = 'benchmarks/__init__.py'
 RESULTS_FILE = 'storage-benchmarks-results.csv'
 CSV_HEADER   = 'datetime,machine_name,arch,cpu,machine_type,os,'\
-               'memory,benchmark,platform,z_chunk,n_worker,'\
-               'result'
+               'memory(mb),benchmark,platform,z_chunk,n_worker,'\
+               'result(s),dataset_size(mb)'
 
 class results_parser:
     """
@@ -59,21 +59,21 @@ class results_parser:
             self.cpu          = cpu
             self.machine      = machine
             self.op_sys       = op_sys
-            self.ram          = float(ram) / 2**30 # Convert to GB
+            self.ram          = float(ram) / 2**20 # Convert to MB
             self.json_results = json.load(results_f)
 
         # Will truncate hash to first 8 chars as that should be enough and to
         # prevent crazy long entries
         self.commit_hash = self.json_results['commit_hash'][0:8]
         self.benchmarks = self.json_results['results']
-        self.ds_sizes = {}
+        self.ds_size = ''
         self.results = []
 
         # Get sizes of datasets in benchmarks. Assumption is that test with
         # 'track' in string should be a dataset size.
         for benchmark in self.benchmarks:
             if re.search(r'track', benchmark):
-                self.ds_sizes[benchmark] = self.benchmarks[benchmark]
+                self.ds_size = self.benchmarks[benchmark]
 
         for benchmark in self.benchmarks:
             # Bypass dataset size results
@@ -97,12 +97,12 @@ class results_parser:
                             for l, run_num in enumerate(run_nums):
                                 nth_run = i+j+k+l
                                 result_str = ('%s,%s,%s,%s,%s,%s,%s,%s,%s,'
-                                              '%s,%s' % (self.machine_name,
+                                              '%s,%s,%s' % (self.machine_name,
                                               self.arch, self.cpu,
                                               self.machine, self.op_sys,
                                               self.ram, benchmark, platform,
                                               z_chunk, n_worker,
-                                              results[nth_run]))
+                                              results[nth_run], self.ds_size))
                                 self.results.append(result_str)
 
     def get_results(self):
