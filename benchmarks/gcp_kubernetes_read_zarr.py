@@ -30,7 +30,7 @@ import xarray as xr
 import zarr
 
 RETRIES = 5
-DS_STORE = 'llc4320_zarr_1000'
+DS_STORE = 'llc4320_zarr_100'
 RUNS = getTestConfigValue('n_runs')
 
 class llc4320_benchmarks():

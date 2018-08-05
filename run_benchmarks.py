@@ -89,13 +89,13 @@ class results_parser:
                 n_workers = self.json_results['results'][benchmark]['params'][2]
                 run_nums  = self.json_results['results'][benchmark]['params'][3]
                 results   = self.json_results['results'][benchmark]['result']
+                nth_run   = 0 # ASV holds results sequentially 
 
                 # Now loop through each parameter to produce CSV output
-                for i, platform in enumerate(platforms):
-                    for j, z_chunk in enumerate(z_chunks):
-                        for k, n_worker in enumerate(n_workers):
-                            for l, run_num in enumerate(run_nums):
-                                nth_run = i+j+k+l
+                for platform in platforms:
+                    for z_chunk in z_chunks:
+                        for n_worker in n_workers:
+                            for run_num in run_nums:
                                 result_str = ('%s,%s,%s,%s,%s,%s,%s,%s,%s,'
                                               '%s,%s,%s' % (self.machine_name,
                                               self.arch, self.cpu,
@@ -104,6 +104,7 @@ class results_parser:
                                               z_chunk, n_worker,
                                               results[nth_run], self.ds_size))
                                 self.results.append(result_str)
+                                nth_run += 1
 
     def get_results(self):
         """
