@@ -522,11 +522,7 @@
                 "160"
             ],
             [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5"
+                "1"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
@@ -572,11 +568,7 @@
                 "160"
             ],
             [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5"
+                "1"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",
@@ -618,11 +610,7 @@
                 "1"
             ],
             [
-                "1",
-                "2",
-                "3",
-                "4",
-                "5"
+                "1"
             ]
         ],
         "pretty_name": "workstation_dask_read_zarr.synthetic_benchmarks.time_read",

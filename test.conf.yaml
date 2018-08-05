@@ -7,7 +7,7 @@ gcs_bucket:  # Google Cloud Platform root bucket holding datasets for benchmarks
 gcs_zarr: # Google Cloud Storagecontainer holding Zarr datasets
 gcs_zarr_fuse: # Google Cloud Storage FUSE mount for Zarr datasets
 gcs_hdf5_fuse: # Google Cloud Storage FUSE mount for hdf5 dataset
-n_runs: 5 # Number of times to repeat benchmark. This applies to all benchmarks in a given run.
+n_runs: 1 # Number of times to repeat benchmark. This applies to all benchmarks in a given run.
 
 # Dataset parameters
 np_nx: 1000
