@@ -34,3 +34,17 @@ class synthetic_benchmarks():
 
     def teardown(self, backend, z_chunksize, n_workers, run_num):
         self.target.rm_objects()
+
+
+class synthetic_ds_size():
+    number = 1
+    timeout = 300
+    repeat = 1
+    warmup_time = 0.0
+
+    def track_megabytes(self):
+        target = target_zarr.ZarrStore(backend='POSIX')
+        target.get_temp_filepath()
+        bmt.rand_xarray().to_zarr(target.storage_obj)
+        ds = xr.open_zarr(target.storage_obj)
+        return ds.nbytes / 2**20 

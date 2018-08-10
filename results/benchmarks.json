@@ -522,7 +522,9 @@
                 "160"
             ],
             [
-                "1"
+                "1",
+                "2",
+                "3"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
@@ -531,12 +533,12 @@
         "type": "time",
         "unit": "seconds"
     },
-    "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_gigabytes": {
-        "code": "def track_gigabytes(self):\n    ds = xr.open_mfdataset(DS_FILES, decode_cf=False, autoclose=True)\n    return ds.nbytes / 2**20\n",
-        "name": "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_gigabytes",
+    "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes": {
+        "code": "def track_megabytes(self):\n    ds = xr.open_mfdataset(DS_FILES, decode_cf=False, autoclose=True)\n    return ds.nbytes / 2**20\n",
+        "name": "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes",
         "param_names": [],
         "params": [],
-        "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_gigabytes",
+        "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes",
         "timeout": 1200,
         "type": "track",
         "unit": "unit"
@@ -568,7 +570,9 @@
                 "160"
             ],
             [
-                "1"
+                "1",
+                "2",
+                "3"
             ]
         ],
         "pretty_name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",
@@ -577,12 +581,12 @@
         "type": "time",
         "unit": "seconds"
     },
-    "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes": {
-        "code": "def track_gigabytes(self):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store(DS_STORE)\n    return llc_ds.nbytes / 2**20 \n",
-        "name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes",
+    "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes": {
+        "code": "def track_megabytes(self):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store(DS_STORE)\n    return llc_ds.nbytes / 2**20 \n",
+        "name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes",
         "param_names": [],
         "params": [],
-        "pretty_name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_gigabytes",
+        "pretty_name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes",
         "timeout": 300,
         "type": "track",
         "unit": "unit"
@@ -610,7 +614,9 @@
                 "1"
             ],
             [
-                "1"
+                "1",
+                "2",
+                "3"
             ]
         ],
         "pretty_name": "workstation_dask_read_zarr.synthetic_benchmarks.time_read",
@@ -618,5 +624,15 @@
         "timeout": 600,
         "type": "time",
         "unit": "seconds"
+    },
+    "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes": {
+        "code": "def track_megabytes(self):\n    target = target_zarr.ZarrStore(backend='POSIX')\n    target.get_temp_filepath()\n    bmt.rand_xarray().to_zarr(target.storage_obj)\n    ds = xr.open_zarr(target.storage_obj)\n    return ds.nbytes / 2**20 \n",
+        "name": "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes",
+        "param_names": [],
+        "params": [],
+        "pretty_name": "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes",
+        "timeout": 300,
+        "type": "track",
+        "unit": "unit"
     }
 }

@@ -73,7 +73,7 @@ class llc4320_ds_size():
     repeat = 1
     warmup_time = 0.0
 
-    def track_gigabytes(self):
+    def track_megabytes(self):
         target = target_zarr.ZarrStore(backend='GCS', dask=True)
         llc_ds = target.open_store(DS_STORE)
         return llc_ds.nbytes / 2**20 

@@ -1,8 +1,9 @@
 {
-    "commit_hash": "b52142e2ac1768051dfe689d4a8a15d2ae6cd30a",
-    "date": 1533059633000,
+    "commit_hash": "8e76d44f72062521f5b31a41fa8888dd3653af26",
+    "date": 1533155411000,
     "ended_at": {
-        "workstation_dask_read_zarr.synthetic_benchmarks.time_read": 1533155397000
+        "workstation_dask_read_zarr.synthetic_benchmarks.time_read": 1533438470000,
+        "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes": 1533438474000
     },
     "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
     "params": {
@@ -58,16 +59,28 @@
                     "1"
                 ],
                 [
-                    "1"
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6"
                 ]
             ],
             "result": [
-                0.3556170000000005
+                0.37666999999999984,
+                0.29593800000000003,
+                0.3609930000000001,
+                0.3164559999999996,
+                0.3856510000000002,
+                0.3851469999999999
             ]
-        }
+        },
+        "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes": 64.86514282226562
     },
     "started_at": {
-        "workstation_dask_read_zarr.synthetic_benchmarks.time_read": 1533155392000
+        "workstation_dask_read_zarr.synthetic_benchmarks.time_read": 1533438443000,
+        "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes": 1533438470000
     },
     "version": 1
 }

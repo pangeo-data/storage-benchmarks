@@ -72,6 +72,6 @@ class llc4320_ds_size():
     repeat = 1
     warmup_time = 0.0
 
-    def track_gigabytes(self):
+    def track_megabytes(self):
         ds = xr.open_mfdataset(DS_FILES, decode_cf=False, autoclose=True)
         return ds.nbytes / 2**20
