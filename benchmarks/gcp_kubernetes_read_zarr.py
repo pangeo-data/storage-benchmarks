@@ -43,8 +43,8 @@ class llc4320_benchmarks():
     number = 1
     warmup_time = 0.0
     run_nums = np.arange(1, RUNS + 1)
-    params = (['GCS'], [1], [60, 80, 100, 120, 140, 160], run_nums)
-    #params = (['GCS'], [1], [50, 60], run_nums)
+    #params = (['GCS'], [1], [60, 80, 100, 120, 140, 160], run_nums)
+    params = (['GCS'], [1], [60], run_nums)
     #params = getTestConfigValue("gcp_kubernetes_read_zarr.llc4320_benchmarks")
     param_names = ['backend', 'z_chunksize', 'n_workers', 'run_num']
 
