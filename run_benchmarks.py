@@ -65,15 +65,15 @@ class results_parser:
         # Will truncate hash to first 8 chars as that should be enough and to
         # prevent crazy long entries
         self.commit_hash = self.json_results['commit_hash'][0:8]
-        self.benchmarks = self.json_results['results']
-        self.ds_size = ''
-        self.results = []
+        self.benchmarks  = self.json_results['results']
+        self.ds_sizes    = {}
+        self.results     = []
 
         # Get sizes of datasets in benchmarks. Assumption is that test with
         # 'track' in string should be a dataset size.
         for benchmark in self.benchmarks:
             if re.search(r'track', benchmark):
-                self.ds_size = self.benchmarks[benchmark]
+                self.ds_sizes[benchmark] = self.benchmarks[benchmark]
 
         for benchmark in self.benchmarks:
             # Bypass dataset size results
@@ -89,7 +89,20 @@ class results_parser:
                 n_workers = self.json_results['results'][benchmark]['params'][2]
                 run_nums  = self.json_results['results'][benchmark]['params'][3]
                 results   = self.json_results['results'][benchmark]['result']
-                nth_run   = 0 # ASV holds results sequentially 
+                nth_run   = 0 # ASV holds results sequentially
+
+                # There could be multiple dataset sizes, so we need to get
+                # right one. Should be one ds size per test run.
+                print(self.ds_sizes)
+                benchmark_prefix = re.search(r'^[a-zA-Z_]*\.', benchmark).group()
+                for key, value in self.ds_sizes.items():
+                    print('hola')
+                    ds_report_prefix = re.search(r'^[a-zA-Z_]*\.', key).group()
+                    print(ds_report_prefix)
+                    if ds_report_prefix == benchmark_prefix:
+                        ds_size = value
+
+
 
                 # Now loop through each parameter to produce CSV output
                 for platform in platforms:
@@ -102,7 +115,7 @@ class results_parser:
                                               self.machine, self.op_sys,
                                               self.ram, benchmark, platform,
                                               z_chunk, n_worker,
-                                              results[nth_run], self.ds_size))
+                                              results[nth_run], ds_size))
                                 self.results.append(result_str)
                                 nth_run += 1
 
@@ -256,7 +269,7 @@ def main():
 
 
     # Run ASV benchmarks according to user input.
-    call(['asv', 'run', '-e', '-b', args.benchmark[0]])
+    #call(['asv', 'run', '-e', '-b', args.benchmark[0]])
 
     # Now, figure out where ASV has written results to parse and output to CSV.
     files = glob.glob(results_dir + '/*')
