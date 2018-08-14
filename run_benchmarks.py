@@ -269,7 +269,7 @@ def main():
 
 
     # Run ASV benchmarks according to user input.
-    #call(['asv', 'run', '-e', '-b', args.benchmark[0]])
+    call(['asv', 'run', '-e', '-b', args.benchmark[0]])
 
     # Now, figure out where ASV has written results to parse and output to CSV.
     files = glob.glob(results_dir + '/*')
