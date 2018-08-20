@@ -1,0 +1,625 @@
+{
+    "IO_dask.NetCDF_GCP_LLC4320.time_load_array_compute_theta_mean": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.NetCDF_GCP_LLC4320.time_load_array_compute_theta_mean",
+        "number": 8,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'FUSE'"
+            ],
+            [
+                "10",
+                "90"
+            ],
+            [
+                "40",
+                "80",
+                "120"
+            ]
+        ],
+        "pretty_name": "IO_dask.NetCDF_GCP_LLC4320.time_load_array_compute_theta_mean",
+        "repeat": 1,
+        "timeout": 3600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_dask.Report_dataset_sizes.track_NetCDF_GCP_LLC4320_dataset_size": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "name": "IO_dask.Report_dataset_sizes.track_NetCDF_GCP_LLC4320_dataset_size",
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'ALL'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_dask.Report_dataset_sizes.track_NetCDF_GCP_LLC4320_dataset_size",
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit"
+    },
+    "IO_dask.Report_dataset_sizes.track_Zarr_GCP_LLC4320_dataset_size": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "name": "IO_dask.Report_dataset_sizes.track_Zarr_GCP_LLC4320_dataset_size",
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'ALL'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_dask.Report_dataset_sizes.track_Zarr_GCP_LLC4320_dataset_size",
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit"
+    },
+    "IO_dask.Report_dataset_sizes.track_Zarr_GCP_synthetic_write_dataset_size": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "name": "IO_dask.Report_dataset_sizes.track_Zarr_GCP_synthetic_write_dataset_size",
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'ALL'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_dask.Report_dataset_sizes.track_Zarr_GCP_synthetic_write_dataset_size",
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit"
+    },
+    "IO_dask.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean",
+        "number": 3,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'GCS'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "20",
+                "40",
+                "80",
+                "120"
+            ]
+        ],
+        "pretty_name": "IO_dask.Zarr_GCP_LLC4320.time_load_array_compute_theta_mean",
+        "repeat": 0,
+        "timeout": 2400,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_dask.Zarr_GCP_synthetic_write.time_synthetic_write": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "IO_dask.Zarr_GCP_synthetic_write.time_synthetic_write",
+        "number": 8,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'GCS'"
+            ],
+            [
+                "1",
+                "5",
+                "10"
+            ],
+            [
+                "20",
+                "40",
+                "80",
+                "120"
+            ]
+        ],
+        "pretty_name": "IO_dask.Zarr_GCP_synthetic_write.time_synthetic_write",
+        "repeat": 1,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_numpy.Read_Random_HDF5_POSIX.time_readtest": {
+        "code": "def time_readtest(self, backend, n_chunks, n_workers):\n    f = self.open(self.path, 'r')\n    readtest(f)\n    f.close()\n",
+        "goal_time": 2.0,
+        "name": "IO_numpy.Read_Random_HDF5_POSIX.time_readtest",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'FUSE'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_numpy.Read_Random_HDF5_POSIX.time_readtest",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_numpy.Read_Random_HSDS.time_readtest": {
+        "code": "def time_readtest(self, backend, n_chunks, n_workers):\n    f = self.open(self.path, 'r')\n    readtest(f)\n    f.close()\n",
+        "goal_time": 2.0,
+        "name": "IO_numpy.Read_Random_HSDS.time_readtest",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_numpy.Read_Random_HSDS.time_readtest",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_numpy.Read_Random_Zarr.time_readtest": {
+        "code": "def time_readtest(self, backend, n_chunks, n_workers):\n    f = self.target.open(self.target.storage_obj, 'r')\n    readtest(f)\n",
+        "goal_time": 2.0,
+        "name": "IO_numpy.Read_Random_Zarr.time_readtest",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'GCS'",
+                "'FUSE'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_numpy.Read_Random_Zarr.time_readtest",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_numpy.Report_dataset_size.track_ds_size": {
+        "code": "def track_ds_size(self, backend, n_chunks, n_workers):\n    return self.ds.nbytes / 1024**2\n",
+        "name": "IO_numpy.Report_dataset_size.track_ds_size",
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_numpy.Report_dataset_size.track_ds_size",
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit"
+    },
+    "IO_numpy.Select_LOCA_HSDS.time_readslice": {
+        "code": "def time_readslice(self, backend, n_chunks, n_workers):\n    f = self.open(self.filepath, 'r')\n    tasmax_slicetest(f)\n    f.close()\n",
+        "goal_time": 2.0,
+        "name": "IO_numpy.Select_LOCA_HSDS.time_readslice",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'HSDS'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_numpy.Select_LOCA_HSDS.time_readslice",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_numpy.Write_Random_HDF5_POSIX.time_writetest": {
+        "code": "def time_writetest(self, backend, n_chunks, n_workers):\n    f = self.open(self.path, 'a')\n    writetest(f, self.data)\n    f.close()\n",
+        "goal_time": 2.0,
+        "name": "IO_numpy.Write_Random_HDF5_POSIX.time_writetest",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'FUSE'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_numpy.Write_Random_HDF5_POSIX.time_writetest",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_numpy.Write_Random_HSDS.time_writetest": {
+        "code": "def time_writetest(self, backend, n_chunks, n_workers):\n    f = self.open(self.path, 'a')\n    writetest(f, self.data)\n    f.close()\n",
+        "goal_time": 2.0,
+        "name": "IO_numpy.Write_Random_HSDS.time_writetest",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'HSDS'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_numpy.Write_Random_HSDS.time_writetest",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_numpy.Write_Random_Zarr.time_writetest": {
+        "code": "def time_writetest(self, backend, n_chunks, n_workers):\n    f = self.target.open(self.target.storage_obj, 'a')\n    writetest(f, self.data)\n",
+        "goal_time": 2.0,
+        "name": "IO_numpy.Write_Random_Zarr.time_writetest",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'GCS'",
+                "'FUSE'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_numpy.Write_Random_Zarr.time_writetest",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_xarray.Read_Zarr.time_synthetic_mean": {
+        "code": "def time_synthetic_mean(self, backend, n_chunks, n_workers):\n    ds = xr.open_zarr(self.target.storage_obj).load()\n    ds.mean()\n",
+        "goal_time": 2.0,
+        "name": "IO_xarray.Read_Zarr.time_synthetic_mean",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'GCS'",
+                "'FUSE'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_xarray.Read_Zarr.time_synthetic_mean",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_xarray.Read_Zarr.time_synthetic_read": {
+        "code": "def time_synthetic_read(self, backend, n_chunks, n_workers):\n    ds = xr.open_zarr(self.target.storage_obj).load()\n",
+        "goal_time": 2.0,
+        "name": "IO_xarray.Read_Zarr.time_synthetic_read",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'GCS'",
+                "'FUSE'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_xarray.Read_Zarr.time_synthetic_read",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "IO_xarray.Report_dataset_sizes.track_ds_size": {
+        "code": "def track_ds_size(self, backend, n_chunks, n_workers):\n    return self.ds.nbytes / 1024**2\n",
+        "name": "IO_xarray.Report_dataset_sizes.track_ds_size",
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'ALL'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_xarray.Report_dataset_sizes.track_ds_size",
+        "timeout": 60.0,
+        "type": "track",
+        "unit": "unit"
+    },
+    "IO_xarray.Write_Zarr.time_synthetic_write": {
+        "code": "def time_synthetic_write(self, backend, n_chunks, n_workers):\n    self.ds.to_zarr(self.target.storage_obj)\n",
+        "goal_time": 2.0,
+        "name": "IO_xarray.Write_Zarr.time_synthetic_write",
+        "number": 5,
+        "param_names": [
+            "backend",
+            "n_chunks",
+            "n_workers"
+        ],
+        "params": [
+            [
+                "'POSIX'",
+                "'GCS'",
+                "'FUSE'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "IO_xarray.Write_Zarr.time_synthetic_write",
+        "repeat": 5,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
+        "number": 1,
+        "param_names": [
+            "backend",
+            "z_chunksize",
+            "n_workers",
+            "run_num"
+        ],
+        "params": [
+            [
+                "'FUSE'"
+            ],
+            [
+                "10"
+            ],
+            [
+                "100"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read",
+        "repeat": 1,
+        "timeout": 3600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes": {
+        "code": "def track_megabytes(self):\n    ds = xr.open_mfdataset(DS_FILES, decode_cf=False, autoclose=True)\n    return ds.nbytes / 2**20\n",
+        "name": "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes",
+        "param_names": [],
+        "params": [],
+        "pretty_name": "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes",
+        "timeout": 1800,
+        "type": "track",
+        "unit": "unit"
+    },
+    "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read": {
+        "code": "def func_wrapper(*args, **kwargs):\n    if not pod_conf.is_file():\n        if func.__name__ == 'setup':\n            raise NotImplementedError(\"Not on GCP Pangeo environment... skipping\")\n        else:\n            return\n    else:\n        func(*args, **kwargs)\n",
+        "goal_time": 2.0,
+        "name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",
+        "number": 1,
+        "param_names": [
+            "backend",
+            "z_chunksize",
+            "n_workers",
+            "run_num"
+        ],
+        "params": [
+            [
+                "'GCS'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "60",
+                "80",
+                "100",
+                "120",
+                "140",
+                "160"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read",
+        "repeat": 1,
+        "timeout": 3600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes": {
+        "code": "def track_megabytes(self):\n    target = target_zarr.ZarrStore(backend='GCS', dask=True)\n    llc_ds = target.open_store(DS_STORE)\n    return llc_ds.nbytes / 2**20 \n",
+        "name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes",
+        "param_names": [],
+        "params": [],
+        "pretty_name": "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes",
+        "timeout": 300,
+        "type": "track",
+        "unit": "unit"
+    },
+    "version": 1,
+    "workstation_dask_read_zarr.synthetic_benchmarks.time_read": {
+        "code": "def time_read(self, backend, z_chunksize, n_workers, run_num):\n    ds = xr.open_zarr(self.target.storage_obj).load()\n",
+        "goal_time": 2.0,
+        "name": "workstation_dask_read_zarr.synthetic_benchmarks.time_read",
+        "number": 1,
+        "param_names": [
+            "backend",
+            "z_chunksize",
+            "n_workers",
+            "run_num"
+        ],
+        "params": [
+            [
+                "'POSIX'"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ],
+            [
+                "1"
+            ]
+        ],
+        "pretty_name": "workstation_dask_read_zarr.synthetic_benchmarks.time_read",
+        "repeat": 1,
+        "timeout": 600,
+        "type": "time",
+        "unit": "seconds"
+    },
+    "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes": {
+        "code": "def track_megabytes(self):\n    target = target_zarr.ZarrStore(backend='POSIX')\n    target.get_temp_filepath()\n    bmt.rand_xarray().to_zarr(target.storage_obj)\n    ds = xr.open_zarr(target.storage_obj)\n    return ds.nbytes / 2**20 \n",
+        "name": "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes",
+        "param_names": [],
+        "params": [],
+        "pretty_name": "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes",
+        "timeout": 300,
+        "type": "track",
+        "unit": "unit"
+    }
+}
