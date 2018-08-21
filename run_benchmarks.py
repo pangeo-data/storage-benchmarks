@@ -7,10 +7,10 @@
 
 """
 
+from datetime import datetime
 from pathlib import Path
-from subprocess import call
+from subprocess import call, check_output
 import argparse
-import datetime
 import fileinput
 import glob
 import os
@@ -93,12 +93,9 @@ class results_parser:
 
                 # There could be multiple dataset sizes, so we need to get
                 # right one. Should be one ds size per test run.
-                print(self.ds_sizes)
                 benchmark_prefix = re.search(r'^[a-zA-Z_]*\.', benchmark).group()
                 for key, value in self.ds_sizes.items():
-                    print('hola')
                     ds_report_prefix = re.search(r'^[a-zA-Z_]*\.', key).group()
-                    print(ds_report_prefix)
                     if ds_report_prefix == benchmark_prefix:
                         ds_size = value
 
@@ -142,14 +139,11 @@ class results_parser:
         try:
             with filepath.open(mode='a') as file_handle:
                 for result in results:
-                    file_handle.write('%s,%s\n' % (datetime.datetime.now(),
+                    file_handle.write('%s,%s\n' % (datetime.now(),
                                                    result))
         except FileNotFoundError:
             print('%s not found or cannot be read.' %s (filepath))
             sys.exit(1)
-
-        print(filepath)
-
 
 ###############################################################################
 #
@@ -267,15 +261,31 @@ def main():
             print('%s not found' % test_conf)
             sys.exit(1)
 
+    # Before running, need to check if previous result is there. If so, move
+    # it. Otherwise, we'll double dip in reporting results.
+    files = glob.glob(results_dir + '/*')
+    results_prefix = check_output(['git', 'log', r'--pretty=format: %h',
+                                   '-n', '1', 'master']).decode().strip()
+    commit_hash_match = re.compile('.*%s.*.json$' % results_prefix)
+
+    for file in files:
+        match = commit_hash_match.match(file)
+        if match:
+            print('Previous results JSON found. Moving to backup file')
+            backup_suffix = f'{datetime.now():%Y-%m-%d:%H:%M:%S%z.bak}'
+            os.rename(file, f'{file}.{backup_suffix}')
 
     # Run ASV benchmarks according to user input.
     call(['asv', 'run', '-e', '-b', args.benchmark[0]])
 
+    files = glob.glob(results_dir + '/*') # update file list
     # Now, figure out where ASV has written results to parse and output to CSV.
-    files = glob.glob(results_dir + '/*')
-    results_file = max(files, key=os.path.getctime)   
-    results = results_parser(results_file, machine_name,
-                             arch, cpu, machine, op_sys, ram)
+    try:
+        results_file = max(files, key=os.path.getctime)
+        results = results_parser(results_file, machine_name,
+                                 arch, cpu, machine, op_sys, ram)
+    except FileNotFoundError:
+        print('Can\'t find results files!!')
     csv_output = results.get_results()
     results.output_file(results_root, csv_output)
 
