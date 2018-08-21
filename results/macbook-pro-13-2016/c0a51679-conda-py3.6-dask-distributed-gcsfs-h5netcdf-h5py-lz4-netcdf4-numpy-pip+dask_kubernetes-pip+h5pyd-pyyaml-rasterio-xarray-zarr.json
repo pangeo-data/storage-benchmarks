@@ -1,0 +1,76 @@
+{
+    "commit_hash": "c0a516795443db05a6d0b651df7a7c95e72c9a68",
+    "date": 1534220697000,
+    "ended_at": {
+        "workstation_dask_read_zarr.synthetic_benchmarks.time_read": 1534859669000,
+        "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes": 1534859673000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Core(TM) i7-6567U CPU @ 3.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "lz4": "",
+        "machine": "macbook-pro-13-2016",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Darwin 17.5.0",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "17179869184",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "lz4": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "workstation_dask_read_zarr.synthetic_benchmarks.time_read": {
+            "params": [
+                [
+                    "'POSIX'"
+                ],
+                [
+                    "1"
+                ],
+                [
+                    "1"
+                ],
+                [
+                    "1"
+                ]
+            ],
+            "result": [
+                0.3318760000000003
+            ]
+        },
+        "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes": 64.86514282226562
+    },
+    "started_at": {
+        "workstation_dask_read_zarr.synthetic_benchmarks.time_read": 1534859663000,
+        "workstation_dask_read_zarr.synthetic_ds_size.track_megabytes": 1534859669000
+    },
+    "version": 1
+}

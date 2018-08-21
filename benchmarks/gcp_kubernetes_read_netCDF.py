@@ -41,8 +41,8 @@ class llc4320_benchmarks():
     number = 1
     warmup_time = 0.0
     run_nums = np.arange(1, RUNS + 1)
-    params = (['FUSE'], [5, 10], [60, 80, 100, 120, 140, 160], run_nums)
-    #params = (['FUSE'], [10], [60], run_nums)
+    #params = (['FUSE'], [90], [60, 80, 100, 120, 140, 160], run_nums)
+    params = (['FUSE'], [10], [100], run_nums)
     param_names = ['backend', 'z_chunksize', 'n_workers', 'run_num']
 
     @bmt.test_gcp
@@ -68,7 +68,7 @@ class llc4320_benchmarks():
 
 class llc4320_ds_size():
     number = 1
-    timeout = 1200
+    timeout = 1800
     repeat = 1
     warmup_time = 0.0
 

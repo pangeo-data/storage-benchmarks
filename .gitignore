@@ -106,3 +106,7 @@ ENV/
 
 # kai
 test-kai.conf.yaml
+
+# backups, old, etc.
+*.bak
+*.old
