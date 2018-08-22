@@ -1,0 +1,110 @@
+{
+    "commit_hash": "db86254c5162fe6dfed45c6a95ba7d3b905bbe2e",
+    "date": 1534860056000,
+    "ended_at": {
+        "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read": 1534916632000,
+        "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes": 1534917691000,
+        "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read": 1534920444000,
+        "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes": 1534920461000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Xeon(R) CPU @ 2.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "lz4": "",
+        "machine": "kubernetes-gcp",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Linux 4.4.111+",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "26760068",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "lz4": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read": {
+            "params": [
+                [
+                    "'FUSE'"
+                ],
+                [
+                    "10"
+                ],
+                [
+                    "100"
+                ],
+                [
+                    "1"
+                ]
+            ],
+            "result": [
+                348.07447481621057
+            ]
+        },
+        "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes": 1111653.8307113647,
+        "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read": {
+            "params": [
+                [
+                    "'GCS'"
+                ],
+                [
+                    "1"
+                ],
+                [
+                    "60",
+                    "80",
+                    "100",
+                    "120",
+                    "140",
+                    "160"
+                ],
+                [
+                    "1"
+                ]
+            ],
+            "result": [
+                319.37266119895503,
+                208.33803804405034,
+                174.64262294396758,
+                144.48574154265225,
+                124.50874474504963,
+                118.90937826782465
+            ]
+        },
+        "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes": 1111653.8307113647
+    },
+    "started_at": {
+        "gcp_kubernetes_read_netCDF.llc4320_benchmarks.time_read": 1534915173000,
+        "gcp_kubernetes_read_netCDF.llc4320_ds_size.track_megabytes": 1534916632000,
+        "gcp_kubernetes_read_zarr.llc4320_benchmarks.time_read": 1534917691000,
+        "gcp_kubernetes_read_zarr.llc4320_ds_size.track_megabytes": 1534920444000
+    },
+    "version": 1
+}
