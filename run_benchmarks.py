@@ -73,7 +73,7 @@ class results_parser:
         # 'track' in string should be a dataset size.
         for benchmark in self.benchmarks:
             if re.search(r'track', benchmark):
-                self.ds_size = self.benchmarks[benchmark]
+                self.ds_sizes[benchmark] = self.benchmarks[benchmark]
 
         for benchmark in self.benchmarks:
             # Bypass dataset size results
