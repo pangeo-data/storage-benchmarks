@@ -29,7 +29,7 @@ import tempfile
 
 RETRIES = 5
 RUNS = getTestConfigValue('n_runs')
-DS_DIM = (3000, 3000, 2000)
+DS_DIM = (3000, 3000, 3000)
 
 class synthetic_benchmarks():
     """Zarr GCP tests on random synthetic Datasets
@@ -41,7 +41,7 @@ class synthetic_benchmarks():
     number = 1
     warmup_time = 0.0
     run_nums = np.arange(1, RUNS + 1)
-    params = (['GCS'], [1, 5, 10], np.arange(60, 160, 20), run_nums)
+    params = (['GCS'], [1], np.arange(60, 180, 20), run_nums)
     param_names = ['backend', 'z_chunksize', 'n_workers', 'run_num']
 
     @bmt.test_gcp

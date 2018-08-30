@@ -1,0 +1,86 @@
+{
+    "commit_hash": "1b309ef322322f5c60632137d4f6fa331acc3fd7",
+    "date": 1535580442000,
+    "ended_at": {
+        "gcp_kubernetes_write_zarr.rand_ds_size.track_megabytes": 1535591012000,
+        "gcp_kubernetes_write_zarr.synthetic_benchmarks.time_synthetic_write": 1535593017000
+    },
+    "env_name": "conda-py3.6-dask-distributed-gcsfs-h5netcdf-h5py-lz4-netcdf4-numpy-pip+dask_kubernetes-pip+h5pyd-pyyaml-rasterio-xarray-zarr",
+    "params": {
+        "arch": "x86_64",
+        "cpu": "Intel(R) Xeon(R) CPU @ 2.30GHz",
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "lz4": "",
+        "machine": "kubernetes-gcp",
+        "netcdf4": "",
+        "numpy": "",
+        "os": "Linux 4.4.111+",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "python": "3.6",
+        "pyyaml": "",
+        "ram": "26760068",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "profiles": {},
+    "python": "3.6",
+    "requirements": {
+        "dask": "",
+        "distributed": "",
+        "gcsfs": "",
+        "h5netcdf": "",
+        "h5py": "",
+        "lz4": "",
+        "netcdf4": "",
+        "numpy": "",
+        "pip+dask_kubernetes": "",
+        "pip+h5pyd": "",
+        "pyyaml": "",
+        "rasterio": "",
+        "xarray": "",
+        "zarr": ""
+    },
+    "results": {
+        "gcp_kubernetes_write_zarr.rand_ds_size.track_megabytes": 205993.65234375,
+        "gcp_kubernetes_write_zarr.synthetic_benchmarks.time_synthetic_write": {
+            "params": [
+                [
+                    "'GCS'"
+                ],
+                [
+                    "1"
+                ],
+                [
+                    "60",
+                    "80",
+                    "100",
+                    "120",
+                    "140",
+                    "160"
+                ],
+                [
+                    "1"
+                ]
+            ],
+            "result": [
+                58.54436176689342,
+                null,
+                40.633429028093815,
+                null,
+                29.798918208573014,
+                null
+            ]
+        }
+    },
+    "started_at": {
+        "gcp_kubernetes_write_zarr.rand_ds_size.track_megabytes": 1535591011000,
+        "gcp_kubernetes_write_zarr.synthetic_benchmarks.time_synthetic_write": 1535591012000
+    },
+    "version": 1
+}
