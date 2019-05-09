@@ -1,3 +1,10 @@
+# DEPRECATION NOTICE #
+
+This project is inactive and unfinished. More recent activty is at:
+
+https://github.com/pangeo-data/benchmarking
+
+
 # storage-benchmarks
 Modified ASV suite of benchmark tests to gather IO performance metrics in Pangeo environments. Set of tests exist for cloud, HPC, and workstation-like environments across different mixture of storage backends and APIs. We're mainly concerned with benchmarking Xarray/Dask performance in both single and multiprocessor/multithreaded/clustered environments.
 
